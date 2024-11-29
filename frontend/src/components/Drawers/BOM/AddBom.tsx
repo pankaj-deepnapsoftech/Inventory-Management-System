@@ -72,6 +72,34 @@ const AddBom: React.FC<AddBomProps> = ({
   const addBomHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const fileInput = supportingDoc.current as HTMLInputElement;
+    let pdfUrl;
+    if(fileInput && fileInput?.files && fileInput.files.length > 0){
+      try{
+        const formData = new FormData();
+        
+        // for(let i=0; i<supportingDoc?.current?.files?.length; i++){
+          // formData.append('file', supportingDoc?.current?.files[i]);
+          // }
+          formData.append('file', fileInput?.files && fileInput.files[0]);
+  
+        const uploadedFileResponse = await fetch(process.env.REACT_APP_FILE_UPLOAD_URL!, {
+          method: "POST",
+          body: formData as unknown as BodyInit
+        })
+        const uploadedFile: any = await uploadedFileResponse.json();
+        if(uploadedFile?.error){
+          throw new Error(uploadedFile?.error);
+        }
+
+        pdfUrl = uploadedFile[0];
+      }
+      catch(err: any)  {
+        toast.error(err.message || 'Something went wrong during file upload');
+        return;
+      }
+    }
+
     let modeifiedRawMaterials = rawMaterials.map((material) => ({
       ...material,
       category: material?.category?.value,
@@ -91,7 +119,7 @@ const AddBom: React.FC<AddBomProps> = ({
         quantity: quantity,
         uom: uom,
         category: category?.value,
-        supporting_doc: supportingDoc,
+        supporting_doc: pdfUrl,
         comments: comments,
         cost: cost,
       },

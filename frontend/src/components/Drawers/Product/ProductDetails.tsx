@@ -18,11 +18,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   const [id, setId] = useState<string | undefined>();
   const [uom, setUom] = useState<string | undefined>();
   const [category, setCategory] = useState<string | undefined>();
+  const [subCategory, setSubCategory] = useState<string | undefined>();
   const [currentStock, setCurrentStock] = useState<string | undefined>();
   const [price, setPrice] = useState<string | undefined>();
   const [minStock, setMinStock] = useState<string | undefined>();
   const [maxStock, setMaxStock] = useState<string | undefined>();
   const [hsn, setHsn] = useState<string | undefined>();
+  const [regularBuyingPrice, setRegularBuyingPrice] = useState<number | undefined>();
+  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<number | undefined>();
+  const [mrp, setMrp] = useState<number | undefined>();
+  const [dealerPrice, setDealerPrice] = useState<number | undefined>();
+  const [distributorPrice, setDistributorPrice] = useState<number | undefined>();
 
   const [cookies] = useCookies();
 
@@ -53,6 +59,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       setMinStock(data.product?.min_stock);
       setMaxStock(data.product?.max_stock);
       setHsn(data.product?.hsn);
+      setSubCategory(data.product?.sub_category);
+      setRegularBuyingPrice(data.product?.regular_buying_price);
+      setWholeSaleBuyingPrice(data.product?.wholesale_buying_price);
+      setMrp(data.product?.mrp);
+      setDealerPrice(data.product?.dealer_price);
+      setDistributorPrice(data.product?.distributor_price);
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -95,12 +107,36 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 <p>{name}</p>
               </div>
               <div className="mt-3 mb-5">
-                <p className="font-semibold">Product Price</p>
+                <p className="font-semibold">Product Price (Default)</p>
                 <p>₹ {price}/-</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Regular Buying Price</p>
+                <p>{regularBuyingPrice || "Not Available"}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Wholesale Buying Price</p>
+                <p>{wholesaleBuyingPrice || "Not Available"}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">MRP</p>
+                <p>{mrp || "Not Available"}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Dealer Price</p>
+                <p>{dealerPrice || "Not Available"}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Distributor Price</p>
+                <p>{distributorPrice || "Not Available"}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Product Category</p>
                 <p>{category}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Product Sub Category</p>
+                <p>{subCategory || "Not Available"}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">UOM (Unit of Measurement)</p>

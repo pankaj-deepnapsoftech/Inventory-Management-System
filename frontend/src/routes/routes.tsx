@@ -58,8 +58,8 @@ const routes = [
     isSublink: false
   },
   {
-    name: "Agent",
-    path: "agent",
+    name: "Merchant",
+    path: "merchant",
     icon: <TbUsersGroup />,
     sublink: [
       {

@@ -156,6 +156,10 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                       <span className="font-semibold">Cost</span>:{" "}
                       {finishedGood.cost}
                     </li>
+                    <li>
+                      <span className="font-semibold">Supporting Document</span>:{" "}
+                      {finishedGood.supporting_doc ? <a href={finishedGood.supporting_doc} target="_blank"><button className="underline">Open</button></a> : 'N/A'}
+                    </li>
                   </ul>
                 </div>
               )}

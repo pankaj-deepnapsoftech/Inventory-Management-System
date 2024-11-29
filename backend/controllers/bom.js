@@ -21,7 +21,6 @@ exports.create = TryCatch(async (req, res) => {
     !finished_good ||
     !bom_name ||
     bom_name.trim().length === 0 ||
-    total_cost === undefined ||
     total_cost === undefined
   ) {
     throw new ErrorHandler("Please provide all the fields", 400);
@@ -110,7 +109,6 @@ exports.update = TryCatch(async (req, res) => {
   if (raw_materials) {
     await Promise.all(
       raw_materials.map(async (material) => {
-        console.log("***************", material);
         const existingMaterial = await BOMRawMaterial.findOne({
           item_id: material.item_id,
         });

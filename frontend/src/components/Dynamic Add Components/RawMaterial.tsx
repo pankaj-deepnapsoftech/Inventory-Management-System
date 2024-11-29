@@ -104,7 +104,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
         category: "",
         assembly_phase: "",
         supplier: "",
-        supporting_doc: "",
+        // supporting_doc: "",
         comments: "",
         unit_cost: "",
         total_part_cost: "",
@@ -312,7 +312,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
                 }}
               />
             </FormControl>
-            <FormControl>
+            {/* <FormControl>
               <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
               <Input
                 border="1px"
@@ -324,7 +324,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
                 name="supporting_doc"
                 value={input.supporting_doc}
               ></Input>
-            </FormControl>
+            </FormControl> */}
             <FormControl>
               <FormLabel fontWeight="bold">Comments</FormLabel>
               <Input

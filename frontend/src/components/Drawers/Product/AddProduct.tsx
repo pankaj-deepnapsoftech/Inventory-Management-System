@@ -18,9 +18,17 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
   const [category, setCategory] = useState<{value: string, label: string} | undefined>();
   const [currentStock, setCurrentStock] = useState<string | undefined>();
   const [price, setPrice] = useState<string | undefined>();
+  const [regularBuyingPrice, setRegularBuyingPrice] = useState<number | undefined>();
+  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<number | undefined>();
+  const [mrp, setMrp] = useState<number | undefined>();
+  const [dealerPrice, setDealerPrice] = useState<number | undefined>();
+  const [distributorPrice, setDistributorPrice] = useState<number | undefined>();
   const [minStock, setMinStock] = useState<string | undefined>();
   const [maxStock, setMaxStock] = useState<string | undefined>();
   const [hsn, setHsn] = useState<string | undefined>();
+  const [itemType, setItemType] = useState<{value: string, label: string} | undefined>();
+  const [subCategory, setSubCategory] = useState<string | undefined>();
+  const [productOrService, setProductOrService] = useState<{value: string, label: string} | undefined>();
 
   const categoryOptions = [
     {value: 'finished goods', label: 'Finished Goods'}, 
@@ -32,13 +40,24 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
     {value: 'service', label: 'Service'}
   ]
 
+  const itemTypeOptions = [
+    {value: 'buy', label: 'Buy'},
+    {value: 'sell', label: 'Sell'},
+    {value: 'both', label: 'Both'}
+  ]
+
+  const productOrServiceOptions = [
+    {value: 'product', label: 'Product'},
+    {value: 'service', label: 'Service'}
+  ]
+
   const [addProduct] = useAddProductMutation();
   const [isAddingProduct, setIsAddingProduct] = useState<boolean>(false);
 
   const addProductHandler = async (e: React.FormEvent)=>{
     e.preventDefault();
     try {
-        if(!name || !id || !uom || !category || !currentStock || !price || name.trim().length === 0 || id.trim().length === 0 || uom.trim().length === 0){
+        if(!name || !id || !uom || !category || !currentStock || !price || !itemType || !productOrService || name.trim().length === 0 || id.trim().length === 0 || uom.trim().length === 0){
             throw new Error('Please fill all the fileds');
         }
 
@@ -51,7 +70,15 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
             max_stock: maxStock,
             current_stock: currentStock,
             price: price,
-            hsn
+            hsn,
+            sub_category: subCategory,
+            item_type: itemType?.value,
+            product_or_service: productOrService?.value,
+            regular_buying_price: regularBuyingPrice,
+            wholesale_buying_price: wholesaleBuyingPrice,
+            mrp: mrp,
+            dealer_price: dealerPrice,
+            distributor_price: distributorPrice
         }).unwrap();
         toast.success(response.message);
         fetchProductsHandler();
@@ -100,13 +127,63 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
               />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
-              <FormLabel fontWeight="bold">Product Price</FormLabel>
+              <FormLabel fontWeight="bold">Product Price (Default)</FormLabel>
               <Input
                 value={price}
                 className="no-scrollbar"
                 onChange={(e) => setPrice(e.target.value)}
                 type="number"
                 placeholder="Product Price"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Regular Buying Price</FormLabel>
+              <Input
+                value={regularBuyingPrice}
+                className="no-scrollbar"
+                onChange={(e) => setRegularBuyingPrice(+e.target.value)}
+                type="number"
+                placeholder="Regular Buying Price"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Wholesale Buying Price</FormLabel>
+              <Input
+                value={wholesaleBuyingPrice}
+                className="no-scrollbar"
+                onChange={(e) => setWholeSaleBuyingPrice(+e.target.value)}
+                type="number"
+                placeholder="Regular Buying Price"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">MRP</FormLabel>
+              <Input
+                value={mrp}
+                className="no-scrollbar"
+                onChange={(e) => setMrp(+e.target.value)}
+                type="number"
+                placeholder="MRP"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Dealer Price</FormLabel>
+              <Input
+                value={dealerPrice}
+                className="no-scrollbar"
+                onChange={(e) => setDealerPrice(+e.target.value)}
+                type="number"
+                placeholder="Dealer Price"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Distributor Price</FormLabel>
+              <Input
+                value={distributorPrice}
+                className="no-scrollbar"
+                onChange={(e) => setDistributorPrice(+e.target.value)}
+                type="number"
+                placeholder="Distributor Price"
               />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
@@ -122,6 +199,23 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
                 type="text"
                 placeholder="UOM (Unit of Measurement)"
               />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Product Subcategory</FormLabel>
+              <Input
+                value={subCategory}
+                onChange={(e) => setSubCategory(e.target.value)}
+                type="text"
+                placeholder="Product Subcategory"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Product Type</FormLabel>
+              <Select value={itemType} options={itemTypeOptions} onChange={(e: any)=>setItemType(e)} />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Product/Service</FormLabel>
+              <Select value={productOrService} options={productOrServiceOptions} onChange={(e: any)=>setProductOrService(e)} />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Current Stock</FormLabel>

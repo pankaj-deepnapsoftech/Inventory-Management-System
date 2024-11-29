@@ -33,6 +33,9 @@ interface ProductTableProps {
     product_id: string;
     uom: string;
     category: string;
+    sub_category?: string;
+    item_type: string,
+    product_or_service: string,
     current_stock: number;
     price: number;
     min_stock?: number;
@@ -61,6 +64,9 @@ const ProductTable: React.FC<ProductTableProps> = ({
     product_id: string;
     uom: string;
     category: string;
+    sub_category?: string;
+    item_type: string,
+    product_or_service: string,
     current_stock: number;
     price: number;
     min_stock?: number;
@@ -81,6 +87,18 @@ const ProductTable: React.FC<ProductTableProps> = ({
       {
         Header: "Category",
         accessor: "category",
+      },
+      {
+        Header: "Sub Category",
+        accessor: "sub_category",
+      },
+      {
+        Header: "Type",
+        accessor: "item_type",
+      },
+      {
+        Header: "Product/Service",
+        accessor: "product_or_service",
       },
       {
         Header: "UOM",
@@ -131,6 +149,9 @@ const ProductTable: React.FC<ProductTableProps> = ({
     product_id: string;
     uom: string;
     category: string;
+    sub_category?: string;
+    item_type: string,
+    product_or_service: string,
     current_stock: number;
     price: number;
     min_stock?: number;

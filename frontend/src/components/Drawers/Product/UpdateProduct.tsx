@@ -25,11 +25,23 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
+  const [subCategory, setSubCategory] = useState<string | undefined>();
   const [currentStock, setCurrentStock] = useState<string | undefined>();
   const [price, setPrice] = useState<string | undefined>();
   const [minStock, setMinStock] = useState<string | undefined>();
   const [maxStock, setMaxStock] = useState<string | undefined>();
   const [hsn, setHsn] = useState<string | undefined>();
+  const [regularBuyingPrice, setRegularBuyingPrice] = useState<
+    number | undefined
+  >();
+  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<
+    number | undefined
+  >();
+  const [mrp, setMrp] = useState<number | undefined>();
+  const [dealerPrice, setDealerPrice] = useState<number | undefined>();
+  const [distributorPrice, setDistributorPrice] = useState<
+    number | undefined
+  >();
 
   const [cookies] = useCookies();
 
@@ -71,11 +83,17 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         product_id: id,
         uom: uom,
         category: category?.value,
+        sub_category: subCategory,
         min_stock: minStock,
         max_stock: maxStock,
         current_stock: currentStock,
         price: price,
         hsn,
+        regular_buying_price: regularBuyingPrice,
+        wholesale_buying_price: wholesaleBuyingPrice,
+        mrp: mrp,
+        dealer_price: dealerPrice,
+        distributor_price: distributorPrice,
       }).unwrap();
       toast.success(response.message);
       fetchProductsHandler();
@@ -115,6 +133,12 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
       setMinStock(data.product?.min_stock);
       setMaxStock(data.product?.max_stock);
       setHsn(data.product?.hsn);
+      setSubCategory(data.product?.sub_category);
+      setRegularBuyingPrice(data.product?.regular_buying_price);
+      setWholeSaleBuyingPrice(data.product?.wholesale_buying_price);
+      setMrp(data.product?.mrp);
+      setDealerPrice(data.product?.dealer_price);
+      setDistributorPrice(data.product?.distributor_price);
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -176,12 +200,71 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                   placeholder="Product Price"
                 />
               </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Regular Buying Price</FormLabel>
+                <Input
+                  value={regularBuyingPrice}
+                  className="no-scrollbar"
+                  onChange={(e) => setRegularBuyingPrice(+e.target.value)}
+                  type="number"
+                  placeholder="Regular Buying Price"
+                />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Wholesale Buying Price</FormLabel>
+                <Input
+                  value={wholesaleBuyingPrice}
+                  className="no-scrollbar"
+                  onChange={(e) => setWholeSaleBuyingPrice(+e.target.value)}
+                  type="number"
+                  placeholder="Regular Buying Price"
+                />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">MRP</FormLabel>
+                <Input
+                  value={mrp}
+                  className="no-scrollbar"
+                  onChange={(e) => setMrp(+e.target.value)}
+                  type="number"
+                  placeholder="MRP"
+                />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Dealer Price</FormLabel>
+                <Input
+                  value={dealerPrice}
+                  className="no-scrollbar"
+                  onChange={(e) => setDealerPrice(+e.target.value)}
+                  type="number"
+                  placeholder="Dealer Price"
+                />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Distributor Price</FormLabel>
+                <Input
+                  value={distributorPrice}
+                  className="no-scrollbar"
+                  onChange={(e) => setDistributorPrice(+e.target.value)}
+                  type="number"
+                  placeholder="Distributor Price"
+                />
+              </FormControl>
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Product Category</FormLabel>
                 <Select
                   value={category}
                   options={categoryOptions}
                   onChange={(e: any) => setCategory(e)}
+                />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Product Subcategory</FormLabel>
+                <Input
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  type="text"
+                  placeholder="Product Subcategory"
                 />
               </FormControl>
               <FormControl className="mt-3 mb-5" isRequired>

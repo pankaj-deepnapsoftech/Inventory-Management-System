@@ -41,7 +41,35 @@ const productSchema = new Schema({
     approved: {
         type: Boolean,
         default: false
-    }
+    },
+    item_type: {
+        type: String,
+        enum: ['buy', 'sell', 'both'],
+        required: [true, 'Item type is a required field']
+    },
+    product_or_service: {
+        type: String,
+        enum: ['product', 'service'],
+        required: [true, 'Product/Service is a required field']
+    },
+    sub_category: {
+        type: String
+    },
+    regular_buying_price: {
+        type: Number
+    },
+    wholesale_buying_price: {
+        type: Number
+    },
+    mrp: {
+        type: Number
+    },
+    dealer_price: {
+        type: Number
+    },
+    distributor_price: {
+        type: Number
+    },
     // tax: Number, // TODO -> Which taxes should be added
     // image: // TODO -> Should be kept or not
 }, {

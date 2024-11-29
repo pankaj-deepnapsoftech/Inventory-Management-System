@@ -1,13 +1,23 @@
-import { FaRegCheckCircle } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaRegCheckCircle } from "react-icons/fa";
 import { IoStorefrontOutline } from "react-icons/io5";
 import { MdOutlineShoppingCart, MdOutlineSpeed } from "react-icons/md";
 import { TbUsersGroup } from "react-icons/tb";
 import routes from "../../routes/routes";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 
 const Navigation: React.FC = () => {
   const {allowedroutes, isSuper} = useSelector((state: any) => state.auth);
+
+  const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({});
+
+  const toggleSubMenusHandler = (path: string) => {
+    setOpenSubMenus((prev: { [key: string]: boolean }) => ({
+      ...prev,
+      [path]: !prev[path]
+    }));
+  };
 
   return (
     <div className="h-[inherit] px-3 py-3 overflow-auto bg-[#f9fafc]">
@@ -24,11 +34,13 @@ const Navigation: React.FC = () => {
                 <li
                   key={ind}
                   className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
+                  onClick={()=>toggleSubMenusHandler(route.path)}
                 >
                   <span>{route.icon}</span>
                   <span>{route.name}</span>
+                  <span className="pt-1">{openSubMenus[route.path] ? <FaAngleUp /> : <FaAngleDown />}</span>
                 </li>
-                {route.sublink &&
+                {openSubMenus[route.path] && route.sublink &&
                   route.sublink.map((sublink, index) => (
                     <NavLink to={route.path + '/' + sublink.path}>
                       <li

@@ -1,7 +1,7 @@
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import Drawer from "../../../ui/Drawer";
 import { BiX } from "react-icons/bi";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import {
   useAddBomMutation,
@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import RawMaterial from "../../Dynamic Add Components/RawMaterial";
 import Process from "../../Dynamic Add Components/Process";
 import { useCookies } from "react-cookie";
+import FormData from "form-data";
 
 interface UpdateBomProps {
   closeDrawerHandler: () => void;
@@ -39,7 +40,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
-  const [supportingDoc, setSupportingDoc] = useState<string | undefined>();
+  const supportingDoc = useRef<HTMLInputElement | null>(null);
   const [comments, setComments] = useState<string | undefined>();
   const [cost, setCost] = useState<string | undefined>();
 
@@ -78,6 +79,36 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
   const updateBomHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const fileInput = supportingDoc.current as HTMLInputElement;
+    console.log(fileInput?.files && fileInput.files[0])
+    let pdfUrl;
+    if(fileInput && fileInput?.files && fileInput.files.length > 0){
+      try{
+        const formData = new FormData();
+        
+        // for(let i=0; i<supportingDoc?.current?.files?.length; i++){
+          // formData.append('file', supportingDoc?.current?.files[i]);
+          // }
+          formData.append('file', fileInput?.files && fileInput.files[0]);
+  
+        const uploadedFileResponse = await fetch(process.env.REACT_APP_FILE_UPLOAD_URL!, {
+          method: "POST",
+          body: formData as unknown as BodyInit
+        })
+        const uploadedFile: any = await uploadedFileResponse.json();
+        console.log(uploadedFile)        
+        if(uploadedFile?.error){
+          throw new Error(uploadedFile?.error);
+        }
+
+        pdfUrl = uploadedFile[0];
+      }
+      catch(err: any)  {
+        toast.error(err.message || 'Something went wrong during file upload');
+        return;
+      }
+    }
+
     let modeifiedRawMaterials = rawMaterials.map((material) => ({
       ...material,
       category: material?.category?.value,
@@ -98,7 +129,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
         quantity: quantity,
         uom: uom,
         category: category?.value,
-        supporting_doc: supportingDoc,
+        supporting_doc: pdfUrl,
         comments: comments,
         cost: cost,
       },
@@ -133,7 +164,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
-    //   console.log(data.bom);
+      //   console.log(data.bom);
 
       setBomName(data.bom.bom_name);
       setPartsCount(data.bom.parts_count);
@@ -146,7 +177,10 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       setCost(data.bom.finished_good.cost);
       setUom(data.bom.finished_good.uom);
       setComments(data.bom.finished_good.comments);
-      setCategory({value: data.bom.finished_good.category, label: data.bom.finished_good.category})
+      setCategory({
+        value: data.bom.finished_good.category,
+        label: data.bom.finished_good.category,
+      });
 
       setProcesses(data.bom.processes);
 
@@ -154,15 +188,19 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       data.bom.raw_materials.forEach((material: any) => {
         inputs.push({
           item_id: material.item_id,
-          item_name: {value: material.item_id, label: material.item_name},
+          item_name: { value: material.item_id, label: material.item_name },
           description: material.description,
           quantity: material.quantity,
           uom: material.uom,
           //   image?: string;
-          category: {value: material.category, label: material.category},
-          assembly_phase: {value: material?.assembly_phase, label: material?.assembly_phase},
+          category: { value: material.category, label: material.category },
+          assembly_phase: {
+            value: material?.assembly_phase,
+            label: material?.assembly_phase,
+          },
           supplier: {
-            value: material?.supplier?._id, label: material?.supplier?.name
+            value: material?.supplier?._id,
+            label: material?.supplier?.name,
           },
           supporting_doc: "",
           comments: material?.comments,
@@ -171,7 +209,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
         });
       });
       setRawMaterials(inputs);
-      
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     } finally {
@@ -297,13 +334,20 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
                   <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-                  <Input
+                  {/* <Input
                     border="1px"
                     borderColor="#a9a9a9"
                     value={supportingDoc}
                     onChange={(e) => setSupportingDoc(e.target.value)}
                     type="text"
                     placeholder="Supporting Doc"
+                  /> */}
+                  <input
+                    type="file"
+                    placeholder="Choose a file"
+                    accept=".pdf"
+                    className="px-1 py-[6px] border border-[#a9a9a9] w-[300px] rounded"
+                    ref={supportingDoc}
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
