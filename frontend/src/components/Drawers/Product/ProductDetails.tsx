@@ -24,11 +24,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   const [minStock, setMinStock] = useState<string | undefined>();
   const [maxStock, setMaxStock] = useState<string | undefined>();
   const [hsn, setHsn] = useState<string | undefined>();
-  const [regularBuyingPrice, setRegularBuyingPrice] = useState<number | undefined>();
-  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<number | undefined>();
+  const [regularBuyingPrice, setRegularBuyingPrice] = useState<
+    number | undefined
+  >();
+  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<
+    number | undefined
+  >();
   const [mrp, setMrp] = useState<number | undefined>();
   const [dealerPrice, setDealerPrice] = useState<number | undefined>();
-  const [distributorPrice, setDistributorPrice] = useState<number | undefined>();
+  const [distributorPrice, setDistributorPrice] = useState<
+    number | undefined
+  >();
+  const [store, setStore] = useState<string | undefined>();
 
   const [cookies] = useCookies();
 
@@ -65,6 +72,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       setMrp(data.product?.mrp);
       setDealerPrice(data.product?.dealer_price);
       setDistributorPrice(data.product?.distributor_price);
+      setStore(data.product?.store?.name);
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -157,6 +165,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               <div className="mt-3 mb-5">
                 <p className="font-semibold">HSN</p>
                 <p>{hsn || "Not Available"}</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Store</p>
+                <p>{store || 'N/A'}</p>
               </div>
             </div>
           )}

@@ -128,6 +128,14 @@ const productApi = createApi({
     unapprovedProducts: builder.query({
       query: (id) => `unapproved`,
     }),
+    productBulKUpload: builder.mutation({
+      query: (data) => ({
+        url: '/bulk',
+        method: 'POST',
+        body: data
+      }),
+      invalidatesTags: ['Product']
+    })
   }),
 });
 
@@ -184,6 +192,14 @@ const storeApi = createApi({
     unapprovedStores: builder.query({
       query: (id) => `unapproved`,
     }),
+    storeBulKUpload: builder.mutation({
+      query: (data) => ({
+        url: '/bulk',
+        method: 'POST',
+        body: data
+      }),
+      invalidatesTags: ['Store']
+    })
   }),
 });
 
@@ -410,6 +426,7 @@ export const {
   useDeleteProductMutation,
   useLazyProductDetailsQuery,
   useLazyUnapprovedProductsQuery,
+  useProductBulKUploadMutation
 } = productApi;
 
 // Store APIs
@@ -420,6 +437,7 @@ export const {
   useDeleteStoresMutation,
   useLazyStoreDetailsQuery,
   useLazyUnapprovedStoresQuery,
+  useStoreBulKUploadMutation
 } = storeApi;
 
 // Agent APIs

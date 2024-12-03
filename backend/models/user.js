@@ -30,7 +30,7 @@ const userSchema = new Schema({
     },
     role: {
         type: Schema.Types.ObjectId,
-        ref: "User Role"
+        ref: "User-Role"
     },
     password: {
         type: String,

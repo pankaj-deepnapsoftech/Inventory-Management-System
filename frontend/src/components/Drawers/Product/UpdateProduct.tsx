@@ -42,6 +42,8 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   const [distributorPrice, setDistributorPrice] = useState<
     number | undefined
   >();
+  const [store, setStore] = useState<{value: string, label: string} | undefined>();
+  const [storeOptions, setStoreOptions] = useState<{value: string, label: string}[] | []>([]);
 
   const [cookies] = useCookies();
 
@@ -94,6 +96,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         mrp: mrp,
         dealer_price: dealerPrice,
         distributor_price: distributorPrice,
+        store: store?.value || undefined
       }).unwrap();
       toast.success(response.message);
       fetchProductsHandler();
@@ -139,6 +142,9 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
       setMrp(data.product?.mrp);
       setDealerPrice(data.product?.dealer_price);
       setDistributorPrice(data.product?.distributor_price);
+      if(data?.product?.store){
+        setStore({value: data.product.store._id, label: data.product.store.name});
+      }
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -146,8 +152,29 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
     }
   };
 
+  const fetchAllStores = async ()=>{
+    try{
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL+'store/all', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${cookies?.access_token}`
+        }
+      });
+      const data = await response.json();
+      if(!data.success){
+        throw new Error(data.message);
+      }
+      const modifiedStores = data.stores.map((store: any) => ({value: store._id, label: store.name}));
+      setStoreOptions(modifiedStores);
+    }
+    catch(err: any){
+      toast.error(err.message || 'Something went wrong');
+    }
+  }
+
   useEffect(() => {
     fetchProductDetails();
+    fetchAllStores();
   }, []);
 
   return (
@@ -314,6 +341,10 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                   type="text"
                   placeholder="HSN"
                 />
+              </FormControl>
+              <FormControl className="mt-3 mb-5">
+                <FormLabel fontWeight="bold">Store</FormLabel>
+                <Select className="w-full rounded mt-2 border border-[#a9a9a9]" options={storeOptions} value={store} onChange={(d: any)=>setStore(d)} />
               </FormControl>
               <Button
                 isLoading={isUpdatingProduct}

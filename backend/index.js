@@ -11,6 +11,7 @@ const storeRoutes = require("./routes/store");
 const agentRoutes = require("./routes/agent");
 const userRoleRoutes = require("./routes/userRole");
 const bomRoutes = require("./routes/bom");
+const dashboardRoutes = require("./routes/dashboard");
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use("/api/store", storeRoutes);
 app.use("/api/agent", agentRoutes);
 app.use("/api/role", userRoleRoutes);
 app.use("/api/bom", bomRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(globalErrorHandler);
 

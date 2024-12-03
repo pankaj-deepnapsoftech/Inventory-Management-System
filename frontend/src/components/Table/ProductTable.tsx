@@ -34,8 +34,8 @@ interface ProductTableProps {
     uom: string;
     category: string;
     sub_category?: string;
-    item_type: string,
-    product_or_service: string,
+    item_type: string;
+    product_or_service: string;
     current_stock: number;
     price: number;
     min_stock?: number;
@@ -65,8 +65,8 @@ const ProductTable: React.FC<ProductTableProps> = ({
     uom: string;
     category: string;
     sub_category?: string;
-    item_type: string,
-    product_or_service: string,
+    item_type: string;
+    product_or_service: string;
     current_stock: number;
     price: number;
     min_stock?: number;
@@ -150,8 +150,8 @@ const ProductTable: React.FC<ProductTableProps> = ({
     uom: string;
     category: string;
     sub_category?: string;
-    item_type: string,
-    product_or_service: string,
+    item_type: string;
+    product_or_service: string;
     current_stock: number;
     price: number;
     min_stock?: number;
@@ -169,6 +169,15 @@ const ProductTable: React.FC<ProductTableProps> = ({
     usePagination
   );
 
+  // const getSelectedProducts = ()=>{
+  //   const rows = document.getElementsByClassName('select');
+  //   const rowsArr = Array.from(rows);
+  //   const selectedIds = rowsArr
+  //   .filter(checkbox => checkbox.checked)  // Filter only the checked checkboxes
+  //   .map(checkbox => checkbox.value);
+  //   console.log(selectedIds)
+  // }
+
   return (
     <div>
       {isLoadingProducts && <Loading />}
@@ -180,6 +189,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
       )}
       {!isLoadingProducts && products.length > 0 && (
         <div>
+          {/* <button onClick={getSelectedProducts}>Get</button> */}
           <TableContainer>
             <Table variant="simple" {...getTableProps()}>
               <Thead className="text-sm font-semibold">
@@ -260,7 +270,10 @@ const ProductTable: React.FC<ProductTableProps> = ({
                           <Td fontWeight="500" {...cell.getCellProps()}>
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
+                              cell.column.id !== "select" &&
                               cell.render("Cell")}
+
+                            {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
 
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (

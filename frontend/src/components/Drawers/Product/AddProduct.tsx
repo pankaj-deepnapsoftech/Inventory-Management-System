@@ -1,92 +1,157 @@
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import Drawer from "../../../ui/Drawer";
 import { BiX } from "react-icons/bi";
-import { useState } from "react";
-import Select from 'react-select';
+import { useEffect, useState } from "react";
+import Select from "react-select";
 import { useAddProductMutation } from "../../../redux/api/api";
 import { toast } from "react-toastify";
+import { useCookies } from "react-cookie";
 
 interface AddProductProps {
   closeDrawerHandler: () => void;
   fetchProductsHandler: () => void;
 }
 
-const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProductsHandler }) => {
+const AddProduct: React.FC<AddProductProps> = ({
+  closeDrawerHandler,
+  fetchProductsHandler,
+}) => {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
   const [uom, setUom] = useState<string | undefined>();
-  const [category, setCategory] = useState<{value: string, label: string} | undefined>();
+  const [category, setCategory] = useState<
+    { value: string; label: string } | undefined
+  >();
   const [currentStock, setCurrentStock] = useState<string | undefined>();
   const [price, setPrice] = useState<string | undefined>();
-  const [regularBuyingPrice, setRegularBuyingPrice] = useState<number | undefined>();
-  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<number | undefined>();
+  const [regularBuyingPrice, setRegularBuyingPrice] = useState<
+    number | undefined
+  >();
+  const [wholesaleBuyingPrice, setWholeSaleBuyingPrice] = useState<
+    number | undefined
+  >();
   const [mrp, setMrp] = useState<number | undefined>();
   const [dealerPrice, setDealerPrice] = useState<number | undefined>();
-  const [distributorPrice, setDistributorPrice] = useState<number | undefined>();
+  const [distributorPrice, setDistributorPrice] = useState<
+    number | undefined
+  >();
   const [minStock, setMinStock] = useState<string | undefined>();
   const [maxStock, setMaxStock] = useState<string | undefined>();
   const [hsn, setHsn] = useState<string | undefined>();
-  const [itemType, setItemType] = useState<{value: string, label: string} | undefined>();
+  const [itemType, setItemType] = useState<
+    { value: string; label: string } | undefined
+  >();
   const [subCategory, setSubCategory] = useState<string | undefined>();
-  const [productOrService, setProductOrService] = useState<{value: string, label: string} | undefined>();
+  const [productOrService, setProductOrService] = useState<
+    { value: string; label: string } | undefined
+  >();
+  const [store, setStore] = useState<
+    { value: string; label: string } | undefined
+  >();
+  const [storeOptions, setStoreOptions] = useState<
+    { value: string; label: string }[] | []
+  >([]);
+  const [cookies] = useCookies();
 
   const categoryOptions = [
-    {value: 'finished goods', label: 'Finished Goods'}, 
-    {value: 'raw materials', label: 'Raw Materials'}, 
-    {value: 'semi finished goods', label: 'Semi Finished Goods'}, 
-    {value: 'consumables', label: 'Consumables'}, 
-    {value: 'bought out parts', label: 'Bought Out Parts'}, 
-    {value: 'trading goods', label: 'Trading Goods'}, 
-    {value: 'service', label: 'Service'}
-  ]
+    { value: "finished goods", label: "Finished Goods" },
+    { value: "raw materials", label: "Raw Materials" },
+    { value: "semi finished goods", label: "Semi Finished Goods" },
+    { value: "consumables", label: "Consumables" },
+    { value: "bought out parts", label: "Bought Out Parts" },
+    { value: "trading goods", label: "Trading Goods" },
+    { value: "service", label: "Service" },
+  ];
 
   const itemTypeOptions = [
-    {value: 'buy', label: 'Buy'},
-    {value: 'sell', label: 'Sell'},
-    {value: 'both', label: 'Both'}
-  ]
+    { value: "buy", label: "Buy" },
+    { value: "sell", label: "Sell" },
+    { value: "both", label: "Both" },
+  ];
 
   const productOrServiceOptions = [
-    {value: 'product', label: 'Product'},
-    {value: 'service', label: 'Service'}
-  ]
+    { value: "product", label: "Product" },
+    { value: "service", label: "Service" },
+  ];
 
   const [addProduct] = useAddProductMutation();
   const [isAddingProduct, setIsAddingProduct] = useState<boolean>(false);
 
-  const addProductHandler = async (e: React.FormEvent)=>{
+  const addProductHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        if(!name || !id || !uom || !category || !currentStock || !price || !itemType || !productOrService || name.trim().length === 0 || id.trim().length === 0 || uom.trim().length === 0){
-            throw new Error('Please fill all the fileds');
-        }
+      if (
+        !name ||
+        !id ||
+        !uom ||
+        !category ||
+        !currentStock ||
+        !price ||
+        !itemType ||
+        !productOrService ||
+        name.trim().length === 0 ||
+        id.trim().length === 0 ||
+        uom.trim().length === 0
+      ) {
+        throw new Error("Please fill all the fileds");
+      }
 
-        const response = await addProduct({
-            name,
-            product_id: id,
-            uom: uom,
-            category: category?.value,
-            min_stock: minStock,
-            max_stock: maxStock,
-            current_stock: currentStock,
-            price: price,
-            hsn,
-            sub_category: subCategory,
-            item_type: itemType?.value,
-            product_or_service: productOrService?.value,
-            regular_buying_price: regularBuyingPrice,
-            wholesale_buying_price: wholesaleBuyingPrice,
-            mrp: mrp,
-            dealer_price: dealerPrice,
-            distributor_price: distributorPrice
-        }).unwrap();
-        toast.success(response.message);
-        fetchProductsHandler();
-        closeDrawerHandler();
+      const response = await addProduct({
+        name,
+        product_id: id,
+        uom: uom,
+        category: category?.value,
+        min_stock: minStock,
+        max_stock: maxStock,
+        current_stock: currentStock,
+        price: price,
+        hsn,
+        sub_category: subCategory,
+        item_type: itemType?.value,
+        product_or_service: productOrService?.value,
+        regular_buying_price: regularBuyingPrice,
+        wholesale_buying_price: wholesaleBuyingPrice,
+        mrp: mrp,
+        dealer_price: dealerPrice,
+        distributor_price: distributorPrice,
+        store: store?.value || undefined
+      }).unwrap();
+      toast.success(response.message);
+      fetchProductsHandler();
+      closeDrawerHandler();
     } catch (err: any) {
-        toast.error(err?.data?.message || err?.message || "Something went wrong");
+      toast.error(err?.data?.message || err?.message || "Something went wrong");
     }
-  }
+  };
+
+  const fetchAllStores = async () => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "store/all",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+      const modifiedStores = data.stores.map((store: any) => ({
+        value: store._id,
+        label: store.name,
+      }));
+      setStoreOptions(modifiedStores);
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    fetchAllStores();
+  }, []);
 
   return (
     <Drawer closeDrawerHandler={closeDrawerHandler}>
@@ -188,7 +253,11 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Product Category</FormLabel>
-              <Select value={category} options={categoryOptions} onChange={(e: any)=>setCategory(e)} />
+              <Select
+                value={category}
+                options={categoryOptions}
+                onChange={(e: any) => setCategory(e)}
+              />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">UOM (Unit of Measurement)</FormLabel>
@@ -211,11 +280,19 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Product Type</FormLabel>
-              <Select value={itemType} options={itemTypeOptions} onChange={(e: any)=>setItemType(e)} />
+              <Select
+                value={itemType}
+                options={itemTypeOptions}
+                onChange={(e: any) => setItemType(e)}
+              />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Product/Service</FormLabel>
-              <Select value={productOrService} options={productOrServiceOptions} onChange={(e: any)=>setProductOrService(e)} />
+              <Select
+                value={productOrService}
+                options={productOrServiceOptions}
+                onChange={(e: any) => setProductOrService(e)}
+              />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Current Stock</FormLabel>
@@ -251,6 +328,15 @@ const AddProduct: React.FC<AddProductProps> = ({ closeDrawerHandler, fetchProduc
                 onChange={(e) => setHsn(e.target.value)}
                 type="text"
                 placeholder="HSN"
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5">
+              <FormLabel fontWeight="bold">Store</FormLabel>
+              <Select
+                className="w-full rounded mt-2 border border-[#a9a9a9]"
+                options={storeOptions}
+                value={store}
+                onChange={(d: any) => setStore(d)}
               />
             </FormControl>
             <Button

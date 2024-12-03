@@ -23,5 +23,5 @@ const userRoleSchema = new Schema({
     timestamps: true
 });
 
-const UserRole = model("User Role", userRoleSchema);
+const UserRole = model("User-Role", userRoleSchema);
 module.exports = UserRole;

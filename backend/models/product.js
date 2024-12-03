@@ -70,6 +70,10 @@ const productSchema = new Schema({
     distributor_price: {
         type: Number
     },
+    store: {
+        type: Schema.Types.ObjectId,
+        ref: 'Store'
+    }
     // tax: Number, // TODO -> Which taxes should be added
     // image: // TODO -> Should be kept or not
 }, {
