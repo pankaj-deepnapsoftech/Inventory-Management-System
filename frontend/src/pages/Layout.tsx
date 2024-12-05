@@ -43,6 +43,7 @@ const Layout: React.FC = () => {
       setCookie("access_token", data.token, { maxAge: 86400 });
       dispatch(userExists(data.user));
     } catch (err: any) {
+      navigate('/login');
       toast.error(err?.message || "Something went wrong");
     }
   };

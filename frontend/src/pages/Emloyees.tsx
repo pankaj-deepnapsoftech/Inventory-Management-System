@@ -115,7 +115,7 @@ const Employees: React.FC = () => {
         emp.last_name?.toLowerCase().includes(searchTxt) ||
         emp.email.toLowerCase()?.includes(searchTxt) ||
         emp.phone.toLowerCase().toString().includes(searchTxt) ||
-        emp?.role?.toLowerCase()?.includes(searchTxt) ||
+        emp?.role?.role?.toLowerCase()?.includes(searchTxt) ||
         (emp?.createdAt &&
           new Date(emp?.createdAt)
             ?.toISOString()

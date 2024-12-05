@@ -4,6 +4,10 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Card from "../components/Dashboard/Card";
 import Loading from "../ui/Loading";
+import { IoIosDocument, IoMdCart } from "react-icons/io";
+import { FaRupeeSign, FaStoreAlt, FaUser } from "react-icons/fa";
+import { AiFillProduct } from "react-icons/ai";
+import { IoPeople } from "react-icons/io5";
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -97,7 +101,9 @@ const Dashboard: React.FC = () => {
       </div> */}
 
       <div>
-        <div className="text-3xl font-bold">Hi {firstname || ""},</div>
+        <div className="text-3xl font-bold text-[#22075e]">
+          Hi {firstname || ""},
+        </div>
       </div>
 
       {isLoading && <Loading />}
@@ -115,6 +121,7 @@ const Dashboard: React.FC = () => {
                 title="Products"
                 content={products?.total_product_count}
                 link="product"
+                icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
                 primaryColor="#4CAAE4"
@@ -122,6 +129,7 @@ const Dashboard: React.FC = () => {
                 textColor="white"
                 title="Stock Value"
                 content={"₹ " + products?.total_stock_price + "/-"}
+                icon={<FaRupeeSign color="#ffffff" size={24} />}
                 link="product"
               />
               <Card
@@ -131,6 +139,7 @@ const Dashboard: React.FC = () => {
                 title="Excess Stock"
                 content={products?.total_excess_stock}
                 link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
               />
               <Card
                 primaryColor="#4CAAE4"
@@ -139,6 +148,7 @@ const Dashboard: React.FC = () => {
                 title="Low Stock"
                 content={products?.total_low_stock}
                 link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
               />
             </div>
           )}
@@ -152,6 +162,7 @@ const Dashboard: React.FC = () => {
                   title="Stores"
                   content={stores?.total_store_count}
                   link="store"
+                  icon={<FaStoreAlt color="#ffffff" size={28} />}
                 />
               </div>
             )}
@@ -163,6 +174,7 @@ const Dashboard: React.FC = () => {
                 title="Buyers"
                 content={merchants?.total_buyer_count}
                 link="merchant/buyer"
+                icon={<FaUser color="#ffffff" size={24} />}
               />
             )}
             {merchants && (
@@ -173,6 +185,7 @@ const Dashboard: React.FC = () => {
                 title="Suppliers"
                 content={merchants?.total_supplier_count}
                 link="merchant/supplier"
+                icon={<FaUser color="#ffffff" size={24} />}
               />
             )}
             {boms && (
@@ -183,6 +196,7 @@ const Dashboard: React.FC = () => {
                 title="BOMs"
                 content={boms?.total_bom_count}
                 link="bom"
+                icon={<IoIosDocument color="#ffffff" size={28} />}
               />
             )}
           </div>
@@ -198,6 +212,7 @@ const Dashboard: React.FC = () => {
                 title="Products"
                 content={approvalsPending?.unapproved_product_count}
                 link="approval"
+                icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
                 primaryColor="#273F7C"
@@ -206,6 +221,7 @@ const Dashboard: React.FC = () => {
                 title="Stores"
                 content={approvalsPending?.unapproved_store_count}
                 link="approval"
+                icon={<FaStoreAlt color="#ffffff" size={28} />}
               />
               <Card
                 primaryColor="#273F7C"
@@ -214,6 +230,7 @@ const Dashboard: React.FC = () => {
                 title="Merchants"
                 content={approvalsPending?.unapproved_merchant_count}
                 link="approval"
+                icon={<FaUser color="#ffffff" size={28} />}
               />
               <Card
                 primaryColor="#273F7C"
@@ -222,6 +239,7 @@ const Dashboard: React.FC = () => {
                 title="BOMs"
                 content={approvalsPending?.unapproved_bom_count}
                 link="approval"
+                icon={<IoIosDocument color="#ffffff" size={28} />}
               />
             </div>
           )}
@@ -239,6 +257,7 @@ const Dashboard: React.FC = () => {
                     title={emp?._id}
                     content={emp?.total_employee_count}
                     link="employee"
+                    icon={<IoPeople color="#ffffff" size={28} />}
                   />
                 );
               })}

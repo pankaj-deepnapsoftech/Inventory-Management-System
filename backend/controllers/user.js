@@ -95,7 +95,7 @@ exports.remove = TryCatch(async (req, res) => {
 exports.details = TryCatch(async (req, res) => {
   const userId = req.user._id;
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).populate("role");
   if (!user) {
     throw new ErrorHandler("User doesn't exist", 400);
   }

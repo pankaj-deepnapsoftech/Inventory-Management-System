@@ -1,7 +1,7 @@
-import { Button, filter } from "@chakra-ui/react";
+import { Button, filter, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
 import AgentTable from "../components/Table/AgentTable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeAddBuyerDrawer,
@@ -11,15 +11,24 @@ import {
   openBuyerDetailsDrawer,
   openUpdateBuyerDrawer,
 } from "../redux/reducers/drawersSlice";
+import SampleCSV from "../assets/csv/agent-sample.csv";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import AddBuyer from "../components/Drawers/Buyer/AddBuyer";
 import UpdateBuyer from "../components/Drawers/Buyer/UpdateBuyer";
-import { useDeleteAgentMutation } from "../redux/api/api";
+import {
+  useAgentBulKUploadMutation,
+  useDeleteAgentMutation,
+} from "../redux/api/api";
 import BuyerDetails from "../components/Drawers/Buyer/BuyerDetails";
+import { AiFillFileExcel } from "react-icons/ai";
+import { RxCross2 } from "react-icons/rx";
 
 const Buyers: React.FC = () => {
   const [cookies] = useCookies();
+  const [showBulkUploadMenu, setShowBulkUploadMenu] = useState<boolean>(false);
+  const [bulkUploading, setBulkUploading] = useState<boolean>(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [buyerId, setBuyerId] = useState<string | undefined>();
   const [isLoadingBuyers, setIsLoadingBuyers] = useState<boolean>(false);
@@ -34,6 +43,7 @@ const Buyers: React.FC = () => {
   const dispatch = useDispatch();
 
   const [deleteBuyer] = useDeleteAgentMutation();
+  const [bulkUpload] = useAgentBulKUploadMutation();
 
   const openAddBuyerDrawerHandler = () => {
     dispatch(openAddBuyerDrawer());
@@ -90,6 +100,29 @@ const Buyers: React.FC = () => {
       toast.error(error?.message || "Something went wrong");
     } finally {
       setIsLoadingBuyers(false);
+    }
+  };
+
+  const bulkUploadHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const file = fileRef?.current?.files?.[0];
+    if (!file) {
+      toast.error("CSV file not selected");
+      return;
+    }
+
+    try {
+      setBulkUploading(true);
+      const formData = new FormData();
+      formData.append("excel", file);
+
+      const response = await bulkUpload(formData).unwrap();
+      toast.success(response.message);
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || "Something went wrong");
+    } finally {
+      setBulkUploading(false);
     }
   };
 
@@ -195,6 +228,83 @@ const Buyers: React.FC = () => {
           >
             Add New Buyer
           </Button>
+          <div className="w-[200px]">
+            <Button
+              fontSize={{ base: "14px", md: "14px" }}
+              paddingX={{ base: "10px", md: "12px" }}
+              paddingY={{ base: "0", md: "3px" }}
+              width={{ base: "-webkit-fill-available", md: 200 }}
+              onClick={() => setShowBulkUploadMenu(true)}
+              color="white"
+              backgroundColor="#1640d6"
+              rightIcon={<AiFillFileExcel size={22} />}
+            >
+              Bulk Upload
+            </Button>
+            {showBulkUploadMenu && (
+              <div className="mt-1 border border-[#a9a9a9] rounded p-1">
+                <form>
+                  <FormControl>
+                    <FormLabel fontWeight="bold">Choose File (.csv)</FormLabel>
+                    <Input
+                      ref={fileRef}
+                      borderWidth={1}
+                      borderColor={"#a9a9a9"}
+                      paddingTop={1}
+                      type="file"
+                      accept=".csv, .xlsx"
+                    />
+                  </FormControl>
+                  <div className="flex gap-1">
+                    <Button
+                      type="submit"
+                      fontSize={{ base: "14px", md: "14px" }}
+                      // paddingX={{ base: "10px", md: "12px" }}
+                      // paddingY={{ base: "0", md: "3px" }}
+                      // width={{ base: "-webkit-fill-available", md: 200 }}
+                      onClick={bulkUploadHandler}
+                      color="white"
+                      backgroundColor="#1640d6"
+                      className="mt-1"
+                      rightIcon={<AiFillFileExcel size={22} />}
+                      isLoading={bulkUploading}
+                    >
+                      Upload
+                    </Button>
+                    <Button
+                      type="button"
+                      fontSize={{ base: "14px", md: "14px" }}
+                      // paddingX={{ base: "10px", md: "12px" }}
+                      // paddingY={{ base: "0", md: "3px" }}
+                      // width={{ base: "-webkit-fill-available", md: 200 }}
+                      onClick={() => setShowBulkUploadMenu(false)}
+                      color="white"
+                      backgroundColor="#1640d6"
+                      className="mt-1"
+                      rightIcon={<RxCross2 size={22} />}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                  <a href={SampleCSV}>
+                    <Button
+                      type="button"
+                      fontSize={{ base: "14px", md: "14px" }}
+                      // paddingX={{ base: "10px", md: "12px" }}
+                      // paddingY={{ base: "0", md: "3px" }}
+                      width={{ base: "-webkit-fill-available", md: 190 }}
+                      color="white"
+                      backgroundColor="#1640d6"
+                      className="mt-1"
+                      rightIcon={<AiFillFileExcel size={22} />}
+                    >
+                      Sample CSV
+                    </Button>
+                  </a>
+                </form>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

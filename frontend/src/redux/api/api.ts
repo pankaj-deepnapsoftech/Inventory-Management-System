@@ -263,6 +263,14 @@ const agentApi = createApi({
     unapprovedSellers: builder.query({
       query: (id) => `unapproved/suppliers`,
     }),
+    agentBulKUpload: builder.mutation({
+      query: (data) => ({
+        url: '/bulk',
+        method: 'POST',
+        body: data
+      }),
+      invalidatesTags: ['Agent']
+    })
   }),
 });
 
@@ -450,6 +458,7 @@ export const {
   useLazyAgentDetailsQuery,
   useLazyUnapprovedBuyersQuery,
   useLazyUnapprovedSellersQuery,
+  useAgentBulKUploadMutation
 } = agentApi;
 
 // BOM APIs

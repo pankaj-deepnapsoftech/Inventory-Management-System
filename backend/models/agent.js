@@ -6,7 +6,8 @@ const agentSchema = new Schema({
         type: String,
         required: [true, 'Agent Type is a required field'],
         enum: {
-            values: ['buyer', 'supplier', 'both'],
+            // values: ['buyer', 'supplier', 'both'],
+            values: ['buyer', 'supplier'],
             message: "Agent Type should be one of the following: buyer, supplier"
         }
     },
