@@ -20,7 +20,8 @@
 }
 
 body{
-    background-color: #b3b3b3b3 !important;
+    /* background-color: #b3b3b3b3 !important; */
+    background-color: #fbfbfb !important;
 }
 
 #root{

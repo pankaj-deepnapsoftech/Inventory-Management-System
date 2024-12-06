@@ -201,7 +201,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
         <FormLabel fontWeight="bold">Raw Materials</FormLabel>
         {inputs.map((input, ind) => (
           <div
-            className="grid grid-cols-4 gap-2 border border-b-[#a9a9a9] pb-2 mb-2"
+            className="grid grid-cols-4 gap-2 border-b-[#a9a9a9] pb-2 mb-2"
             key={ind}
           >
             {/* <FormControl className="mt-3 mb-5" isRequired>

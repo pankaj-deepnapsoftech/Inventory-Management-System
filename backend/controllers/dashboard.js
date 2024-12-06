@@ -1,3 +1,4 @@
+const moment = require("moment");
 const User = require("../models/user");
 const Agent = require("../models/agent");
 const BOM = require("../models/bom");
@@ -6,9 +7,20 @@ const Product = require("../models/product");
 const Store = require("../models/store");
 const { TryCatch } = require("../utils/error");
 
-exports.summary = TryCatch(async (req, res) => {
+exports.summary = async (req, res) => {
+  let { from, to } = req.body;
+
+  if (from && to) {
+    from = moment(from)
+      .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+      .format();
+    to = moment(to)
+      .set({ hour: 23, minute: 59, second: 59, millisecond: 999 })
+      .format();
+  }
+
   // Products Summary
-  const products = await Product.aggregate([
+  const productsPipeline = [
     {
       $project: {
         product_id: 1,
@@ -18,11 +30,6 @@ exports.summary = TryCatch(async (req, res) => {
         max_stock: 1,
         price: 1,
         approved: 1,
-      },
-    },
-    {
-      $match: {
-        approved: true,
       },
     },
     {
@@ -48,7 +55,26 @@ exports.summary = TryCatch(async (req, res) => {
         },
       },
     },
-  ]);
+  ];
+
+  if (from && to) {
+    productsPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+        approved: true,
+      },
+    });
+  } else {
+    productsPipeline.unshift({
+      $match: {
+        approved: true,
+      },
+    });
+  }
+  const products = await Product.aggregate(productsPipeline);
 
   // Stores Summary
   const storeCount = await Store.find({ approved: true }).countDocuments();
@@ -57,16 +83,10 @@ exports.summary = TryCatch(async (req, res) => {
   const bomCount = await BOM.find({ approved: true }).countDocuments();
 
   // Merchant Summary
-  const merchants = await Agent.aggregate([
+  const merchantsPipeline = [
     {
       $project: {
         agent_type: 1,
-        approved: 1,
-      },
-    },
-    {
-      $match: {
-        approved: true,
       },
     },
     {
@@ -84,7 +104,26 @@ exports.summary = TryCatch(async (req, res) => {
         },
       },
     },
-  ]);
+  ];
+
+  if (from && to) {
+    merchantsPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+        approved: true,
+      },
+    });
+  } else {
+    merchantsPipeline.unshift({
+      $match: {
+        approved: true,
+      },
+    });
+  }
+  const merchants = await Agent.aggregate(merchantsPipeline);
 
   // Approval Summary
   const unapprovedProducts = await Product.find({
@@ -99,7 +138,7 @@ exports.summary = TryCatch(async (req, res) => {
   const unapprovedBoms = await BOM.find({ approved: false }).countDocuments();
 
   // Employee Summary
-  const employees = await User.aggregate([
+  const employeesPipeline = [
     {
       $lookup: {
         from: "user-roles",
@@ -126,23 +165,44 @@ exports.summary = TryCatch(async (req, res) => {
       $group: {
         _id: "$role_details.role",
         total_employee_count: {
-            $sum: 1
-        }
+          $sum: 1,
+        },
       },
     },
-  ]);
+  ];
+
+  if (from && to) {
+    employeesPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+      },
+    });
+  }
+
+  const employees = await User.aggregate(employeesPipeline);
 
   res.status(200).json({
     status: 200,
     success: true,
-    products: products[0],
+    products: products[0] || {
+      total_low_stock: 0,
+      total_excess_stock: 0,
+      total_product_count: 0,
+      total_stock_price: 0,
+    },
     stores: {
       total_store_count: storeCount,
     },
     boms: {
       total_bom_count: bomCount,
     },
-    merchants: merchants[0],
+    merchants: merchants[0] || {
+      total_supplier_count: 0,
+      total_buyer_count: 0,
+    },
     approvals_pending: {
       unapproved_product_count: unapprovedProducts,
       unapproved_store_count: unapprovedStores,
@@ -151,4 +211,4 @@ exports.summary = TryCatch(async (req, res) => {
     },
     employees,
   });
-});
+};

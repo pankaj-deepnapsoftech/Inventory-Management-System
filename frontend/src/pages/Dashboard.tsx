@@ -8,9 +8,12 @@ import { IoIosDocument, IoMdCart } from "react-icons/io";
 import { FaRupeeSign, FaStoreAlt, FaUser } from "react-icons/fa";
 import { AiFillProduct } from "react-icons/ai";
 import { IoPeople } from "react-icons/io5";
+import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [from, setFrom] = useState<string | undefined>();
+  const [to, setTo] = useState<string | undefined>();
   const [cookies] = useCookies();
   const { firstname } = useSelector((state: any) => state.auth);
   const [approvalsPending, setApprovalsPending] = useState<
@@ -64,17 +67,20 @@ const Dashboard: React.FC = () => {
       const response = await fetch(
         process.env.REACT_APP_BACKEND_URL + "dashboard",
         {
-          method: "GET",
+          method: "POST",
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${cookies?.access_token}`,
           },
+          body: JSON.stringify({
+            from, to
+          })
         }
       );
       const data = await response.json();
       if (!data.success) {
         throw new Error(data.message);
       }
-
       setProducts(data.products);
       setStores(data.stores);
       setMerchants(data.merchants);
@@ -88,6 +94,24 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const applyFilterHandler = (e: React.FormEvent)=>{
+    e.preventDefault();
+    console.log(from, to)
+
+    if(from && to){
+      fetchSummaryHandler();
+    }
+  }
+
+  const resetFilterHandler = (e: React.FormEvent)=>{
+    e.preventDefault();
+
+    setFrom('');
+    setTo('');
+
+    fetchSummaryHandler();
+  }
+
   useEffect(() => {
     fetchSummaryHandler();
   }, []);
@@ -100,9 +124,46 @@ const Dashboard: React.FC = () => {
         </div>
       </div> */}
 
-      <div>
+      <div className="flex items-start justify-between">
         <div className="text-3xl font-bold text-[#22075e]">
           Hi {firstname || ""},
+        </div>
+
+        <div>
+          <form onSubmit={applyFilterHandler} className="flex items-end justify-between gap-2">
+            <FormControl>
+              <FormLabel>From</FormLabel>
+              <Input value={from} onChange={(e)=>setFrom(e.target.value)} backgroundColor="white" type="date" />
+            </FormControl>
+            <FormControl>
+              <FormLabel>To</FormLabel>
+              <Input value={to} onChange={(e)=>setTo(e.target.value)} backgroundColor="white" type="date" />
+            </FormControl>
+            <Button
+              type="submit"
+              fontSize={{ base: "14px", md: "14px" }}
+              paddingX={{ base: "10px", md: "12px" }}
+              paddingY={{ base: "0", md: "3px" }}
+              width={{ base: "-webkit-fill-available", md: 150 }}
+              // onClick={fetchProductsHandler}
+              color="white"
+              backgroundColor="#1640d6"
+            >
+              Apply
+            </Button>
+            <Button
+              type="submit"
+              fontSize={{ base: "14px", md: "14px" }}
+              paddingX={{ base: "10px", md: "12px" }}
+              paddingY={{ base: "0", md: "3px" }}
+              width={{ base: "-webkit-fill-available", md: 150 }}
+              onClick={resetFilterHandler}
+              color="white"
+              backgroundColor="#1640d6"
+            >
+              Reset
+            </Button>
+          </form>
         </div>
       </div>
 

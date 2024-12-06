@@ -20,7 +20,7 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <div className="h-[inherit] px-3 py-3 overflow-auto bg-[#f9fafc]">
+    <div className="h-[inherit] px-3 py-3 overflow-auto bg-[#fbfbfb]">
       <ul>
         {routes.map((route, ind) => {
           const isAllowed = isSuper || allowedroutes.includes(route.path.replaceAll('/', ''));
