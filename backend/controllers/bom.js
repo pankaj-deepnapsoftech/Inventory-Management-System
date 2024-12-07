@@ -38,26 +38,13 @@ exports.create = TryCatch(async (req, res) => {
     })
   );
 
-  const {
-    item_id,
-    item_name,
-    description,
-    quantity,
-    uom,
-    image,
-    category,
-    supporting_doc,
-    comments,
-    cost,
-  } = finished_good;
+  const { item, description, quantity, image, supporting_doc, comments, cost } =
+    finished_good;
   const createdFinishedGood = await BOMFinishedMaterial.create({
-    item_id,
-    item_name,
+    item,
     description,
     quantity,
-    uom,
     image,
-    category,
     supporting_doc,
     comments,
     cost,
@@ -94,43 +81,81 @@ exports.update = TryCatch(async (req, res) => {
   if (!id) {
     throw new ErrorHandler("id not provided", 400);
   }
-  const bom = await BOM.findById(id);
+  const bom = await BOM.findById(id)
+    .populate("approved_by")
+    .populate({
+      path: "finished_good",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .populate({
+      path: "raw_materials",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    });
   if (!bom) {
     throw new ErrorHandler("BOM not found", 400);
   }
 
   if (finished_good) {
-    await BOMFinishedMaterial.findOneAndUpdate(
-      { _id: bom.finished_good },
-      { ...finished_good }
-    );
+    // If finished good has not changed
+    if (finished_good.item === bom.finished_good._id) {
+      await BOMFinishedMaterial.findByIdAndUpdate({ ...bom.finished_good });
+    }
+    // Else
+    else {
+      await BOMFinishedMaterial.findByIdAndDelete(bom.finished_good._id);
+      const newFinishedGood = await BOMFinishedMaterial.create({
+        ...finished_good,
+      });
+      bom.finished_good = newFinishedGood;
+    }
   }
 
   if (raw_materials) {
-    await Promise.all(
+    let newRawMaterials = await Promise.all(
       raw_materials.map(async (material) => {
-        const existingMaterial = await BOMRawMaterial.findOne({
-          item_id: material.item_id,
-        });
-        if (existingMaterial) {
-          existingMaterial.set({ ...material });
-          await existingMaterial.save();
-        } else {
+        // Check if the material already exists in the BOM's raw materials
+        const isAlreadyPresent = bom.raw_materials.some(
+          (raw_material) => raw_material.item._id.toString() === material.item
+        );
+
+        // If the item is already in BOM's raw materials
+        if (isAlreadyPresent) {
+          // Update the material if it exists
+          const updatedMaterial = await BOMRawMaterial.findByIdAndUpdate(
+            {_id: material.item},
+            { ...material },
+            { new: true }
+          );
+          return updatedMaterial; // Return the updated material instead of undefined
+        }
+        // Else create a new material
+        else {
           const newMaterial = await BOMRawMaterial.create({ ...material });
-          bom.raw_materials.push(newMaterial._id);
+          return newMaterial;
         }
       })
-    );
+    )
+    // console.log(newRawMaterials);
+    newRawMaterials = newRawMaterials.filter(material => material !== null);
+    bom.raw_materials = newRawMaterials;
   }
 
-  (bom_name && bom_name.trim().length > 0) && (bom.bom_name = bom_name);
-  (parts_count && parts_count > 0) && (bom.parts_count = parts_count);
-  (total_cost) && (bom.total_cost = total_cost);
+  bom_name && bom_name.trim().length > 0 && (bom.bom_name = bom_name);
+  parts_count && parts_count > 0 && (bom.parts_count = parts_count);
+  total_cost && (bom.total_cost = total_cost);
   if (approved && req.user.isSuper) {
     bom.approved_by = req.user._id;
     bom.approved = true;
   }
-  bom.approval_date = await bom.save();
+  await bom.save();
 
   res.status(200).json({
     status: 200,
@@ -168,13 +193,20 @@ exports.details = TryCatch(async (req, res) => {
     throw new ErrorHandler("id not provided", 400);
   }
   const bom = await BOM.findById(id)
-    .populate("finished_good")
+    .populate("approved_by")
+    .populate({
+      path: "finished_good",
+      populate: { path: "item" },
+    })
     .populate({
       path: "raw_materials",
-      populate: {
-        path: "supplier",
-      },
+      populate: [
+        {
+          path: "item",
+        },
+      ],
     });
+
   if (!bom) {
     throw new ErrorHandler("BOM not found", 400);
   }
@@ -185,9 +217,25 @@ exports.details = TryCatch(async (req, res) => {
   });
 });
 exports.all = TryCatch(async (req, res) => {
-  const boms = await BOM.find({ approved: true }).populate(
-    "finished_good raw_materials approved_by"
-  ).sort({'updatedAt': -1});
+  const boms = await BOM.find({ approved: true })
+    .populate("approved_by")
+    .populate({
+      path: "finished_good",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .populate({
+      path: "raw_materials",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .sort({ updatedAt: -1 });
   res.status(200).json({
     status: 200,
     success: true,
@@ -195,9 +243,25 @@ exports.all = TryCatch(async (req, res) => {
   });
 });
 exports.unapproved = TryCatch(async (req, res) => {
-  const boms = await BOM.find({ approved: false }).populate(
-    "finished_good raw_materials"
-  ).sort({'updatedAt': -1});
+  const boms = await BOM.find({ approved: false })
+    .populate("approved_by")
+    .populate({
+      path: "finished_good",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .populate({
+      path: "raw_materials",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .sort({ updatedAt: -1 });
   res.status(200).json({
     status: 200,
     success: true,

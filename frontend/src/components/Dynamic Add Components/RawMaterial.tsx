@@ -6,64 +6,21 @@ import { IoIosAdd } from "react-icons/io";
 import Select from "react-select";
 import { toast } from "react-toastify";
 
-// interface RawMaterialsType {
-//   item_id: string;
-//   item_name: string;
-//   description: string;
-//   quantity: number;
-//   uom: string;
-//   image?: string;
-//   category: string;
-//   assembly_phase: string;
-//   supplier: string;
-//   supporting_doc?: string;
-//   comments?: string;
-//   unit_cost: number;
-//   total_part_cost: string;
-// }
-
 interface RawMaterialProps {
   inputs: any[];
+  products: any[],
+  productOptions: any[],
   setInputs: (inputs: any) => void;
 }
 
-const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
-  // const [inputs, setInputs] = useState<RawMaterialsType[]>([
-  //   {
-  //     item_id: "",
-  //     item_name: "",
-  //     description: "",
-  //     quantity: 0,
-  //     uom: "",
-  //     //   image?: string;
-  //     category: "",
-  //     assembly_phase: "",
-  //     supplier: "",
-  //     supporting_doc: "",
-  //     comments: "",
-  //     unit_cost: 0,
-  //     total_part_cost: "",
-  //   },
-  // ]);
+const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, productOptions }) => {
   const [cookies] = useCookies();
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
-  const [products, setProducts] = useState<any[]>([]);
-  const [productsOptionsList, setProductsOptionsList] = useState<any[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   const [isLoadingSuppliers, setIsLoadingSuppliers] = useState<boolean>(false);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [suppliersOptionsList, setSuppliersOptionsList] = useState<any[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<any[]>([]);
-
-  const categoryOptions = [
-    { value: "finished goods", label: "Finished Goods" },
-    { value: "raw materials", label: "Raw Materials" },
-    { value: "semi finished goods", label: "Semi Finished Goods" },
-    { value: "consumables", label: "Consumables" },
-    { value: "bought out parts", label: "Bought Out Parts" },
-    { value: "trading goods", label: "Trading Goods" },
-    { value: "service", label: "Service" },
-  ];
 
   const assemblyPhaseOptions = [
     { value: "not started", label: "Not Started" },
@@ -81,11 +38,13 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
       if (unit_cost) {
         inputsArr[ind]["total_part_cost"] = +unit_cost * +value;
       }
-    } else if (name === "unit_cost") {
-      const quantity = inputsArr[ind]["quantity"];
-      if (quantity) {
-        inputsArr[ind]["total_part_cost"] = +quantity * +value;
-      }
+    }
+    else if (name === "item_name") {
+      const item_id = inputsArr[ind]["item_name"].value;
+      const product = products.filter((prd: any) => prd._id === item_id)[0];
+      inputsArr[ind]["uom"] = product.uom;
+      inputsArr[ind]["unit_cost"] = product.price;
+      inputsArr[ind]["category"] = product.category;
     }
 
     setInputs(inputsArr);
@@ -118,30 +77,30 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
     setInputs(inputsArr);
   };
 
-  const fetchProductsHandler = async () => {
-    try {
-      setIsLoadingProducts(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + "product/all",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${cookies?.access_token}`,
-          },
-        }
-      );
-      const results = await response.json();
-      if (!results.success) {
-        throw new Error(results?.message);
-      }
-      // console.log(results.products);
-      setProducts(results.products);
-    } catch (error: any) {
-      toast.error(error?.message || "Something went wrong");
-    } finally {
-      setIsLoadingProducts(false);
-    }
-  };
+  // const fetchProductsHandler = async () => {
+  //   try {
+  //     setIsLoadingProducts(true);
+  //     const response = await fetch(
+  //       process.env.REACT_APP_BACKEND_URL + "product/all",
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${cookies?.access_token}`,
+  //         },
+  //       }
+  //     );
+  //     const results = await response.json();
+  //     if (!results.success) {
+  //       throw new Error(results?.message);
+  //     }
+  //     // console.log(results.products);
+  //     setProducts(results.products);
+  //   } catch (error: any) {
+  //     toast.error(error?.message || "Something went wrong");
+  //   } finally {
+  //     setIsLoadingProducts(false);
+  //   }
+  // };
 
   const fetchSuppliersHandler = async () => {
     try {
@@ -169,17 +128,17 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
   };
 
   useEffect(() => {
-    fetchProductsHandler();
+    // fetchProductsHandler();
     fetchSuppliersHandler();
   }, []);
 
-  useEffect(() => {
-    const productOptions = products.map((prod) => ({
-      value: prod._id,
-      label: prod.name,
-    }));
-    setProductsOptionsList(productOptions);
-  }, [products]);
+  // useEffect(() => {
+  //   const productOptions = products.map((prod) => ({
+  //     value: prod._id,
+  //     label: prod.name,
+  //   }));
+  //   setProductsOptionsList(productOptions);
+  // }, [products]);
 
   useEffect(() => {
     const supplierOptions = suppliers.map((supp) => ({
@@ -189,11 +148,14 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
     setSuppliersOptionsList(supplierOptions);
   }, [suppliers]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let prods = [];
-    prods = inputs.map((material: any) => ({value: material.item_id, label: material.item_name}));
+    prods = inputs.map((material: any) => ({
+      value: material.item_id,
+      label: material.item_name,
+    }));
     setSelectedProducts(prods);
-  }, [inputs])
+  }, [inputs]);
 
   return (
     <div>
@@ -222,7 +184,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
               <Select
                 required
                 className="rounded mt-2 border border-[#a9a9a9]"
-                options={productsOptionsList}
+                options={productOptions}
                 placeholder="Select"
                 value={selectedProducts[ind]?.label}
                 name="item_name"
@@ -263,11 +225,9 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
             <FormControl isRequired>
               <FormLabel fontWeight="bold">UOM</FormLabel>
               <Input
+                isDisabled={true}
                 border="1px"
                 borderColor="#a9a9a9"
-                onChange={(e) => {
-                  onChangeHandler(e.target.name, e.target.value, ind);
-                }}
                 type="text"
                 name="uom"
                 value={input.uom}
@@ -275,16 +235,14 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
             </FormControl>
             <FormControl isRequired>
               <FormLabel fontWeight="bold">Category</FormLabel>
-              <Select
-                className="rounded mt-2 border border-[#a9a9a9]"
-                options={categoryOptions}
-                placeholder="Select"
+              <Input
+                isDisabled={true}
+                border="1px"
+                borderColor="#a9a9a9"
+                type="text"
+                name="uom"
                 value={input.category}
-                name="category"
-                onChange={(d: any) => {
-                  onChangeHandler("category", d, ind);
-                }}
-              />
+              ></Input>
             </FormControl>
             <FormControl>
               <FormLabel fontWeight="bold">Assembly Phase</FormLabel>
@@ -341,6 +299,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
             <FormControl isRequired>
               <FormLabel fontWeight="bold">Unit Cost</FormLabel>
               <Input
+                isDisabled={true}
                 border="1px"
                 borderColor="#a9a9a9"
                 onChange={(e) => {
@@ -361,7 +320,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs }) => {
                 type="number"
                 name="total_part_cost"
                 value={input.total_part_cost}
-                className="rounded px-2 py-[6px] w-[300px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed"
+                className="rounded px-2 py-[6px] w-[300px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"
               ></input>
             </FormControl>
           </div>

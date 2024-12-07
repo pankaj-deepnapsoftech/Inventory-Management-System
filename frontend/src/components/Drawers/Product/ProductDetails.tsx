@@ -120,11 +120,19 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Regular Buying Price</p>
-                <p>{regularBuyingPrice || "Not Available"}</p>
+                <p>
+                  {regularBuyingPrice
+                    ? `₹ ${regularBuyingPrice}/-`
+                    : "Not Available"}
+                </p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Wholesale Buying Price</p>
-                <p>{wholesaleBuyingPrice || "Not Available"}</p>
+                <p>
+                  {wholesaleBuyingPrice
+                    ? `₹ ${wholesaleBuyingPrice}/-`
+                    : "Not Available"}
+                </p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">MRP</p>
@@ -132,11 +140,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Dealer Price</p>
-                <p>{dealerPrice || "Not Available"}</p>
+                <p>{dealerPrice
+                    ? `₹ ${dealerPrice}/-`
+                    : "Not Available"}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Distributor Price</p>
-                <p>{distributorPrice || "Not Available"}</p>
+                <p>{distributorPrice
+                    ? `₹ ${distributorPrice}/-`
+                    : "Not Available"}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Product Category</p>
@@ -168,7 +180,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Store</p>
-                <p>{store || 'N/A'}</p>
+                <p>{store || "N/A"}</p>
               </div>
             </div>
           )}

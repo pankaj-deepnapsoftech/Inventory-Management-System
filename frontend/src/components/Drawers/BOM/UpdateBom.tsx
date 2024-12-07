@@ -30,22 +30,22 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
   const [bomName, setBomName] = useState<string | undefined>();
   const [partsCount, setPartsCount] = useState<number>(0);
   const [totalPartsCost, setTotalPartsCost] = useState<number>(0);
-  const [finishedGoodName, setFinishedGoodName] = useState<
-    string | undefined
+  const [finishedGood, setFinishedGood] = useState<
+    { value: string; label: string } | undefined
   >();
-  const [finishedGoodId, setFinishedGoodId] = useState<string | undefined>();
+  const [unitCost, setUnitCost] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
   const [quantity, setQuantity] = useState<number | undefined>();
   const [uom, setUom] = useState<string | undefined>();
-  const [category, setCategory] = useState<
-    { value: string; label: string } | undefined
-  >();
+  const [category, setCategory] = useState<string | undefined>();
   const supportingDoc = useRef<HTMLInputElement | null>(null);
   const [comments, setComments] = useState<string | undefined>();
-  const [cost, setCost] = useState<string | undefined>();
+  const [cost, setCost] = useState<number | undefined>();
 
   const [processes, setProcesses] = useState<string[]>([""]);
-
+  const [products, setProducts] = useState<any[]>([]);
+  const [productOptions, setProductOptions] = useState<any[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
   const [updateBom] = useUpdateBOMMutation();
 
   const [rawMaterials, setRawMaterials] = useState<any[]>([
@@ -80,55 +80,55 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
     e.preventDefault();
 
     const fileInput = supportingDoc.current as HTMLInputElement;
-    console.log(fileInput?.files && fileInput.files[0])
     let pdfUrl;
-    if(fileInput && fileInput?.files && fileInput.files.length > 0){
-      try{
+    if (fileInput && fileInput?.files && fileInput.files.length > 0) {
+      try {
         const formData = new FormData();
-        
+
         // for(let i=0; i<supportingDoc?.current?.files?.length; i++){
-          // formData.append('file', supportingDoc?.current?.files[i]);
-          // }
-          formData.append('file', fileInput?.files && fileInput.files[0]);
-  
-        const uploadedFileResponse = await fetch(process.env.REACT_APP_FILE_UPLOAD_URL!, {
-          method: "POST",
-          body: formData as unknown as BodyInit
-        })
+        // formData.append('file', supportingDoc?.current?.files[i]);
+        // }
+        formData.append("file", fileInput?.files && fileInput.files[0]);
+
+        const uploadedFileResponse = await fetch(
+          process.env.REACT_APP_FILE_UPLOAD_URL!,
+          {
+            method: "POST",
+            body: formData as unknown as BodyInit,
+          }
+        );
         const uploadedFile: any = await uploadedFileResponse.json();
-        console.log(uploadedFile)        
-        if(uploadedFile?.error){
+        if (uploadedFile?.error) {
           throw new Error(uploadedFile?.error);
         }
 
         pdfUrl = uploadedFile[0];
-      }
-      catch(err: any)  {
-        toast.error(err.message || 'Something went wrong during file upload');
+      } catch (err: any) {
+        toast.error(err.message || "Something went wrong during file upload");
         return;
       }
     }
 
-    let modeifiedRawMaterials = rawMaterials.map((material) => ({
-      ...material,
-      category: material?.category?.value,
-      item_name: material?.item_name?.label,
-      item_id: material?.item_name?.value,
+    let modifiedRawMaterials = rawMaterials.map((material) => ({
+      item: material?.item_name?.value,
+      description: material?.description,
+      quantity: material?.quantity,
+      // image: material?.image,
       assembly_phase: material?.assembly_phase?.value,
       supplier: material?.supplier?.value,
+      supporting_doc: material?.supporting_doc,
+      comments: material?.comments,
+      total_part_cost: material?.total_part_cost,
     }));
 
     const body = {
       _id: bomId,
-      raw_materials: modeifiedRawMaterials,
+      raw_materials: modifiedRawMaterials,
       processes: processes,
       finished_good: {
-        item_id: finishedGoodId,
-        item_name: finishedGoodName,
+        item: finishedGood?.value,
         description: description,
         quantity: quantity,
-        uom: uom,
-        category: category?.value,
         supporting_doc: pdfUrl,
         comments: comments,
         cost: cost,
@@ -164,36 +164,33 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
-      //   console.log(data.bom);
 
       setBomName(data.bom.bom_name);
       setPartsCount(data.bom.parts_count);
       setTotalPartsCost(data.bom.total_cost);
-
-      setFinishedGoodId(data.bom.finished_good.item_id);
-      setFinishedGoodName(data.bom.finished_good.item_name);
+      setFinishedGood({
+        value: data.bom.finished_good.item._id,
+        label: data.bom.finished_good.item.name,
+      });
       setDescription(data.bom.finished_good.description);
       setQuantity(data.bom.finished_good.quantity);
       setCost(data.bom.finished_good.cost);
-      setUom(data.bom.finished_good.uom);
+      setUnitCost(data.bom.finished_good.item.price);
+      setUom(data.bom.finished_good.item.uom);
+      setCategory(data.bom.finished_good.item.category);
       setComments(data.bom.finished_good.comments);
-      setCategory({
-        value: data.bom.finished_good.category,
-        label: data.bom.finished_good.category,
-      });
 
       setProcesses(data.bom.processes);
 
       const inputs: any = [];
       data.bom.raw_materials.forEach((material: any) => {
         inputs.push({
-          item_id: material.item_id,
-          item_name: { value: material.item_id, label: material.item_name },
+          item_name: { value: material.item._id, label: material.item.name },
           description: material.description,
           quantity: material.quantity,
-          uom: material.uom,
+          uom: material.item.uom,
           //   image?: string;
-          category: { value: material.category, label: material.category },
+          category: material.item.category,
           assembly_phase: {
             value: material?.assembly_phase,
             label: material?.assembly_phase,
@@ -204,7 +201,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
           },
           supporting_doc: "",
           comments: material?.comments,
-          unit_cost: material.unit_cost,
+          unit_cost: material.item.price,
           total_part_cost: material.total_part_cost,
         });
       });
@@ -216,9 +213,60 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
     }
   };
 
+  const fetchProductsHandler = async () => {
+    try {
+      setIsLoadingProducts(true);
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "product/all",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
+        }
+      );
+      const results = await response.json();
+      if (!results.success) {
+        throw new Error(results?.message);
+      }
+      setProducts(results.products);
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
+  const onFinishedGoodChangeHandler = (d: any) => {
+    setFinishedGood(d);
+    const product: any = products.filter((prd: any) => prd._id === d.value)[0];
+    setCategory(product.category);
+    setUom(product.uom);
+    setUnitCost(product.price);
+    if (quantity) {
+      setCost(product.price * +quantity);
+    }
+  };
+
+  const onFinishedGoodQntyChangeHandler = (qty: number) => {
+    setQuantity(qty);
+    if (unitCost) {
+      setCost(+unitCost * qty);
+    }
+  };
+
   useEffect(() => {
     fetchBomDetails();
+    fetchProductsHandler();
   }, []);
+
+  useEffect(() => {
+    const modifiedProducts = products.map((prd) => ({
+      value: prd._id,
+      label: prd.name,
+    }));
+    setProductOptions(modifiedProducts);
+  }, [products]);
 
   useEffect(() => {
     if (
@@ -254,31 +302,25 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
           </h2>
 
           <form onSubmit={updateBomHandler}>
-            <RawMaterial inputs={rawMaterials} setInputs={setRawMaterials} />
+            <RawMaterial
+              products={products}
+              productOptions={productOptions}
+              inputs={rawMaterials}
+              setInputs={setRawMaterials}
+            />
             <Process inputs={processes} setInputs={setProcesses} />
             <div>
               <FormLabel fontWeight="bold">Finished Good</FormLabel>
               <div className="grid grid-cols-4 gap-2">
                 <FormControl className="mt-3 mb-5" isRequired>
-                  <FormLabel fontWeight="bold">Finished Good Id</FormLabel>
-                  <Input
-                    border="1px"
-                    borderColor="#a9a9a9"
-                    value={finishedGoodId}
-                    onChange={(e) => setFinishedGoodId(e.target.value)}
-                    type="text"
-                    placeholder="Finished Good Id"
-                  />
-                </FormControl>
-                <FormControl className="mt-3 mb-5" isRequired>
-                  <FormLabel fontWeight="bold">Finished Good Name</FormLabel>
-                  <Input
-                    border="1px"
-                    borderColor="#a9a9a9"
-                    value={finishedGoodName}
-                    onChange={(e) => setFinishedGoodName(e.target.value)}
-                    type="text"
-                    placeholder="Finished Good Name"
+                  <FormLabel fontWeight="bold">Finished Good</FormLabel>
+                  <Select
+                    className="rounded mt-2 border border-[#a9a9a9]"
+                    options={productOptions}
+                    placeholder="Select"
+                    value={finishedGood}
+                    name="assembly_phase"
+                    onChange={onFinishedGoodChangeHandler}
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
@@ -298,9 +340,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                     border="1px"
                     borderColor="#a9a9a9"
                     value={quantity}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setQuantity(+e.target.value)
-                    }
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFinishedGoodQntyChangeHandler(+e.target.value)}
                     type="number"
                     placeholder="Quantity"
                   />
@@ -310,26 +350,21 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                     Unit Of Measurement (UOM)
                   </FormLabel>
                   <Input
+                    isDisabled={true}
                     border="1px"
                     borderColor="#a9a9a9"
                     value={uom}
-                    onChange={(e) => setUom(e.target.value)}
                     type="text"
-                    placeholder="Unit Of Measurement (UOM)"
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5" isRequired>
                   <FormLabel fontWeight="bold">Category</FormLabel>
-                  <Select
-                    required
-                    className="rounded mt-2 border border-[#a9a9a9]"
-                    options={categoryOptions}
-                    placeholder="Select"
+                  <Input
+                    isDisabled={true}
+                    border="1px"
+                    borderColor="#a9a9a9"
                     value={category}
-                    name="item_name"
-                    onChange={(d: any) => {
-                      setCategory(d);
-                    }}
+                    type="text"
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
@@ -346,7 +381,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                     type="file"
                     placeholder="Choose a file"
                     accept=".pdf"
-                    className="px-1 py-[6px] border border-[#a9a9a9] w-[300px] rounded"
+                    className="p-1 border border-[#a9a9a9] w-[267px] rounded"
                     ref={supportingDoc}
                   />
                 </FormControl>
@@ -362,12 +397,23 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5" isRequired>
+                  <FormLabel fontWeight="bold">Unit Cost</FormLabel>
+                  <Input
+                    isDisabled={true}
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={unitCost}
+                    type="number"
+                  />
+                </FormControl>
+                <FormControl className="mt-3 mb-5" isRequired>
                   <FormLabel fontWeight="bold">Cost</FormLabel>
                   <Input
+                    isDisabled={true}
                     border="1px"
                     borderColor="#a9a9a9"
                     value={cost}
-                    onChange={(e) => setCost(e.target.value)}
+                    onChange={(e) => setCost(+e.target.value)}
                     type="number"
                     placeholder="Cost"
                   />
@@ -396,7 +442,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                   // }
                   type="number"
                   placeholder="Parts Count"
-                  className="rounded px-2 py-[6px] w-[300px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed"
+                  className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"
                 />
               </FormControl>
               <FormControl className="mt-3 mb-5" isRequired>
@@ -409,7 +455,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                   // }
                   type="number"
                   placeholder="Total Parts Cost"
-                  className="rounded px-2 py-[6px] w-[300px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed"
+                  className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"
                 />
               </FormControl>
             </div>

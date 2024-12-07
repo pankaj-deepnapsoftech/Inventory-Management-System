@@ -18,7 +18,7 @@ const AddProduct: React.FC<AddProductProps> = ({
 }) => {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
-  const [uom, setUom] = useState<string | undefined>();
+  const [uom, setUom] = useState<{value: string, label: string} | undefined>();
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
@@ -73,6 +73,16 @@ const AddProduct: React.FC<AddProductProps> = ({
     { value: "product", label: "Product" },
     { value: "service", label: "Service" },
   ];
+  
+  const uomOptions = [
+    { value: "pcs", label: "pcs" },
+    { value: "kgs", label: "kgs" },
+    { value: "ltr", label: "ltr" },
+    { value: "tonne", label: "tonne" },
+    { value: "cm", label: "cm" },
+    { value: "inch", label: "inch" },
+    { value: "mtr", label: "mtr" },
+  ];
 
   const [addProduct] = useAddProductMutation();
   const [isAddingProduct, setIsAddingProduct] = useState<boolean>(false);
@@ -91,7 +101,7 @@ const AddProduct: React.FC<AddProductProps> = ({
         !productOrService ||
         name.trim().length === 0 ||
         id.trim().length === 0 ||
-        uom.trim().length === 0
+        !uom
       ) {
         throw new Error("Please fill all the fileds");
       }
@@ -99,7 +109,7 @@ const AddProduct: React.FC<AddProductProps> = ({
       const response = await addProduct({
         name,
         product_id: id,
-        uom: uom,
+        uom: uom?.value,
         category: category?.value,
         min_stock: minStock,
         max_stock: maxStock,
@@ -261,12 +271,10 @@ const AddProduct: React.FC<AddProductProps> = ({
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">UOM (Unit of Measurement)</FormLabel>
-              <Input
-                className="no-scrollbar"
+              <Select
                 value={uom}
-                onChange={(e) => setUom(e.target.value)}
-                type="text"
-                placeholder="UOM (Unit of Measurement)"
+                options={uomOptions}
+                onChange={(e: any) => setUom(e)}
               />
             </FormControl>
             <FormControl className="mt-3 mb-5">

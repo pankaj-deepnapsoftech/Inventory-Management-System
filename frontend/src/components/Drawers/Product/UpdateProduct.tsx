@@ -21,7 +21,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
 }) => {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
-  const [uom, setUom] = useState<string | undefined>();
+  const [uom, setUom] = useState<{value: string, label: string} | undefined>();
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
@@ -56,6 +56,16 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
     { value: "trading goods", label: "Trading Goods" },
     { value: "service", label: "Service" },
   ];
+  
+  const uomOptions = [
+    { value: "pcs", label: "pcs" },
+    { value: "kgs", label: "kgs" },
+    { value: "ltr", label: "ltr" },
+    { value: "tonne", label: "tonne" },
+    { value: "cm", label: "cm" },
+    { value: "inch", label: "inch" },
+    { value: "mtr", label: "mtr" },
+  ];
 
   const [updateProduct] = useUpdateProductMutation();
   const [isLoadingProduct, setIsLoadingProduct] = useState<boolean>(false);
@@ -74,7 +84,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         !price ||
         name.trim().length === 0 ||
         id.trim().length === 0 ||
-        uom.trim().length === 0
+        !uom
       ) {
         throw new Error("Please fill all the fileds");
       }
@@ -83,7 +93,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         _id: productId,
         name,
         product_id: id,
-        uom: uom,
+        uom: uom?.value,
         category: category?.value,
         sub_category: subCategory,
         min_stock: minStock,
@@ -130,7 +140,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         value: data.product.category,
         label: data.product.category,
       });
-      setUom(data.product.uom);
+      setUom({value: data.product.uom, label: data.product.uom});
       setPrice(data.product.price);
       setCurrentStock(data.product.current_stock);
       setMinStock(data.product?.min_stock);
@@ -298,12 +308,10 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                 <FormLabel fontWeight="bold">
                   UOM (Unit of Measurement)
                 </FormLabel>
-                <Input
-                  className="no-scrollbar"
+                <Select
                   value={uom}
-                  onChange={(e) => setUom(e.target.value)}
-                  type="text"
-                  placeholder="UOM (Unit of Measurement)"
+                  options={uomOptions}
+                  onChange={(e: any) => setUom(e)}
                 />
               </FormControl>
               <FormControl className="mt-3 mb-5" isRequired>

@@ -2,13 +2,17 @@ const { Schema, model } = require("mongoose");
 
 const BOMFinishedMaterialSchema = new Schema(
   {
-    item_id: {
-      type: String,
-      required: [true, "Item id is a required field"],
-    },
-    item_name: {
-      type: String,
-      required: [true, "Item name is a required field"],
+    // item_id: {
+    //   type: String,
+    //   required: [true, "Item id is a required field"],
+    // },
+    // item_name: {
+    //   type: String,
+    //   required: [true, "Item name is a required field"],
+    // },
+    item: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
     },
     description: {
       type: String,
@@ -18,23 +22,15 @@ const BOMFinishedMaterialSchema = new Schema(
       default: 0,
     },
     // uom -> unit of measurement
-    uom: {
-      type: String,
-      required: [true, "UOM is a required field"],
-    },
+    // uom: {
+    //   type: String,
+    //   required: [true, "UOM is a required field"],
+    // },
     image: {
       type: String,
     },
-    category: {
-      type: String,
-    },
-    // status
-    // assembly_phase: {
+    // category: {
     //   type: String,
-    // },
-    // supplier: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "Agent",
     // },
     supporting_doc: {
       type: String,

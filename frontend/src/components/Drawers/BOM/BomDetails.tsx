@@ -39,7 +39,6 @@ const BomDetails: React.FC<BomDetailsProps> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
-      console.log(data.bom);
       setFinishedGood(data.bom.finished_good);
       setRawMaterials(data.bom.raw_materials);
       setBomName(data.bom.bom_name);
@@ -88,7 +87,7 @@ const BomDetails: React.FC<BomDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Total Cost</p>
-                <p>{totalBomCost}</p>
+                <p>₹ {totalBomCost}/-</p>
               </div>
               <div>
                 <p className="font-semibold">Raw Materials</p>
@@ -97,16 +96,24 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                     {rawMaterials.map((material) => (
                       <li>
                         <p>
+                          <span className="font-semibold">Item ID</span>:{" "}
+                          {material?.item?.product_id}
+                        </p>
+                        <p>
                           <span className="font-semibold">Item Name</span>:{" "}
-                          {material?.item_name}
+                          {material?.item?.name}
                         </p>
                         <p>
                           <span className="font-semibold">Quantity</span>:{" "}
                           {material?.quantity}
                         </p>
                         <p>
+                          <span className="font-semibold">UOM</span>:{" "}
+                          {material?.item?.uom}
+                        </p>
+                        <p>
                           <span className="font-semibold">Total Part Cost</span>
-                          : {material?.total_part_cost}
+                          : ₹ {material?.total_part_cost}/-
                         </p>
                       </li>
                     ))}
@@ -130,11 +137,11 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                   <ul className="pl-5">
                     <li>
                       <span className="font-semibold">Item Id</span>:{" "}
-                      {finishedGood.item_id}
+                      {finishedGood?.item?.product_id}
                     </li>
                     <li>
                       <span className="font-semibold">Item Name</span>:{" "}
-                      {finishedGood.item_name}
+                      {finishedGood?.item?.name}
                     </li>
                     <li>
                       <span className="font-semibold">Quantity</span>:{" "}
@@ -142,11 +149,11 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                     </li>
                     <li>
                       <span className="font-semibold">UOM</span>:{" "}
-                      {finishedGood.uom}
+                      {finishedGood?.item?.uom}
                     </li>
                     <li>
                       <span className="font-semibold">Category</span>:{" "}
-                      {finishedGood.category}
+                      {finishedGood?.item?.category}
                     </li>
                     <li>
                       <span className="font-semibold">Category</span>:{" "}
@@ -154,7 +161,7 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                     </li>
                     <li>
                       <span className="font-semibold">Cost</span>:{" "}
-                      {finishedGood.cost}
+                      ₹ {finishedGood.cost}/-
                     </li>
                     <li>
                       <span className="font-semibold">Supporting Document</span>:{" "}
