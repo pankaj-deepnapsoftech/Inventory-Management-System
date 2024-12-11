@@ -1,9 +1,10 @@
 import { FaRegCheckCircle } from "react-icons/fa";
-import { IoStorefrontOutline } from "react-icons/io5";
-import { MdOutlineShoppingCart, MdOutlineSpeed, MdOutlineSell, MdOutlineAttachMoney } from "react-icons/md";
+import { IoDocumentTextOutline, IoStorefrontOutline } from "react-icons/io5";
+import { MdOutlineShoppingCart, MdOutlineSpeed, MdOutlineSell, MdOutlineAttachMoney, MdOutlinePayment } from "react-icons/md";
 import { RiBillLine } from "react-icons/ri";
 import { TbLockAccess, TbUsersGroup } from "react-icons/tb";
 import { FaPeopleGroup } from "react-icons/fa6";
+import { BiPurchaseTagAlt } from "react-icons/bi";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Approvals from "../pages/Approvals";
@@ -13,6 +14,9 @@ import Sellers from "../pages/Sellers";
 import BOM from "../pages/BOM";
 import UserRole from "../pages/UserRoles";
 import Employees from "../pages/Emloyees";
+import ProformaInvoice from "../pages/ProformaInvoice";
+import Invoice from "../pages/Invoice";
+import Payment from "../pages/Payment";
 
 const routes = [
   {
@@ -35,6 +39,32 @@ const routes = [
     path: "employee",
     element: <Employees />,
     isSublink: false
+  },
+  {
+    name: "Sales & Purchase",
+    path: "sales-purchase",
+    icon: <BiPurchaseTagAlt />,
+    sublink: [
+      {
+        name: "Proforma Invoices",
+        icon: <IoDocumentTextOutline />,
+        path: "proforma-invoice",
+        element: <ProformaInvoice />,
+      },
+      {
+        name: "Invoices",
+        icon: <RiBillLine />,
+        path: "invoice",
+        element: <Invoice />,
+      },
+      {
+        name: "Payments",
+        icon: <MdOutlinePayment />,
+        path: "payment",
+        element: <Payment />,
+      },
+    ],
+    isSublink: true
   },
   {
     name: "Product",

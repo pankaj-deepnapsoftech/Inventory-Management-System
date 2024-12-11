@@ -12,6 +12,8 @@ const agentRoutes = require("./routes/agent");
 const userRoleRoutes = require("./routes/userRole");
 const bomRoutes = require("./routes/bom");
 const dashboardRoutes = require("./routes/dashboard");
+const proformaInvoiceRoutes = require("./routes/proformaInvoice");
+const invoiceRoutes = require("./routes/invoice");
 
 const app = express();
 
@@ -60,6 +62,8 @@ app.use("/api/agent", agentRoutes);
 app.use("/api/role", userRoleRoutes);
 app.use("/api/bom", bomRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/proforma-invoice", proformaInvoiceRoutes);
+app.use("/api/invoice", invoiceRoutes);
 
 app.use(globalErrorHandler);
 

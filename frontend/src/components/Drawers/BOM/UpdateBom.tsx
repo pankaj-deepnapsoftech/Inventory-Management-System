@@ -50,7 +50,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
 
   const [rawMaterials, setRawMaterials] = useState<any[]>([
     {
-      item_id: "",
+      _id: "",
       item_name: "",
       description: "",
       quantity: "",
@@ -110,6 +110,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
     }
 
     let modifiedRawMaterials = rawMaterials.map((material) => ({
+      _id: material?._id,
       item: material?.item_name?.value,
       description: material?.description,
       quantity: material?.quantity,
@@ -185,6 +186,7 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       const inputs: any = [];
       data.bom.raw_materials.forEach((material: any) => {
         inputs.push({
+          _id: material._id,
           item_name: { value: material.item._id, label: material.item.name },
           description: material.description,
           quantity: material.quantity,
