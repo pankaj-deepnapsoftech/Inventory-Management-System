@@ -410,10 +410,61 @@ const employeeApi = createApi({
       query: (data)=>'/user',
     })
   })
+});
+
+const proformaInvoiceApi = createApi({
+  reducerPath: 'proformaInvoiceApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BACKEND_URL+'proforma-invoice',
+    mode: 'cors',
+    prepareHeaders: (headers)=>{
+      const cookies = parseCookies();
+      const token = cookies?.access_token;
+      if(token){
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
+  tagTypes: ['Proforma Invoice'],
+
+  endpoints: (builder)=>({
+    fetchProformaInvoices: builder.query({
+      query: ()=>'/all',
+      providesTags: ['Proforma Invoice']
+    }),
+    proformaInvoiceDetails: builder.query({
+      query: (_id)=> `/${_id}`,
+      providesTags: ['Proforma Invoice']
+    }),
+    createProformaInvoice: builder.mutation({
+      query: (data)=>({
+        url: `/`,
+        method: "POST",
+        body: data
+      }),
+      invalidatesTags: ['Proforma Invoice']
+    }),
+    updateProformaInvoice: builder.mutation({
+      query: (data)=>({
+        url: `/${data._id}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ['Proforma Invoice']
+    }),
+    deleteProformaInvoice: builder.mutation({
+      query: (_id)=>({
+        url: `/${_id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ['Proforma Invoice']
+    }),
+  })
 })
 
 // export default api;
-export { api, productApi, storeApi, agentApi, bomApi, userRoleApi, employeeApi };
+export { api, productApi, storeApi, agentApi, bomApi, userRoleApi, employeeApi, proformaInvoiceApi };
 
 // Authentication APIs
 export const {
@@ -486,3 +537,12 @@ export const {
   useLazyFetchEmployeesQuery,
   useUpdateEmployeeMutation
 } = employeeApi
+
+// Proforma Invoice APIs
+export const {
+  useLazyFetchProformaInvoicesQuery,
+  useLazyProformaInvoiceDetailsQuery,
+  useCreateProformaInvoiceMutation,
+  useUpdateProformaInvoiceMutation,
+  useDeleteProformaInvoiceMutation
+} = proformaInvoiceApi

@@ -34,7 +34,8 @@ exports.update = TryCatch(async (req, res)=>{
     res.status(200).json({
         status: 200,
         success: true,
-        message: "Proforma Invoice has been updated successfully"
+        message: "Proforma Invoice has been updated successfully",
+        proforma_invoice: updatedInvoice._doc
     })
 })
 exports.remove = TryCatch(async (req, res)=>{

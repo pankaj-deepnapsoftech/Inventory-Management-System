@@ -36,22 +36,26 @@ interface ProformaInvoiceTableProps {
     total: string;
     status: string;
   }>;
-  isLoadingProformaInvoices: boolean;
-  openProformaInvoiceDetailsDrawerHandler?: (id: string) => void;
+  isLoadingProformaInvoices: boolean,
+  openProformaInvoiceDetailsHandler?: (id: string) => void,
+  deleteProformaInvoiceHandler?: (id: string) => void,
+  openUpdateProformaInvoiceDrawer?: (id: string) => void
 }
 
 const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
   proformaInvoices,
   isLoadingProformaInvoices,
-  openProformaInvoiceDetailsDrawerHandler,
+  openProformaInvoiceDetailsHandler,
+  deleteProformaInvoiceHandler,
+  openUpdateProformaInvoiceDrawer
 }) => {
   const columns = useMemo(
     () => [
       // { Header: "Number", accessor: "number" },
       { Header: "Created By", accessor: "creator" },
-      { Header: "Created On", accessor: "created_on" },
+      { Header: "Created At", accessor: "createdAt" },
+      { Header: "Last Updated", accessor: "updatedAt" },
       { Header: "Customer", accessor: "customer" },
-      { Header: "Date", accessor: "startdate" },
       { Header: "Sub Total", accessor: "subtotal" },
       { Header: "Total", accessor: "total" },
       { Header: "Status", accessor: "status" },
@@ -176,9 +180,11 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                           <Td fontWeight="500" {...cell.getCellProps()}>
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
+                              cell.column.id !== "customer" &&
+                              cell.column.id !== "creator" &&
                               cell.render("Cell")}
 
-                            {cell.column.id === "created_on" &&
+                            {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
                                   {moment(row.original?.created_on).format(
@@ -186,38 +192,58 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                                   )}
                                 </span>
                               )}
+                            {cell.column.id === "updatedAt" &&
+                              row.original?.createdAt && (
+                                <span>
+                                  {moment(row.original?.created_on).format(
+                                    "DD/MM/YYYY"
+                                  )}
+                                </span>
+                              )}
+                            {cell.column.id === "customer" &&
+                              row.original?.buyer && (
+                                <span>
+                                  {row.original?.buyer?.name}
+                                </span>
+                              )}
+                            {cell.column.id === "creator" &&
+                              row.original?.buyer && (
+                                <span>
+                                  PENDING
+                                </span>
+                              )}
                           </Td>
                         );
                       })}
                       <Td className="flex gap-x-2">
-                        {openProformaInvoiceDetailsDrawerHandler && (
+                        {openProformaInvoiceDetailsHandler && (
                           <MdOutlineVisibility
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openAgentDetailsDrawerHandler(row.original?._id)
+                              openProformaInvoiceDetailsHandler(row.original?._id)
                             }
                           />
                         )}
-                        {/* {openUpdateAgentDrawerHandler && (
+                        {openUpdateProformaInvoiceDrawer && (
                           <MdEdit
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openUpdateAgentDrawerHandler(row.original?._id)
+                              openUpdateProformaInvoiceDrawer(row.original?._id)
                             }
                           />
                         )}
-                        {deleteAgentHandler && (
+                        {deleteProformaInvoiceHandler && (
                           <MdDeleteOutline
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              deleteAgentHandler(row.original?._id)
+                              deleteProformaInvoiceHandler(row.original?._id)
                             }
                           />
                         )}
-                        {approveAgentHandler && (
+                        {/* {approveAgentHandler && (
                           <FcApproval
                             className="hover:scale-110"
                             size={16}

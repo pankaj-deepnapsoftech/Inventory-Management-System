@@ -28,8 +28,12 @@ const proformaInvoiceSchema = new Schema({
     },
     items: {
         type: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Product'
+            item: {
+                type: Schema.Types.ObjectId,
+                ref: 'Product'
+            },
+            quantity: Number,
+            amount: Number
         }],
         required: [true, 'Items is a required field'],
         validate: {
@@ -44,7 +48,11 @@ const proformaInvoiceSchema = new Schema({
         required: [true, 'Subtotal is a required field']
     },
     tax:{
-        type: String
+        type: {
+            tax_amount: Number,
+            tax_name: String
+        },
+        required: [true, 'Tax is a required field']
     },
     total: {
         type: Number,
