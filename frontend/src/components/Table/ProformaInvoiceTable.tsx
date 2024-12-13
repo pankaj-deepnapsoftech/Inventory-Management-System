@@ -58,7 +58,7 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
       { Header: "Customer", accessor: "customer" },
       { Header: "Sub Total", accessor: "subtotal" },
       { Header: "Total", accessor: "total" },
-      { Header: "Status", accessor: "status" },
+      // { Header: "Status", accessor: "status" },
     ],
     []
   );
@@ -182,8 +182,15 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                               cell.column.id !== "updatedAt" &&
                               cell.column.id !== "customer" &&
                               cell.column.id !== "creator" &&
+                              cell.column.id !== "creator" &&
                               cell.render("Cell")}
 
+                            {cell.column.id === "creator" &&
+                              row.original?.creator && (
+                                <span>
+                                  {row.original?.creator?.first_name + ' ' + row.original?.creator?.last_name}
+                                </span>
+                              )}
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
@@ -201,9 +208,9 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                                 </span>
                               )}
                             {cell.column.id === "customer" &&
-                              row.original?.buyer && (
+                              (row.original?.buyer || row.original?.supplier) && (
                                 <span>
-                                  {row.original?.buyer?.name}
+                                  {row.original?.buyer ? row.original.buyer.name : row.original.supplier.name}
                                 </span>
                               )}
                             {cell.column.id === "creator" &&

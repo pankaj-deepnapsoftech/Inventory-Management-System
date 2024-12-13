@@ -7,7 +7,7 @@ exports.create = TryCatch(async (req, res)=>{
         throw new ErrorHandler('Please provide all the fields', 400);
     }
 
-    const createdInvoice = await Invoice.create({...invoice});
+    const createdInvoice = await Invoice.create({...invoice, balance: invoice.total, creator: req.user._id});
 
     res.status(200).json({
         status: 200,
@@ -17,7 +17,25 @@ exports.create = TryCatch(async (req, res)=>{
     })
 })
 exports.update = TryCatch(async (req, res)=>{
+    const {_id} = req.params;
+    if(!_id){
+        throw new ErrorHandler("Proforma Invoice doesn't exist", 400);
+    }
+    const invoice = req.body;
+    if(!invoice){
+        throw new ErrorHandler("Please provide all the fileds", 400);
+    }
 
+    const updatedInvoice = await Invoice.findByIdAndUpdate({_id: _id}, {
+        $set: {...invoice, items: invoice.items}
+    }, {new: true});
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "Proforma Invoice has been updated successfully",
+        invoice: updatedInvoice._doc
+    });
 })
 exports.remove = TryCatch(async (req, res)=>{
     const {_id} = req.params;
@@ -43,19 +61,23 @@ exports.details = TryCatch(async (req, res)=>{
         throw new ErrorHandler("Invoice Id not provided", 400);
     }
 
-    const Invoice = await Invoice.findOne({_id: _id}).populate('buyer store items');
-    if(!Invoice){
+    const invoice = await Invoice.findOne({_id: _id}).populate('creator supplier buyer store').populate({
+        path: "items.item",
+        model: "Product"
+    });
+;
+    if(!invoice){
         throw new ErrorHandler("Invoice doesn't exist", 400);
     }
 
     res.status(200).json({
         status: 200,
         success: true,
-        invoice: Invoice._doc
+        invoice: invoice._doc
     })
 })
 exports.all = TryCatch(async (req, res)=>{
-    const Invoices = await Invoice.find().populate('buyer store items');
+    const Invoices = await Invoice.find().populate('creator buyer supplier store');;
 
     res.status(200).json({
         status: 200,

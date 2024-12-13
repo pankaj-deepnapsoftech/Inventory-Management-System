@@ -10,7 +10,7 @@ exports.create = TryCatch(async (req, res) => {
     throw new ErrorHandler("Please provide all the fields", 400);
   }
 
-  const store = await Store.create({ ...storeDetails });
+  const store = await Store.create({ ...storeDetails, approved: req.user.isSuper });
 
   res.status(200).json({
     status: 200,

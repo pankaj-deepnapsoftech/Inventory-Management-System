@@ -103,6 +103,7 @@ exports.create = TryCatch(async (req, res) => {
     bom_name,
     parts_count,
     total_cost,
+    approved: req.user.isSuper
   });
 
   res.status(200).json({

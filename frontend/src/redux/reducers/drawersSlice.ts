@@ -39,7 +39,22 @@ const initialState = {
   // Proforma Invoice Drawer
   isAddProformaInvoiceDrawerOpened: false,
   isUpdateProformaInvoiceDrawerOpened: false,
-  isProformaInvoiceDetailsDrawerOpened: false
+  isProformaInvoiceDetailsDrawerOpened: false,
+
+  // Invoice Drawer
+  isAddInvoiceDrawerOpened: false,
+  isUpdateInvoiceDrawerOpened: false,
+  isInvoiceDetailsDrawerOpened: false,
+
+  // Process Drawer
+  isAddProcessDrawerOpened: false,
+  isUpdateProcessDrawerOpened: false,
+  isProcessDetailsDrawerOpened: false,
+
+  // Payment Drawer
+  isAddPaymentDrawerOpened: false,
+  isUpdatePaymentDrawerOpened: false,
+  isPaymentDetailsDrawerOpened: false
 };
 
 const drawersSlice = createSlice({
@@ -213,9 +228,72 @@ const drawersSlice = createSlice({
     },
     closeProformaInvoiceDetailsDrawer: (state)=>{
       state.isProformaInvoiceDetailsDrawerOpened = false;
+    },
+    // Add Proforma Invoice Drawer
+    openAddInvoiceDrawer: (state)=>{
+      state.isAddInvoiceDrawerOpened = true;
+    },
+    closeAddInvoiceDrawer: (state)=>{
+      state.isAddInvoiceDrawerOpened = false;
+    },
+    // Update Proforma Invoice Drawer
+    openUpdateInvoiceDrawer: (state)=>{
+      state.isUpdateInvoiceDrawerOpened = true;
+    },
+    closeUpdateInvoiceDrawer: (state)=>{
+      state.isUpdateInvoiceDrawerOpened = false;
+    },
+    // User Proforma Invoice Drawer
+    openInvoiceDetailsDrawer: (state)=>{
+      state.isInvoiceDetailsDrawerOpened = true;
+    },
+    closeInvoiceDetailsDrawer: (state)=>{
+      state.isInvoiceDetailsDrawerOpened = false;
+    },
+    // Add Process Drawer
+    openAddProcessDrawer: (state)=>{
+      state.isAddProcessDrawerOpened = true;
+    },
+    closeAddProcessDrawer: (state)=>{
+      state.isAddProcessDrawerOpened = false;
+    },
+    // Update Process Drawer
+    openUpdateProcessDrawer: (state)=>{
+      state.isUpdateProcessDrawerOpened = true;
+    },
+    closeUpdateProcessDrawer: (state)=>{
+      state.isUpdateProcessDrawerOpened = false;
+    },
+    // User Process Drawer
+    openProcessDetailsDrawer: (state)=>{
+      state.isProcessDetailsDrawerOpened = true;
+    },
+    closeProcessDetailsDrawer: (state)=>{
+      state.isProcessDetailsDrawerOpened = false;
+    },
+    // Add Payment Drawer
+    openAddPaymentDrawer: (state)=>{
+      state.isAddPaymentDrawerOpened = true;
+    },
+    closeAddPaymentDrawer: (state)=>{
+      state.isAddPaymentDrawerOpened = false;
+    },
+    // Update Payment Drawer
+    openUpdatePaymentDrawer: (state)=>{
+      state.isUpdatePaymentDrawerOpened = true;
+    },
+    closeUpdatePaymentDrawer: (state)=>{
+      state.isUpdatePaymentDrawerOpened = false;
+    },
+    // User Payment Drawer
+    openPaymentDetailsDrawer: (state)=>{
+      state.isPaymentDetailsDrawerOpened = true;
+    },
+    closePaymentDetailsDrawer: (state)=>{
+      state.isPaymentDetailsDrawerOpened = false;
     }
   },
 });
 
 export default drawersSlice;
-export const { openAddProductDrawer, closeAddProductDrawer, openUpdateProductDrawer, closeUpdateProductDrawer, openProductDetailsDrawer, closeProductDetailsDrawer, openAddStoreDrawer, closeAddStoreDrawer, openUpdateStoreDrawer, closeUpdateStoreDrawer, openStoreDetailsDrawer, closeStoreDetailsDrawer, openAddBuyerDrawer, closeAddBuyerDrawer, openUpdateBuyerDrawer, closeUpdateBuyerDrawer, openBuyerDetailsDrawer, closeBuyerDetailsDrawer, openAddSellerDrawer, closeAddSellerDrawer, openUpdateSellerDrawer, closeUpdateSellerDrawer, openSellerDetailsDrawer, closeSellerDetailsDrawer, openAddBomDrawer, closeAddBomDrawer, openUpdateBomDrawer, closeUpdateBomDrawer, openBomDetailsDrawer, closeBomDetailsDrawer, openAddRoleDrawer, closeAddRoleDrawer, openUpdateRoleDrawer, closeUpdateRoleDrawer, openRoleDetailsDrawer, closeRoleDetailsDrawer, openAddEmployeeDrawer, closeAddEmployeeDrawer, openEmployeeDetailsDrawer, closeEmployeeDetailsDrawer, openUpdateEmployeeDrawer, closeUpdateEmployeeDrawer, openAddProformaInvoiceDrawer, closeAddProformaInvoiceDrawer, openUpdateProformaInvoiceDrawer, closeUpdateProformaInvoiceDrawer, openProformaInvoiceDetailsDrawer, closeProformaInvoiceDetailsDrawer } = drawersSlice.actions;
+export const { openAddProductDrawer, closeAddProductDrawer, openUpdateProductDrawer, closeUpdateProductDrawer, openProductDetailsDrawer, closeProductDetailsDrawer, openAddStoreDrawer, closeAddStoreDrawer, openUpdateStoreDrawer, closeUpdateStoreDrawer, openStoreDetailsDrawer, closeStoreDetailsDrawer, openAddBuyerDrawer, closeAddBuyerDrawer, openUpdateBuyerDrawer, closeUpdateBuyerDrawer, openBuyerDetailsDrawer, closeBuyerDetailsDrawer, openAddSellerDrawer, closeAddSellerDrawer, openUpdateSellerDrawer, closeUpdateSellerDrawer, openSellerDetailsDrawer, closeSellerDetailsDrawer, openAddBomDrawer, closeAddBomDrawer, openUpdateBomDrawer, closeUpdateBomDrawer, openBomDetailsDrawer, closeBomDetailsDrawer, openAddRoleDrawer, closeAddRoleDrawer, openUpdateRoleDrawer, closeUpdateRoleDrawer, openRoleDetailsDrawer, closeRoleDetailsDrawer, openAddEmployeeDrawer, closeAddEmployeeDrawer, openEmployeeDetailsDrawer, closeEmployeeDetailsDrawer, openUpdateEmployeeDrawer, closeUpdateEmployeeDrawer, openAddProformaInvoiceDrawer, closeAddProformaInvoiceDrawer, openUpdateProformaInvoiceDrawer, closeUpdateProformaInvoiceDrawer, openProformaInvoiceDetailsDrawer, closeProformaInvoiceDetailsDrawer, openAddInvoiceDrawer, closeAddInvoiceDrawer, openUpdateInvoiceDrawer, closeUpdateInvoiceDrawer, openInvoiceDetailsDrawer, closeInvoiceDetailsDrawer, openAddProcessDrawer, closeAddProcessDrawer, openUpdateProcessDrawer, closeUpdateProcessDrawer, openProcessDetailsDrawer, closeProcessDetailsDrawer, openAddPaymentDrawer, closeAddPaymentDrawer, openPaymentDetailsDrawer, closePaymentDetailsDrawer, openUpdatePaymentDrawer, closeUpdatePaymentDrawer } = drawersSlice.actions;

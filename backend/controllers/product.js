@@ -10,7 +10,7 @@ exports.create = TryCatch(async (req, res) => {
     throw new ErrorHandler("Please provide product details", 400);
   }
 
-  const product = await Product.create({ ...productDetails });
+  const product = await Product.create({ ...productDetails, approved: req.user.isSuper });
 
   res.status(200).json({
     status: 200,

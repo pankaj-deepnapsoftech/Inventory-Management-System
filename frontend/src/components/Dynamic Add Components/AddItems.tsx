@@ -20,7 +20,7 @@ const AddItems: React.FC<AddItemsProps> = ({inputs, setInputs}) => {
   const [productOptions, setProductOptions] = useState<any[] | []>([]);
 
   const addInputHandler = () => {
-    setInputs((prev) => [
+    setInputs((prev: any) => [
       ...prev,
       { item: { value: "", label: "" }, quantity: 0, price: 0 },
     ]);

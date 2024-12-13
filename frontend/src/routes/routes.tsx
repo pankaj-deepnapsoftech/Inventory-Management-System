@@ -1,10 +1,11 @@
 import { FaRegCheckCircle } from "react-icons/fa";
 import { IoDocumentTextOutline, IoStorefrontOutline } from "react-icons/io5";
-import { MdOutlineShoppingCart, MdOutlineSpeed, MdOutlineSell, MdOutlineAttachMoney, MdOutlinePayment } from "react-icons/md";
+import { MdOutlineShoppingCart, MdOutlineSpeed, MdOutlineSell, MdOutlineAttachMoney, MdOutlinePayment, MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { RiBillLine } from "react-icons/ri";
 import { TbLockAccess, TbUsersGroup } from "react-icons/tb";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { BiPurchaseTagAlt } from "react-icons/bi";
+import { VscServerProcess } from "react-icons/vsc";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Approvals from "../pages/Approvals";
@@ -17,6 +18,7 @@ import Employees from "../pages/Emloyees";
 import ProformaInvoice from "../pages/ProformaInvoice";
 import Invoice from "../pages/Invoice";
 import Payment from "../pages/Payment";
+import Process from "../pages/Process";
 
 const routes = [
   {
@@ -108,11 +110,24 @@ const routes = [
     isSublink: true
   },
   {
-    name: "BOM",
-    icon: <RiBillLine />,
-    path: "bom",
-    element: <BOM />,
-    isSublink: false
+    name: "Production",
+    path: "production",
+    icon: <MdOutlineProductionQuantityLimits />,
+    sublink: [
+      {
+        name: "BOM",
+        icon: <RiBillLine />,
+        path: "bom",
+        element: <BOM />,
+      },
+      {
+        name: "Process",
+        icon: <VscServerProcess />,
+        path: "process",
+        element: <Process />,
+      },
+    ],
+    isSublink: true
   },
 ];
 

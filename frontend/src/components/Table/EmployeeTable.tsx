@@ -53,8 +53,8 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
 }) => {
   const columns = useMemo(
     () => [
-      { Header: "Firstname", accessor: "first_name" },
-      { Header: "Lastname", accessor: "last_name" },
+      { Header: "First Name", accessor: "first_name" },
+      { Header: "Last Name", accessor: "last_name" },
       { Header: "Email", accessor: "email" },
       { Header: "Phone", accessor: "phone" },
       { Header: "Role", accessor: "role" },

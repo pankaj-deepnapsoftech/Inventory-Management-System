@@ -25,6 +25,9 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
   const [buyer, setBuyer] = useState<
     { value: string; label: string } | undefined
   >();
+  const [supplier, setSupplier] = useState<
+    { value: string; label: string } | undefined
+  >();
   const [proformaInvoiceNo, setProformaInvoiceNo] = useState<
     string | undefined
   >();
@@ -42,6 +45,10 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
   const [buyerOptions, setBuyerOptions] = useState<
     { value: string; label: string }[] | []
   >([]);
+  const [suppliers, setSuppliers] = useState<any[] | []>([]);
+  const [supplierOptions, setSupplierOptions] = useState<
+    { value: string; label: string }[] | []
+  >([]);
   const [store, setStore] = useState<
     { value: string; label: string } | undefined
   >();
@@ -55,11 +62,21 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
     { value: 0.18, label: "GST 18%" },
     { value: 0, label: "No Tax 0%" },
   ];
+  const [category, setCategory] = useState<
+    { value: string; label: string } | undefined
+  >();
+  const categoryOptions = [
+    { value: "sale", label: "Sales" },
+    { value: "purchase", label: "Purchase" },
+  ];
 
-
-    const [inputs, setInputs] = useState<{ item: { value: string, label: string }, quantity: number, price: number }[]>([
-    { item: { value: "", label: "" }, quantity: 0, price: 0 }
-  ]);
+  const [inputs, setInputs] = useState<
+    {
+      item: { value: string; label: string };
+      quantity: number;
+      price: number;
+    }[]
+  >([{ item: { value: "", label: "" }, quantity: 0, price: 0 }]);
 
   const [addProformaInvoice] = useCreateProformaInvoiceMutation();
 
@@ -67,33 +84,37 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
     e.preventDefault();
 
     const data = {
-        buyer: buyer?.value,
-        proforma_invoice_no: proformaInvoiceNo,
-        document_date: documentDate,
-        sales_order_date: salesOrderDate,
-        note: note,
-        tax: tax?.value,
-        subtotal: subtotal,
-        total: total,
-        store: store?.value,
-        items: items.map(item => item.value)
+      proforma_invoice_no: proformaInvoiceNo,
+      document_date: documentDate,
+      sales_order_date: salesOrderDate,
+      note: note,
+      tax: { tax_amount: tax?.value, tax_name: tax?.label },
+      subtotal: subtotal,
+      total: total,
+      store: store?.value,
+      items: inputs.map((item: any) => ({
+        item: item.item.value,
+        quantity: item.quantity,
+        amount: item.price,
+      })),
+      category: category?.value,
+      buyer: buyer?.value,
+      supplier: supplier?.value,
     };
-    
-    try{
-        setIsAdding(true);
-        const response = await addProformaInvoice(data).unwrap();
-        if(!response.success){
-            throw new Error(response.message);
-        }
-        toast.success(response.message);
-        closeDrawerHandler();
-        fetchProformaInvoicesHandler();
-    }
-    catch(error: any){
-        toast.error(error?.message || 'Something went wrong');
-    }
-    finally{
-        setIsAdding(false);
+
+    try {
+      setIsAdding(true);
+      const response = await addProformaInvoice(data).unwrap();
+      if (!response.success) {
+        throw new Error(response.message);
+      }
+      toast.success(response.message);
+      closeDrawerHandler();
+      fetchProformaInvoicesHandler();
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -118,6 +139,32 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
         label: buyer.name,
       }));
       setBuyerOptions(buyers);
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    }
+  };
+
+  const fetchSuppliersHandler = async () => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "agent/suppliers",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      const suppliers = data.agents.map((supplier: any) => ({
+        value: supplier._id,
+        label: supplier.name,
+      }));
+      setSupplierOptions(suppliers);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     }
@@ -174,26 +221,26 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
     }
   };
 
-  useEffect(()=>{
-    if(tax && subtotal){
-        setTotal(subtotal + (tax?.value * subtotal));
+  useEffect(() => {
+    if (tax && subtotal) {
+      setTotal(subtotal + tax?.value * subtotal);
     }
   }, [tax, subtotal]);
 
-  useEffect(()=>{
-    const price = items.reduce((acc: number, curr: any)=>{
-        const price = allItems.find((item: any)=> item._id === curr.value)?.price;
-        return acc + (price || 0);
+  useEffect(() => {
+    const price = inputs.reduce((acc: number, curr: any) => {
+      // const prod = allItems.find((item: any)=> item._id === curr.item.value);
+      return acc + (curr?.price * curr?.quantity || 0);
     }, 0);
     setSubtotal(price);
-  }, [items]);
+  }, [inputs]);
 
   useEffect(() => {
     fetchBuyersHandler();
     fetchItemsHandler();
     fetchStoresHandler();
+    fetchSuppliersHandler();
   }, []);
-
 
   return (
     <Drawer closeDrawerHandler={closeDrawerHandler}>
@@ -216,14 +263,36 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
 
           <form onSubmit={addProformaInvoiceHandler}>
             <FormControl className="mt-3 mb-5" isRequired>
-              <FormLabel fontWeight="bold">Buyer</FormLabel>
+              <FormLabel fontWeight="bold">Category</FormLabel>
               <Select
-                value={buyer}
-                options={buyerOptions}
+                value={category}
+                options={categoryOptions}
                 required={true}
-                onChange={(e: any) => setBuyer(e)}
+                onChange={(e: any) => setCategory(e)}
               />
             </FormControl>
+            {category && category.value === "sales" && (
+              <FormControl className="mt-3 mb-5" isRequired>
+                <FormLabel fontWeight="bold">Buyer</FormLabel>
+                <Select
+                  value={buyer}
+                  options={buyerOptions}
+                  required={true}
+                  onChange={(e: any) => setBuyer(e)}
+                />
+              </FormControl>
+            )}
+            {category && category.value === "purchase" && (
+              <FormControl className="mt-3 mb-5" isRequired>
+                <FormLabel fontWeight="bold">Supplier</FormLabel>
+                <Select
+                  value={supplier}
+                  options={supplierOptions}
+                  required={true}
+                  onChange={(e: any) => setSupplier(e)}
+                />
+              </FormControl>
+            )}
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Proforma Invoice No.</FormLabel>
               <Input
@@ -233,7 +302,7 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
                 placeholder="Proforma Invoice No."
               />
             </FormControl>
-            <FormControl className="mt-3 mb-5">
+            <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Document Date</FormLabel>
               <Input
                 value={documentDate}
@@ -243,7 +312,7 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
                 placeholder="Document Date"
               />
             </FormControl>
-            <FormControl className="mt-3 mb-5">
+            <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Sales Order Date</FormLabel>
               <Input
                 value={salesOrderDate}

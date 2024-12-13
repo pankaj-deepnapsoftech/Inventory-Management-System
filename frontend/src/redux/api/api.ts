@@ -461,10 +461,163 @@ const proformaInvoiceApi = createApi({
       invalidatesTags: ['Proforma Invoice']
     }),
   })
+});
+
+const invoiceApi = createApi({
+  reducerPath: 'invoiceApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BACKEND_URL+'invoice',
+    mode: 'cors',
+    prepareHeaders: (headers)=>{
+      const cookies = parseCookies();
+      const token = cookies?.access_token;
+      if(token){
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
+  tagTypes: ['Invoice'],
+
+  endpoints: (builder)=>({
+    fetchInvoices: builder.query({
+      query: ()=>'/all',
+      providesTags: ['Invoice']
+    }),
+    invoiceDetails: builder.query({
+      query: (_id)=> `/${_id}`,
+      providesTags: ['Invoice']
+    }),
+    createInvoice: builder.mutation({
+      query: (data)=>({
+        url: `/`,
+        method: "POST",
+        body: data
+      }),
+      invalidatesTags: ['Invoice']
+    }),
+    updateInvoice: builder.mutation({
+      query: (data)=>({
+        url: `/${data._id}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ['Invoice']
+    }),
+    deleteInvoice: builder.mutation({
+      query: (_id)=>({
+        url: `/${_id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ['Invoice']
+    }),
+  })
+})
+
+const processApi = createApi({
+  reducerPath: 'processApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BACKEND_URL+'process',
+    mode: 'cors',
+    prepareHeaders: (headers)=>{
+      const cookies = parseCookies();
+      const token = cookies?.access_token;
+      if(token){
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
+  tagTypes: ['Process'],
+
+  endpoints: (builder)=>({
+    fetchProcess: builder.query({
+      query: ()=>'/all',
+      providesTags: ['Process']
+    }),
+    processDetails: builder.query({
+      query: (_id)=> `/${_id}`,
+      providesTags: ['Process']
+    }),
+    createProcess: builder.mutation({
+      query: (data)=>({
+        url: `/`,
+        method: "POST",
+        body: data
+      }),
+      invalidatesTags: ['Process']
+    }),
+    updateProcess: builder.mutation({
+      query: (data)=>({
+        url: `/${data._id}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ['Process']
+    }),
+    deleteProcess: builder.mutation({
+      query: (_id)=>({
+        url: `/${_id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ['Process']
+    }),
+  })
+})
+
+const paymentApi = createApi({
+  reducerPath: 'paymentApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_BACKEND_URL+'payment',
+    mode: 'cors',
+    prepareHeaders: (headers)=>{
+      const cookies = parseCookies();
+      const token = cookies?.access_token;
+      if(token){
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
+  tagTypes: ['Payment'],
+
+  endpoints: (builder)=>({
+    fetchPayment: builder.query({
+      query: ()=>'/all',
+      providesTags: ['Payment']
+    }),
+    paymentDetails: builder.query({
+      query: (_id)=> `/${_id}`,
+      providesTags: ['Payment']
+    }),
+    createPayment: builder.mutation({
+      query: (data)=>({
+        url: `/`,
+        method: "POST",
+        body: data
+      }),
+      invalidatesTags: ['Payment']
+    }),
+    updatePayment: builder.mutation({
+      query: (data)=>({
+        url: `/${data._id}`,
+        method: "PUT",
+        body: data
+      }),
+      invalidatesTags: ['Payment']
+    }),
+    deletePayment: builder.mutation({
+      query: (_id)=>({
+        url: `/${_id}`,
+        method: "DELETE"
+      }),
+      invalidatesTags: ['Payment']
+    }),
+  })
 })
 
 // export default api;
-export { api, productApi, storeApi, agentApi, bomApi, userRoleApi, employeeApi, proformaInvoiceApi };
+export { api, productApi, storeApi, agentApi, bomApi, userRoleApi, employeeApi, proformaInvoiceApi, invoiceApi, processApi, paymentApi };
 
 // Authentication APIs
 export const {
@@ -546,3 +699,29 @@ export const {
   useUpdateProformaInvoiceMutation,
   useDeleteProformaInvoiceMutation
 } = proformaInvoiceApi
+
+// Invoice APIs
+export const {
+useLazyFetchInvoicesQuery,
+useLazyInvoiceDetailsQuery,
+useCreateInvoiceMutation,
+useUpdateInvoiceMutation,
+useDeleteInvoiceMutation
+} = invoiceApi
+
+// Process APIs
+export const {
+  useLazyFetchProcessQuery,
+  useLazyProcessDetailsQuery,
+  useCreateProcessMutation,
+  useUpdateProcessMutation,
+  useDeleteProcessMutation
+} = processApi
+
+// Payment APIs
+export const {
+  useLazyFetchPaymentQuery,
+  useLazyPaymentDetailsQuery,
+  useCreatePaymentMutation,
+  useUpdatePaymentMutation
+} = paymentApi

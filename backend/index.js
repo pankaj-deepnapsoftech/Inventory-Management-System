@@ -1,5 +1,4 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const { globalErrorHandler } = require("./middlewares/error");
 const { connectDB } = require("./utils/connectDB");
@@ -14,6 +13,8 @@ const bomRoutes = require("./routes/bom");
 const dashboardRoutes = require("./routes/dashboard");
 const proformaInvoiceRoutes = require("./routes/proformaInvoice");
 const invoiceRoutes = require("./routes/invoice");
+const processRoutes = require("./routes/process");
+const paymentRoutes = require("./routes/payment");
 
 const app = express();
 
@@ -64,6 +65,8 @@ app.use("/api/bom", bomRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/proforma-invoice", proformaInvoiceRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/process", processRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.use(globalErrorHandler);
 

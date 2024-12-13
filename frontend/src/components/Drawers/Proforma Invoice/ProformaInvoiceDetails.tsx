@@ -6,38 +6,41 @@ import Loading from "../../../ui/Loading";
 import { BiX } from "react-icons/bi";
 import moment from "moment";
 
-interface ProformaInvoiceDetailsProps {
+interface InvoiceDetailsProps {
   closeDrawerHandler: () => void;
   id: string | undefined;
 }
 
-const ProformaInvoiceDetails: React.FC<ProformaInvoiceDetailsProps> = ({
+const ProformaInvoiceDetails: React.FC<InvoiceDetailsProps> = ({
   closeDrawerHandler,
   id,
 }) => {
   const [cookies] = useCookies();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [buyer, setBuyer] = useState<string | undefined>();
-  const [proformaInvoiceNo, setProformaInvoiceNo] = useState<
+  const [supplier, setSupplier] = useState<string | undefined>();
+  const [invoiceNo, setInvoiceNo] = useState<
     string | undefined
   >();
   const [documentDate, setDocumentDate] = useState<string | undefined>();
+  const [category, setCategory] = useState<string | undefined>();
   const [salesOrderDate, setSalesOrderDate] = useState<string | undefined>();
   const [note, setNote] = useState<string | undefined>();
   const [subtotal, setSubtotal] = useState<number | undefined>(0);
   const [total, setTotal] = useState<number | undefined>();
   const [items, setItems] = useState<any[] | []>([]);
   const [store, setStore] = useState<string | undefined>();
-  const [tax, setTax] = useState<string | undefined>();
+  const [tax, setTax] = useState<any | undefined>();
+  const [creator, setCreator] = useState<any | undefined>();
   const taxOptions = [
     { value: 0.18, label: "GST 18%" },
     { value: 0, label: "No Tax 0%" },
   ];
 
-  const fetchProformaInvoiceDetails = async (id: string) => {
+  const fetchInvoiceDetails = async (id: string) => {
     try {
       const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + `proforma-invoice/${id}`,
+        process.env.REACT_APP_BACKEND_URL + `invoice/${id}`,
         {
           method: "GET",
           headers: {
@@ -49,23 +52,26 @@ const ProformaInvoiceDetails: React.FC<ProformaInvoiceDetailsProps> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
-      setBuyer(data.proforma_invoice.buyer.name);
-      setProformaInvoiceNo(data.proforma_invoice.proforma_invoice_no);
-      setDocumentDate(data.proforma_invoice.document_date);
-      setSalesOrderDate(data.proforma_invoice.sales_order_date);
-      setNote(data.proforma_invoice?.note || "Not Available");
-      setSubtotal(data.proforma_invoice.subtotal);
-      setTotal(data.proforma_invoice.total);
-      setTax(data.proforma_invoice.tax);
-      setItems(data.proforma_invoice.items);
-      setStore(data.proforma_invoice.store.name);
+      setInvoiceNo(data.invoice.invoice_no);
+      setDocumentDate(data.invoice.document_date);
+      setSalesOrderDate(data.invoice.sales_order_date);
+      setNote(data.invoice?.note || "Not Available");
+      setSubtotal(data.invoice.subtotal);
+      setTotal(data.invoice.total);
+      setTax(data.invoice.tax);
+      setItems(data.invoice.items);
+      setStore(data.invoice.store.name);
+      setCategory(data.invoice.category);
+      setBuyer(data.invoice?.buyer?.name);
+      setSupplier(data.invoice?.supplier?.name);
+      setCreator(data.invoice.creator);
     } catch (error: any) {
       toast.error(error.messsage || "Something went wrong");
     }
   };
 
   useEffect(() => {
-    fetchProformaInvoiceDetails(id || "");
+    fetchInvoiceDetails(id || "");
   }, [id]);
 
   return (
@@ -79,24 +85,36 @@ const ProformaInvoiceDetails: React.FC<ProformaInvoiceDetailsProps> = ({
       >
         <h1 className="px-4 flex gap-x-2 items-center text-xl py-3 border-b">
           <BiX onClick={closeDrawerHandler} size="26px" />
-          Proforma Invoice
+          Invoice
         </h1>
 
         <div className="mt-8 px-5">
           <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#f9fafc]">
-            Proforma Invoice Details
+            Invoice Details
           </h2>
 
           {isLoading && <Loading />}
           {!isLoading && (
             <div>
               <div className="mt-3 mb-5">
-                <p className="font-semibold">Buyer</p>
-                <p>{buyer}</p>
+                <p className="font-semibold">Created By</p>
+                <p>{creator?.first_name + ' ' + creator?.last_name}</p>
               </div>
               <div className="mt-3 mb-5">
-                <p className="font-semibold">Proforma Invoice No.</p>
-                <p>{proformaInvoiceNo}</p>
+                <p className="font-semibold">Category</p>
+                <p>{category?.toUpperCase()}</p>
+              </div>
+              {buyer && <div className="mt-3 mb-5">
+                <p className="font-semibold">Buyer</p>
+                <p>{buyer}</p>
+              </div>}
+              {supplier && <div className="mt-3 mb-5">
+                <p className="font-semibold">Supplier</p>
+                <p>{supplier}</p>
+              </div>}
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Invoice No.</p>
+                <p>{invoiceNo}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Document Date</p>
@@ -108,7 +126,15 @@ const ProformaInvoiceDetails: React.FC<ProformaInvoiceDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Items</p>
-                <p>{/* {} */}</p>
+                <ul className="border">
+                  {items?.map((item: any)=>{
+                    return <li className="flex gap-3">
+                      <span className="border-l flex-1 p-1">{item.item.name}</span>
+                      <span className="border-l flex-1 p-1">{item.quantity}</span>
+                      <span className="border-l flex-1 p-1">₹ {item.amount}/-</span>
+                    </li>
+                  })}
+                </ul>
                 <div className="mt-3 mb-5">
                   <p className="font-semibold">Store</p>
                   <p>{store}</p>
@@ -124,7 +150,7 @@ const ProformaInvoiceDetails: React.FC<ProformaInvoiceDetailsProps> = ({
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Tax</p>
-                <p>{tax}</p>
+                <p>{tax?.tax_name}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Total</p>

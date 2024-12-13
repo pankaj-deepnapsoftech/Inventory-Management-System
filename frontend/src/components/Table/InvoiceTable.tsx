@@ -23,7 +23,8 @@ import {
 } from "@chakra-ui/react";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa";
 import moment from "moment";
-import { MdDeleteOutline, MdEdit, MdOutlineVisibility } from "react-icons/md";
+import { MdDeleteOutline, MdEdit, MdOutlinePayment, MdOutlineVisibility } from "react-icons/md";
+import { log } from "console";
 
 interface InvoiceTableProps {
   invoices: Array<{
@@ -31,33 +32,35 @@ interface InvoiceTableProps {
     created_on: string;
     customer?: string;
     startdate: string;
-    expiredate: string;
     subtotal: string;
     total: string;
     status: string;
-    paymentstatus: string;
   }>;
-  isLoadingInvoices: boolean;
-  openInvoiceDetailsDrawerHandler?: (id: string) => void;
+  isLoadingInvoices: boolean,
+  openInvoiceDetailsHandler?: (id: string) => void,
+  deleteInvoiceHandler?: (id: string) => void,
+  openUpdateInvoiceDrawer?: (id: string) => void,
+  openPaymentDrawer?: (id: string)=>void
 }
 
-const InvoiceTable: React.FC<AgentTableProps> = ({
+const InvoiceTable: React.FC<InvoiceTableProps> = ({
   invoices,
   isLoadingInvoices,
-  openInvoiceDetailsDrawerHandler,
+  openInvoiceDetailsHandler,
+  deleteInvoiceHandler,
+  openUpdateInvoiceDrawer,
+  openPaymentDrawer
 }) => {
   const columns = useMemo(
     () => [
-        { Header: "Number", accessor: "number" },
-        { Header: "Created By", accessor: "creator" },
-        { Header: "Created On", accessor: "created_on" },
-        { Header: "Customer", accessor: "customer" },
-        { Header: "Date", accessor: "startdate" },
-        { Header: "Expire Date", accessor: "expiredate" },
-        { Header: "Sub Total", accessor: "subtotal" },
-        { Header: "Total", accessor: "total" },
-        { Header: "Status", accessor: "status" },
-        { Header: "Payment Status", accessor: "paymentstatus" },
+      // { Header: "Number", accessor: "number" },
+      { Header: "Created By", accessor: "creator" },
+      { Header: "Created At", accessor: "createdAt" },
+      { Header: "Last Updated", accessor: "updatedAt" },
+      { Header: "Customer", accessor: "customer" },
+      { Header: "Sub Total", accessor: "subtotal" },
+      { Header: "Total", accessor: "total" },
+      // { Header: "Status", accessor: "status" },
     ],
     []
   );
@@ -179,9 +182,18 @@ const InvoiceTable: React.FC<AgentTableProps> = ({
                           <Td fontWeight="500" {...cell.getCellProps()}>
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
+                              cell.column.id !== "customer" &&
+                              cell.column.id !== "creator" &&
+                              cell.column.id !== "creator" &&
                               cell.render("Cell")}
 
-                            {cell.column.id === "created_on" &&
+                            {cell.column.id === "creator" &&
+                              row.original?.creator && (
+                                <span>
+                                  {row.original?.creator?.first_name + ' ' + row.original?.creator?.last_name}
+                                </span>
+                              )}
+                            {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
                                   {moment(row.original?.created_on).format(
@@ -189,46 +201,66 @@ const InvoiceTable: React.FC<AgentTableProps> = ({
                                   )}
                                 </span>
                               )}
+                            {cell.column.id === "updatedAt" &&
+                              row.original?.createdAt && (
+                                <span>
+                                  {moment(row.original?.created_on).format(
+                                    "DD/MM/YYYY"
+                                  )}
+                                </span>
+                              )}
+                            {cell.column.id === "customer" &&
+                              (row.original?.buyer || row.original?.supplier) && (
+                                <span>
+                                  {row.original?.buyer ? row.original.buyer.name : row.original.supplier.name}
+                                </span>
+                              )}
+                            {cell.column.id === "creator" &&
+                              row.original?.buyer && (
+                                <span>
+                                  PENDING
+                                </span>
+                              )}
                           </Td>
                         );
                       })}
                       <Td className="flex gap-x-2">
-                        {openProformaInvoiceDetailsDrawerHandler && (
+                        {openInvoiceDetailsHandler && (
                           <MdOutlineVisibility
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openAgentDetailsDrawerHandler(row.original?._id)
+                              openInvoiceDetailsHandler(row.original?._id)
                             }
                           />
                         )}
-                        {/* {openUpdateAgentDrawerHandler && (
+                        {openUpdateInvoiceDrawer && (
                           <MdEdit
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openUpdateAgentDrawerHandler(row.original?._id)
+                              openUpdateInvoiceDrawer(row.original?._id)
                             }
                           />
                         )}
-                        {deleteAgentHandler && (
+                        {deleteInvoiceHandler && (
                           <MdDeleteOutline
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              deleteAgentHandler(row.original?._id)
+                              deleteInvoiceHandler(row.original?._id)
                             }
                           />
                         )}
-                        {approveAgentHandler && (
-                          <FcApproval
+                        {openPaymentDrawer && (
+                          <MdOutlinePayment
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              approveAgentHandler(row.original?._id)
+                              openPaymentDrawer(row.original?._id)
                             }
                           />
-                        )} */}
+                        )}
                       </Td>
                     </Tr>
                   );

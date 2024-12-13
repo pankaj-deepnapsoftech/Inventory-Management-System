@@ -1,10 +1,23 @@
 const { Schema, model } = require("mongoose");
 
 const proformaInvoiceSchema = new Schema({
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Creator is a required field']
+    },
+    category: {
+        type: String,
+        enum: ['sale', 'purchase'],
+        required: [true, 'category is a required field']
+    },
     buyer: {
         type: Schema.Types.ObjectId,
-        ref: 'Agent',
-        required: [true, 'Buyer is a required field']
+        ref: 'Agent'
+    },
+    supplier: {
+        type: Schema.Types.ObjectId,
+        ref: 'Agent'
     },
     proforma_invoice_no: {
         type: String,
@@ -12,7 +25,7 @@ const proformaInvoiceSchema = new Schema({
     },
     document_date: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     sales_order_date: {
         type: Date,

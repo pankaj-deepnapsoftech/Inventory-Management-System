@@ -7,7 +7,7 @@ exports.create = TryCatch(async (req, res)=>{
         throw new ErrorHandler('Please provide all the fields', 400);
     }
 
-    const createdProformaInvoice = await ProformaInvoice.create({...proformaInvoice});
+    const createdProformaInvoice = await ProformaInvoice.create({...proformaInvoice, creator: req.user._id});
 
     res.status(200).json({
         status: 200,
@@ -26,17 +26,16 @@ exports.update = TryCatch(async (req, res)=>{
         throw new ErrorHandler("Please provide all the fileds", 400);
     }
 
-    const updatedInvoice = await ProformaInvoice.findByIdAndUpdate({_id: _id}, {
-        ...proformaInvoice,
-        items: {$set: proformaInvoice.items}
+    const updatedProformaInvoice = await ProformaInvoice.findByIdAndUpdate({_id: _id}, {
+        $set: {...proformaInvoice, items: proformaInvoice.items}
     }, {new: true});
 
     res.status(200).json({
         status: 200,
         success: true,
         message: "Proforma Invoice has been updated successfully",
-        proforma_invoice: updatedInvoice._doc
-    })
+        proforma_invoice: updatedProformaInvoice._doc
+    });
 })
 exports.remove = TryCatch(async (req, res)=>{
     const {_id} = req.params;
@@ -62,7 +61,11 @@ exports.details = TryCatch(async (req, res)=>{
         throw new ErrorHandler("Proforma Invoice Id not provided", 400);
     }
 
-    const proformaInvoice = await ProformaInvoice.findOne({_id: _id}).populate('buyer store items');
+    const proformaInvoice = await ProformaInvoice.findOne({_id: _id}).populate('creator supplier buyer store').populate({
+        path: "items.item",
+        model: "Product"
+    });
+
     if(!proformaInvoice){
         throw new ErrorHandler("Proforma Invoice doesn't exist", 400);
     }
@@ -74,7 +77,7 @@ exports.details = TryCatch(async (req, res)=>{
     })
 })
 exports.all = TryCatch(async (req, res)=>{
-    const proformaInvoices = await ProformaInvoice.find().populate('buyer store items');
+    const proformaInvoices = await ProformaInvoice.find().populate('creator buyer supplier store');
 
     res.status(200).json({
         status: 200,

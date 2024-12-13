@@ -9,7 +9,7 @@ exports.create = TryCatch(async (req, res) => {
   if (!agentDetails) {
     throw new ErrorHandler("Please provide the agent details", 400);
   }
-  const agent = await Agent.create({ ...agentDetails });
+  const agent = await Agent.create({ ...agentDetails, approved: req.user.isSuper });
   res.status(200).json({
     status: 200,
     success: true,
