@@ -21,7 +21,9 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
 }) => {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
-  const [uom, setUom] = useState<{value: string, label: string} | undefined>();
+  const [uom, setUom] = useState<
+    { value: string; label: string } | undefined
+  >();
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
@@ -42,10 +44,22 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
   const [distributorPrice, setDistributorPrice] = useState<
     number | undefined
   >();
-  const [store, setStore] = useState<{value: string, label: string} | undefined>();
-  const [storeOptions, setStoreOptions] = useState<{value: string, label: string}[] | []>([]);
+  const [store, setStore] = useState<
+    { value: string; label: string } | undefined
+  >();
+  const [storeOptions, setStoreOptions] = useState<
+    { value: string; label: string }[] | []
+  >([]);
 
   const [cookies] = useCookies();
+  const [inventoryCategory, setInventoryCategory] = useState<
+    { value: string; label: string } | undefined
+  >();
+
+  const inventoryCategoryOptions = [
+    { value: "direct", label: "Direct" },
+    { value: "indirect", label: "Indirect" },
+  ];
 
   const categoryOptions = [
     { value: "finished goods", label: "Finished Goods" },
@@ -56,7 +70,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
     { value: "trading goods", label: "Trading Goods" },
     { value: "service", label: "Service" },
   ];
-  
+
   const uomOptions = [
     { value: "pcs", label: "pcs" },
     { value: "kgs", label: "kgs" },
@@ -91,6 +105,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
 
       const response = await updateProduct({
         _id: productId,
+        inventory_category: inventoryCategory?.value,
         name,
         product_id: id,
         uom: uom?.value,
@@ -106,7 +121,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         mrp: mrp,
         dealer_price: dealerPrice,
         distributor_price: distributorPrice,
-        store: store?.value || undefined
+        store: store?.value || undefined,
       }).unwrap();
       toast.success(response.message);
       fetchProductsHandler();
@@ -140,7 +155,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
         value: data.product.category,
         label: data.product.category,
       });
-      setUom({value: data.product.uom, label: data.product.uom});
+      setUom({ value: data.product.uom, label: data.product.uom });
       setPrice(data.product.price);
       setCurrentStock(data.product.current_stock);
       setMinStock(data.product?.min_stock);
@@ -152,9 +167,16 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
       setMrp(data.product?.mrp);
       setDealerPrice(data.product?.dealer_price);
       setDistributorPrice(data.product?.distributor_price);
-      if(data?.product?.store){
-        setStore({value: data.product.store._id, label: data.product.store.name});
+      if (data?.product?.store) {
+        setStore({
+          value: data.product.store._id,
+          label: data.product.store.name,
+        });
       }
+      setInventoryCategory({
+        value: data.product.inventory_category,
+        label: data.product.inventory_category,
+      });
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -162,25 +184,30 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
     }
   };
 
-  const fetchAllStores = async ()=>{
-    try{
-      const response = await fetch(process.env.REACT_APP_BACKEND_URL+'store/all', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${cookies?.access_token}`
+  const fetchAllStores = async () => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "store/all",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
         }
-      });
+      );
       const data = await response.json();
-      if(!data.success){
+      if (!data.success) {
         throw new Error(data.message);
       }
-      const modifiedStores = data.stores.map((store: any) => ({value: store._id, label: store.name}));
+      const modifiedStores = data.stores.map((store: any) => ({
+        value: store._id,
+        label: store.name,
+      }));
       setStoreOptions(modifiedStores);
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
     }
-    catch(err: any){
-      toast.error(err.message || 'Something went wrong');
-    }
-  }
+  };
 
   useEffect(() => {
     fetchProductDetails();
@@ -209,6 +236,15 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
           {isLoadingProduct && <Loading />}
           {!isLoadingProduct && (
             <form onSubmit={updateProductHandler}>
+              <FormControl isRequired>
+                <FormLabel fontWeight="bold">Inventory Category</FormLabel>
+                <Select
+                  value={inventoryCategory}
+                  options={inventoryCategoryOptions}
+                  onChange={(e: any) => setInventoryCategory(e)}
+                  required={true}
+                />
+              </FormControl>
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Product ID</FormLabel>
                 <Input
@@ -352,7 +388,12 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
               </FormControl>
               <FormControl className="mt-3 mb-5">
                 <FormLabel fontWeight="bold">Store</FormLabel>
-                <Select className="w-full rounded mt-2 border border-[#a9a9a9]" options={storeOptions} value={store} onChange={(d: any)=>setStore(d)} />
+                <Select
+                  className="w-full rounded mt-2 border border-[#a9a9a9]"
+                  options={storeOptions}
+                  value={store}
+                  onChange={(d: any) => setStore(d)}
+                />
               </FormControl>
               <Button
                 isLoading={isUpdatingProduct}

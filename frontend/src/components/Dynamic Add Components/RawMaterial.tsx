@@ -8,12 +8,17 @@ import { toast } from "react-toastify";
 
 interface RawMaterialProps {
   inputs: any[];
-  products: any[],
-  productOptions: any[],
+  products: any[];
+  productOptions: any[];
   setInputs: (inputs: any) => void;
 }
 
-const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, productOptions }) => {
+const RawMaterial: React.FC<RawMaterialProps> = ({
+  inputs,
+  setInputs,
+  products,
+  productOptions,
+}) => {
   const [cookies] = useCookies();
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
@@ -38,8 +43,7 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, 
       if (unit_cost) {
         inputsArr[ind]["total_part_cost"] = +unit_cost * +value;
       }
-    }
-    else if (name === "item_name") {
+    } else if (name === "item_name") {
       const item_id = inputsArr[ind]["item_name"].value;
       const product = products.filter((prd: any) => prd._id === item_id)[0];
       inputsArr[ind]["uom"] = product.uom;
@@ -77,34 +81,8 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, 
     setInputs(inputsArr);
   };
 
-  // const fetchProductsHandler = async () => {
-  //   try {
-  //     setIsLoadingProducts(true);
-  //     const response = await fetch(
-  //       process.env.REACT_APP_BACKEND_URL + "product/all",
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           Authorization: `Bearer ${cookies?.access_token}`,
-  //         },
-  //       }
-  //     );
-  //     const results = await response.json();
-  //     if (!results.success) {
-  //       throw new Error(results?.message);
-  //     }
-  //     // console.log(results.products);
-  //     setProducts(results.products);
-  //   } catch (error: any) {
-  //     toast.error(error?.message || "Something went wrong");
-  //   } finally {
-  //     setIsLoadingProducts(false);
-  //   }
-  // };
-
   const fetchSuppliersHandler = async () => {
     try {
-      // setIsSellersLoading(true);
       const response = await fetch(
         process.env.REACT_APP_BACKEND_URL + "agent/suppliers",
         {
@@ -115,30 +93,18 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, 
         }
       );
       const data = await response.json();
-      // console.log(data);
       if (!data.success) {
         throw new Error(data.message);
       }
       setSuppliers(data.agents);
     } catch (err: any) {
       toast.error(err?.message || "Something went wrong");
-    } finally {
-      // setIsSellersLoading(false);
     }
   };
 
   useEffect(() => {
-    // fetchProductsHandler();
     fetchSuppliersHandler();
   }, []);
-
-  // useEffect(() => {
-  //   const productOptions = products.map((prod) => ({
-  //     value: prod._id,
-  //     label: prod.name,
-  //   }));
-  //   setProductsOptionsList(productOptions);
-  // }, [products]);
 
   useEffect(() => {
     const supplierOptions = suppliers.map((supp) => ({
@@ -163,22 +129,22 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, 
         <FormLabel fontWeight="bold">Raw Materials</FormLabel>
         {inputs.map((input, ind) => (
           <div
-            className="grid grid-cols-4 gap-2 border-b-[#a9a9a9] pb-2 mb-2"
+            className="grid grid-cols-4 gap-2 pb-2 mb-2"
             key={ind}
           >
             {/* <FormControl className="mt-3 mb-5" isRequired>
-            <FormLabel fontWeight="bold">Product ID</FormLabel>
-            <Input
-              disabled
-              // onChange={(e) =>
-              //   onChangeHandler(e.target.name, e.target.value, ind)
-              // }
-              type="text"
-              placeholder="Product ID"
-              name="item_id"
-              value={input?.item_name}
-            />
-          </FormControl> */}
+          <FormLabel fontWeight="bold">Product ID</FormLabel>
+          <Input
+            disabled
+            // onChange={(e) =>
+            //   onChangeHandler(e.target.name, e.target.value, ind)
+            // }
+            type="text"
+            placeholder="Product ID"
+            name="item_id"
+            value={input?.item_name}
+          />
+        </FormControl> */}
             <FormControl className="mb-5" isRequired>
               <FormLabel fontWeight="bold">Product Name</FormLabel>
               <Select
@@ -271,18 +237,18 @@ const RawMaterial: React.FC<RawMaterialProps> = ({ inputs, setInputs, products, 
               />
             </FormControl>
             {/* <FormControl>
-              <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-              <Input
-                border="1px"
-                borderColor="#a9a9a9"
-                onChange={(e) => {
-                  onChangeHandler(e.target.name, e.target.value, ind);
-                }}
-                type="text"
-                name="supporting_doc"
-                value={input.supporting_doc}
-              ></Input>
-            </FormControl> */}
+            <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
+            <Input
+              border="1px"
+              borderColor="#a9a9a9"
+              onChange={(e) => {
+                onChangeHandler(e.target.name, e.target.value, ind);
+              }}
+              type="text"
+              name="supporting_doc"
+              value={input.supporting_doc}
+            ></Input>
+          </FormControl> */}
             <FormControl>
               <FormLabel fontWeight="bold">Comments</FormLabel>
               <Input

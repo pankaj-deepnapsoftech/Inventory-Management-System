@@ -1,15 +1,93 @@
 import { Button } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PaymentTable from "../components/Table/PaymentTable";
+import { toast } from "react-toastify";
+import { useCookies } from "react-cookie";
+import { MdOutlineRefresh } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  closePaymentDetailsDrawer,
+  closeUpdatePaymentDrawer,
+  openPaymentDetailsDrawer,
+  openUpdatePaymentDrawer,
+} from "../redux/reducers/drawersSlice";
+import PaymentDetails from "../components/Drawers/Payment/PaymentDetails";
+import UpdatePayment from "../components/Drawers/Payment/UpdatePayment";
 
 const Payment: React.FC = () => {
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [data, setData] = useState<any[] | []>([]);
   const [filteredData, setFilteredData] = useState<any[] | []>([]);
   const [isLoadingPayments, setIsLoadingPayments] = useState<boolean>(false);
+  const [cookies] = useCookies();
+  const dispatch = useDispatch();
+  const { isUpdatePaymentDrawerOpened, isPaymentDetailsDrawerOpened } =
+    useSelector((state: any) => state.drawers);
+  const [id, setId] = useState<string | undefined>();
+
+  const fetchPaymentsHandler = async () => {
+    try {
+      setIsLoadingPayments(true);
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "payment/all",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+      setData(data.payments);
+      setFilteredData(data.payments);
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsLoadingPayments(false);
+    }
+  };
+
+  const openPaymentDetailsDrawerHandler = (id: string) => {
+    setId(id);
+    dispatch(openPaymentDetailsDrawer());
+  };
+  const closePaymentDetailsDrawerHandler = (id: string) => {
+    setId(id);
+    dispatch(closePaymentDetailsDrawer());
+  };
+
+  const openPaymentUpdateDrawerHandler = (id: string) => {
+    setId(id);
+    dispatch(openUpdatePaymentDrawer());
+  };
+  const closePaymentUpdateDrawerHandler = () => {
+    setId(id);
+    dispatch(closeUpdatePaymentDrawer());
+  };
+
+  useEffect(() => {
+    fetchPaymentsHandler();
+  }, []);
 
   return (
     <div>
+      {isPaymentDetailsDrawerOpened && (
+        <PaymentDetails
+          closeDrawerHandler={closePaymentDetailsDrawerHandler}
+          id={id}
+        />
+      )}
+      {isUpdatePaymentDrawerOpened && (
+        <UpdatePayment
+          closeDrawerHandler={closePaymentUpdateDrawerHandler}
+          id={id}
+          fetchPaymentsHandler={fetchPaymentsHandler}
+        />
+      )}
+
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-start mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
           Payments
@@ -29,8 +107,8 @@ const Payment: React.FC = () => {
             paddingX={{ base: "10px", md: "12px" }}
             paddingY={{ base: "0", md: "3px" }}
             width={{ base: "-webkit-fill-available", md: 100 }}
-            // onClick={fetchProductsHandler}
-            // leftIcon={<MdOutlineRefresh />}
+            onClick={fetchPaymentsHandler}
+            leftIcon={<MdOutlineRefresh />}
             color="#1640d6"
             borderColor="#1640d6"
             variant="outline"
@@ -41,7 +119,13 @@ const Payment: React.FC = () => {
       </div>
 
       <div>
-        <PaymentTable isLoadingPayments={isLoadingPayments} payments={filteredData} />
+        <PaymentTable
+          isLoadingPayments={isLoadingPayments}
+          payments={filteredData}
+          payment={filteredData}
+          openPaymentDetailsDrawerHandler={openPaymentDetailsDrawerHandler}
+          openUpdatePaymentDrawer={openPaymentUpdateDrawerHandler}
+        />
       </div>
     </div>
   );

@@ -83,6 +83,13 @@ const ProformaInvoice: React.FC = () => {
     fetchProformaInvoiceHandler();
   }, [])
 
+  // useEffect(()=>{
+  //   const results = filteredData.map(prod => (
+
+  //   ));
+  //   setFilteredData(results);
+  // }, [searchKey])
+
   return (
     <div>
 

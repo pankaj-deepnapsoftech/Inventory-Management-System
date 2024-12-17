@@ -1,71 +1,187 @@
-const Process = require("../models/process");
+const ProductionProcess = require("../models/productionProcess");
+const BOM = require("../models/bom");
 const { TryCatch, ErrorHandler } = require("../utils/error");
 
-exports.create = TryCatch(async (req, res)=>{
-    const process = req.body;
-    if(!process){
-        throw new ErrorHandler("Please provide all the fields", 400);
-    }
+exports.create = TryCatch(async (req, res) => {
+  const processData = req.body;
+  if (!processData) {
+    throw new ErrorHandler("Please provide all the fields", 400);
+  }
 
-    await Process.create({...process, creator: req.user._id});
+  // console.log(processData)
 
-    res.status(200).json({
-        status: 200,
-        success: true,
-        message: "Process has been created successfully"
+  const bom = await BOM.findById(processData.bom)
+    .populate({
+      path: "finished_good",
+      populate: { path: "item" },
     })
-})
-exports.update = TryCatch(async (req, res)=>{
-    const {_id} = req.params;
-    const processDetails = req.body;
-    if(!_id){
-        throw new ErrorHandler("Id not provided", 400);
-    }
-    if(!processDetails){
-        throw new ErrorHandler("Please provide all the fields", 400);
-    }
-    const process = await Process.findById(_id);
-    if(!process){
-        throw new ErrorHandler("Process doesn't exist", 400);
-    }
+    .populate({
+      path: "raw_materials",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    });
+  if (!bom) {
+    throw new ErrorHandler("BOM doesn't exist", 400);
+  }
 
-    await Process.findByIdAndUpdate({_id}, {...processDetails});
+  const finished_good = {
+    item: bom.finished_good.item._id,
+    estimated_quantity: bom.finished_good.quantity,
+  };
 
-    res.status(200).json({
-        status: 200,
-        success: true,
-        message: "Process has been updated successfully"
-    })
-})
-exports.remove = TryCatch(async (req, res)=>{
-    const {_id} = req.params;
-    if(!_id){
-        throw new ErrorHandler("Id not provided", 400);
-    }
-    await Process.findByIdAndDelete(_id);
-    res.status(200).json({
-        status: 200,
-        success: true,
-        message: "Process has been deleted successfully"
-    })
-})
-exports.details = TryCatch(async (req, res)=>{
-    const {_id} = req.params;
-    if(!_id){
-        throw new ErrorHandler("Id not provided", 400);
-    }
-    const process = await Process.findById(_id).populate("creator");
-    res.status(200).json({
-        status: 200,
-        success: true,
-        process
-    })
-})
-exports.all = TryCatch(async (req, res)=>{
-    const processes = await Process.find({}).populate("creator");
-    res.status(200).json({
-        status: 200,
-        success: true,
-        processes
-    })
+  const processes = bom.processes.map((process) => ({
+    process: process,
+  }));
+
+  const raw_materials = bom.raw_materials.map((material) => ({
+    item: material.item._id,
+    estimated_quantity: material.quantity,
+  }));
+
+  const productionProcess = await ProductionProcess.create({
+    ...processData,
+    finished_good,
+    processes,
+    raw_materials,
+    creator: req.user._id,
+    approved: req.user.isSuper || false,
+  });
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Process has been created successfully",
+  });
+});
+exports.update = TryCatch(async (req, res) => {
+
+  // console.log(req.body);
+  const {_id, status, bom} = req.body;
+  const productionProcess = await ProductionProcess.findById(_id);
+  productionProcess.status = status;
+  productionProcess.finished_good.estimated_quantity = bom.finished_good.estimated_quantity;
+  productionProcess.finished_good.produced_quantity = bom.finished_good.produced_quantity;
+  productionProcess.raw_materials.forEach(p => {
+    const material = bom.raw_materials.find(m => m.item === p.item.toString());
+    p.estimated_quantity = material.estimated_quantity;
+    p.used_quantity = material.used_quantity;
+  });
+  productionProcess.processes.forEach(p => {
+    const process = bom.processes.find(pr => pr._id.toString() === p._id.toString());
+    p.done = process.done;
+  })
+  await productionProcess.save()
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Production process has been updated successfully"
+  })
+});
+exports.remove = TryCatch(async (req, res) => {
+  const { _id } = req.params;
+  if (!_id) {
+    throw new ErrorHandler("Id not provided", 400);
+  }
+
+  const productionProcess = await ProductionProcess.findById(_id);
+  if (!productionProcess) {
+    throw new ErrorHandler("Production process doesn't exist", 400);
+  }
+
+  await productionProcess.deleteOne();
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Production process has been deleted successfully",
+  });
+});
+exports.details = TryCatch(async (req, res) => {
+  const { _id } = req.params;
+  let productionProcess = await ProductionProcess.findById(_id)
+    .populate("rm_store fg_store scrap_store creator item")
+    .populate([
+      {
+        path: "finished_good",
+        populate: {
+          path: "item",
+        },
+      },
+      {
+        path: "raw_materials",
+        populate: {
+          path: "item",
+          populate: {
+            path: "store",
+          },
+        },
+      }
+    ])
+    .populate({
+      path: "bom",
+      populate: [
+        {
+          path: "creator",
+        },
+        {
+          path: "finished_good",
+          populate: {
+            path: "item",
+          },
+        },
+        {
+          path: "raw_materials",
+          populate: {
+            path: "item",
+            populate: {
+              path: "store",
+            },
+          },
+        },
+      ],
+    });
+
+  if (!_id) {
+    throw new ErrorHandler("Production Process doesn't exist", 400);
+  }
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    production_process: productionProcess,
+  });
+});
+exports.all = TryCatch(async (req, res) => {
+  const productionProcesses = await ProductionProcess.find().populate(
+    "rm_store fg_store scrap_store creator item bom"
+  );
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    production_processes: productionProcesses,
+  });
+});
+exports.markDone = TryCatch(async (req, res)=>{
+  const {_id} = req.params;
+  if(!_id){
+    throw new ErrorHandler("Id not provided", 400);
+  }
+  const productionProcess = await ProductionProcess.findById(_id);
+  if(!productionProcess){
+    throw new ErrorHandler("Production process doesn't exist", 400);
+  }
+
+  productionProcess.status = 'completed';
+  await productionProcess.save();
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Production process has been marked done successfully"
+  })
 })

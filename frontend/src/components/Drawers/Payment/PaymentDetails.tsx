@@ -4,23 +4,28 @@ import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import Loading from "../../../ui/Loading";
 import { BiX } from "react-icons/bi";
-import moment from "moment";
 
-interface ProcessProps {
-  closeDrawerHandler: () => void;
+interface PaymentDetailsProps {
+  closeDrawerHandler: (id: string) => void;
   id: string | undefined;
 }
 
-const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
+const PaymentDetails: React.FC<PaymentDetailsProps> = ({
+  closeDrawerHandler,
+  id,
+}) => {
   const [cookies] = useCookies();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [process, setProcess] = useState<string | undefined>();
+  const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
+  const [mode, setMode] = useState<string | undefined>();
+  const [amount, setAmount] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
-  const [creator, setCreator] = useState<any | undefined>();
 
-  const fetchProcessDetails = async (id: string) => {
+  const fetchPaymentDetails = async (id: string) => {
     try {
-      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `process/${id}`,
+      setIsLoading(true);
+      // @ts-ignore
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `payment/${id}`,
         {
           method: "GET",
           headers: {
@@ -32,19 +37,23 @@ const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
       if (!data.success) {
         throw new Error(data.message);
       }
-      setProcess(data.process.process);
-      setDescription(data.process?.description);
-      setDescription(data.process.creator);
+      setInvoiceNo(data.payment.invoice.invoice_no);
+      setMode(data.payment.mode);
+      setDescription(data.payment?.description);
+      setAmount(data.payment.amount);
     } catch (error: any) {
       toast.error(error.messsage || "Something went wrong");
+    } finally{
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProcessDetails(id || "");
+    fetchPaymentDetails(id || "");
   }, [id]);
 
   return (
+    // @ts-ignore
     <Drawer closeDrawerHandler={closeDrawerHandler}>
       <div
         className="absolute overflow-auto h-[100vh] w-[90vw] md:w-[450px] bg-white right-0 top-0 z-10 py-3"
@@ -54,29 +63,34 @@ const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
         }}
       >
         <h1 className="px-4 flex gap-x-2 items-center text-xl py-3 border-b">
+          { /* @ts-ignore */ }
           <BiX onClick={closeDrawerHandler} size="26px" />
-          Process
+          Payment
         </h1>
 
         <div className="mt-8 px-5">
           <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#f9fafc]">
-            Process Details
+            Payment Details
           </h2>
 
           {isLoading && <Loading />}
           {!isLoading && (
             <div>
               <div className="mt-3 mb-5">
-                <p className="font-semibold">Created By</p>
-                <p>{creator?.first_name + " " + creator?.last_name}</p>
+                <p className="font-semibold">Invoice No.</p>
+                <p>{invoiceNo}</p>
               </div>
               <div className="mt-3 mb-5">
-                <p className="font-semibold">Process</p>
-                <p>{process}</p>
+                <p className="font-semibold">Amount</p>
+                <p>₹ {amount}/-</p>
+              </div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Mode</p>
+                <p>{mode}</p>
               </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Description</p>
-                <p>{description || "N/A"}</p>
+                <p>{description || 'N/A'}</p>
               </div>
             </div>
           )}
@@ -86,4 +100,4 @@ const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
   );
 };
 
-export default ProcessDetails;
+export default PaymentDetails;

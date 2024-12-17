@@ -20,6 +20,7 @@ const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
 
   const fetchProcessDetails = async (id: string) => {
     try {
+      // @ts-ignore
       const response = await fetch(process.env.REACT_APP_BACKEND_URL + `process/${id}`,
         {
           method: "GET",
@@ -55,12 +56,12 @@ const ProcessDetails: React.FC<ProcessProps> = ({ closeDrawerHandler, id }) => {
       >
         <h1 className="px-4 flex gap-x-2 items-center text-xl py-3 border-b">
           <BiX onClick={closeDrawerHandler} size="26px" />
-          Process
+          Production Process
         </h1>
 
         <div className="mt-8 px-5">
           <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#f9fafc]">
-            Process Details
+            Production Process Details
           </h2>
 
           {isLoading && <Loading />}

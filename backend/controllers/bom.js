@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const BOM = require("../models/bom");
 const BOMFinishedMaterial = require("../models/bom-finished-material");
 const BOMRawMaterial = require("../models/bom-raw-material");
@@ -66,8 +67,8 @@ exports.create = TryCatch(async (req, res) => {
       //   throw new ErrorHandler(`Insufficient stock for ${isExistingMaterial.name}`, 400);
       // }
 
-      isExistingMaterial.current_stock -= material.quantity;
-      await isExistingMaterial.save();
+      // isExistingMaterial.current_stock -= material.quantity;
+      // await isExistingMaterial.save();
 
       const createdMaterial = await BOMRawMaterial.create({
         ...material,
@@ -78,12 +79,12 @@ exports.create = TryCatch(async (req, res) => {
 
   const { item, description, quantity, image, supporting_doc, comments, cost } =
     finished_good;
-  const isProdExists = await Product.findById(item);
+  // const isProdExists = await Product.findById(item);
   // if(!isProdExists){
   //   throw new ErrorHandler("Product selected for finished good doesn't exist", 400);
   // }
-  isProdExists.current_stock += quantity;
-  await isProdExists.save();
+  // isProdExists.current_stock += quantity;
+  // await isProdExists.save();
   const createdFinishedGood = await BOMFinishedMaterial.create({
     item,
     description,
@@ -103,7 +104,8 @@ exports.create = TryCatch(async (req, res) => {
     bom_name,
     parts_count,
     total_cost,
-    approved: req.user.isSuper
+    approved: req.user.isSuper,
+    creator: req.user._id
   });
 
   res.status(200).json({
@@ -175,7 +177,7 @@ exports.update = TryCatch(async (req, res) => {
         }
         if (
           isRawMaterialExists.quantity.toString() !==
-            material.quantity.toString() &&
+          material.quantity.toString() &&
           isProdExists.current_stock < material.quantity
         ) {
           throw new ErrorHandler(
@@ -222,18 +224,18 @@ exports.update = TryCatch(async (req, res) => {
         try {
           const isExistingRawMaterial = await BOMRawMaterial.findById(material._id);
           const isProdExists = await Product.findById(material.item);
-  
+
           if (!isProdExists) {
             throw new Error(`Product with ID ${material.item} does not exist.`);
           }
-  
+
           if (isExistingRawMaterial) {
             if (isExistingRawMaterial.item.toString() !== material.item) {
               isExistingRawMaterial.item = material.item;
             }
-  
+
             isExistingRawMaterial.description = material?.description;
-  
+
             if (isExistingRawMaterial.quantity.toString() !== material?.quantity?.toString()) {
               const quantityDifference = material.quantity - isExistingRawMaterial.quantity;
               if (quantityDifference > 0) {
@@ -244,12 +246,12 @@ exports.update = TryCatch(async (req, res) => {
                 isExistingRawMaterial.quantity = material.quantity;
               }
             }
-  
+
             isExistingRawMaterial.assembly_phase = material?.assembly_phase;
             isExistingRawMaterial.supporting_doc = material?.supporting_doc;
             isExistingRawMaterial.comments = material?.comments;
             isExistingRawMaterial.total_part_cost = material?.total_part_cost;
-  
+
             await isExistingRawMaterial.save();
           } else {
             const newRawMaterial = await BOMRawMaterial.create({ ...material });
@@ -263,7 +265,7 @@ exports.update = TryCatch(async (req, res) => {
       })
     );
   }
-  
+
 
   if (processes && processes.length > 0) {
     bom.processes = processes;
@@ -391,3 +393,36 @@ exports.unapproved = TryCatch(async (req, res) => {
     boms,
   });
 });
+
+exports.findFinishedGoodBom = TryCatch(async (req, res) => {
+  const { _id } = req.params;
+  if (!_id) {
+    throw new ErrorHandler("Id not provided", 400);
+  }
+
+  // const boms = await BOM.find({'finished_good': {
+  //   $elemMatch: {
+  //     item: _id
+  //   }}}).populate({
+  //   path: "finished_good",
+  //   populate: [
+  //     {
+  //       path: "item",
+  //     },
+  //   ],
+  // });
+
+  const allBoms = await BOM.find().populate('finished_good');
+  // console.log(allBoms)
+  const boms = allBoms.filter(bom => {
+    return bom.finished_good.item.toString() === _id;
+  });
+
+  // console.log(boms)
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    boms: boms
+  })
+})

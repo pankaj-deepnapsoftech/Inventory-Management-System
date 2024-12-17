@@ -16,6 +16,7 @@ import {
 import AddProcess from "../components/Drawers/Process/AddProcess";
 import ProcessDetails from "../components/Drawers/Process/ProcessDetails";
 import UpdateProcess from "../components/Drawers/Process/UpdateProcess";
+import { useDeleteProcessMutation } from "../redux/api/api";
 
 const Process: React.FC = () => {
   const [searchKey, setSearchKey] = useState<string | undefined>();
@@ -28,7 +29,7 @@ const Process: React.FC = () => {
   const fetchProcessHandler = async () => {
     try {
       const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + "process/all",
+        process.env.REACT_APP_BACKEND_URL + "production-process/all",
         {
           method: "GET",
           headers: {
@@ -41,8 +42,8 @@ const Process: React.FC = () => {
         throw new Error(data.message);
       }
 
-      setData(data.processes);
-      setFilteredData(data.processes);
+      setData(data.production_processes);
+      setFilteredData(data.production_processes);
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
     } finally {
@@ -56,6 +57,8 @@ const Process: React.FC = () => {
     isProcessDetailsDrawerOpened,
   } = useSelector((state: any) => state.drawers);
   const dispatch = useDispatch();
+
+  const [deleteProcess] = useDeleteProcessMutation();
 
   const openAddProcessDrawerHandler = () => {
     dispatch(openAddProcessDrawer());
@@ -78,6 +81,16 @@ const Process: React.FC = () => {
     dispatch(closeUpdateProcessDrawer());
   };
 
+  const deleteProcessHandler = async (id: string) => {
+    try {
+      const response = await deleteProcess(id).unwrap();
+      toast.success(response.message);
+      fetchProcessHandler();
+    } catch (error: any) {
+      console.log(error.message || 'Something went wrong');
+    }
+  }
+
   useEffect(() => {
     fetchProcessHandler();
   }, []);
@@ -92,7 +105,7 @@ const Process: React.FC = () => {
 
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-8">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
-          Process
+          Production Process
         </div>
 
         <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 gap-x-2 w-full md:w-fit">
@@ -121,18 +134,18 @@ const Process: React.FC = () => {
             fontSize={{ base: "14px", md: "14px" }}
             paddingX={{ base: "10px", md: "12px" }}
             paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 200 }}
+            width={{ base: "-webkit-fill-available", md: 230 }}
             onClick={openAddProcessDrawerHandler}
             color="white"
             backgroundColor="#1640d6"
           >
-            Add New Process
+            Add New Production Process
           </Button>
         </div>
       </div>
 
       <div>
-        <ProcessTable isLoadingProcess={isLoading} process={filteredData} />
+        <ProcessTable isLoadingProcess={isLoading} process={filteredData} deleteProcessHandler={deleteProcessHandler} openUpdateProcessDrawerHandler={openUpdateProcessDrawerHandler} />
       </div>
     </div>
   );

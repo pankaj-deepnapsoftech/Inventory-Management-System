@@ -27,17 +27,21 @@ import { MdDeleteOutline, MdEdit, MdOutlineVisibility } from "react-icons/md";
 
 interface ProcessTableProps {
   process: Array<{
-    process: string;
-    description: string;
     creator: any;
+    item: string;
+    rm_store: string;
+    fg_store: string;
+    scrap_store: string;
     createdAt: string;
     updatedAt: string;
+    status: string
   }>;
   isLoadingProcess: boolean;
   openUpdateProcessDrawerHandler?: (id: string) => void;
   openProcessDetailsDrawerHandler?: (id: string) => void;
   deleteProcessHandler?: (id: string) => void;
 }
+
 
 const ProcessTable: React.FC<ProcessTableProps> = ({
   process,
@@ -49,8 +53,11 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
   const columns = useMemo(
     () => [
       { Header: "Created By", accessor: "creator" },
-      { Header: "Process", accessor: "process" },
-      { Header: "Description", accessor: "description" },
+      { Header: "Status", accessor: "status" },
+      { Header: "Item", accessor: "item" },
+      { Header: "RM Store", accessor: "rm_store" },
+      { Header: "FG Store", accessor: "fg_store" },
+      { Header: "Scrap Store", accessor: "scrap_store" },
       { Header: "Created On", accessor: "createdAt" },
       { Header: "Last Updated", accessor: "updatedAt" },
     ],
@@ -171,6 +178,11 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
                               cell.column.id !== "creator" &&
+                              cell.column.id !== "rm_store" &&
+                              cell.column.id !== "fg_store" &&
+                              cell.column.id !== "scrap_store" &&
+                              cell.column.id !== "item" &&
+                              cell.column.id !== "status" &&
                               cell.render("Cell")}
 
                             {cell.column.id === "createdAt" &&
@@ -191,6 +203,16 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                               )}
                             {cell.column.id === "creator" &&
                                 <span>{row.original.creator.first_name + ' ' + row.original.creator.last_name}</span>}
+                            {cell.column.id === "item" &&
+                                <span>{row.original.item.name}</span>}
+                            {cell.column.id === "rm_store" &&
+                                <span>{row.original.rm_store.name}</span>}
+                            {cell.column.id === "fg_store" &&
+                                <span>{row.original.fg_store.name}</span>}
+                            {cell.column.id === "scrap_store" &&
+                                <span>{row.original.scrap_store.name}</span>}
+                            {cell.column.id === "status" &&
+                                <span>{row.original.status.toUpperCase()}</span>}
                           </Td>
                         );
                       })}

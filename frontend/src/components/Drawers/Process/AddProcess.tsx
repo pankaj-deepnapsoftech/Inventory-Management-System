@@ -4,13 +4,10 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
-  useCreateProcessMutation,
-  useCreateProformaInvoiceMutation,
+  useCreateProcessMutation
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import AddItems from "../../Dynamic Add Components/AddItems";
 
 interface AddProcess {
   closeDrawerHandler: () => void;
@@ -23,17 +20,40 @@ const AddProcess: React.FC<AddProcess> = ({
 }) => {
   const [cookies] = useCookies();
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [process, setProcess] = useState<string | undefined>();
-  const [description, setDescription] = useState<string | undefined>();
+  // const [itemId, setItemId] = useState<{ value: string, label: string } | undefined>();
+  const [itemId, setItemId] = useState<string | undefined>();
+  const [itemName, setItemName] = useState<{ value: string, label: string } | undefined>();
+  const [bom, setBom] = useState<{ value: string, label: string } | undefined>();
+  const [currentStock, setCurrentStock] = useState<number | undefined>();
+  const [quantity, setQuantity] = useState<number | undefined>();
+  const [uom, setUom] = useState<number | undefined>();
+  const [fgStore, setFgStore] = useState<{ value: string, label: string } | undefined>();
+  const [rmStore, setRmStore] = useState<{ value: string, label: string } | undefined>();
+  const [scrapStore, setScrapStore] = useState<{ value: string, label: string } | undefined>();
+
+  // const [itemIdOptions, setItemIdOptions] = useState<{ value: string, label: string }[] | []>();
+  const [itemNameOptions, setItemNameOptions] = useState<{ value: string, label: string }[] | []>();
+  const [bomOptions, setBomOptions] = useState<{ value: string, label: string }[] | []>();
+  const [fgStoreOptions, setFgStoreOptions] = useState<{ value: string, label: string }[] | []>();
+  const [rmStoreOptions, setRmStoreOptions] = useState<{ value: string, label: string }[] | []>();
+  const [scrapStoreOptions, setScrapStoreOptions] = useState<{ value: string, label: string }[] | []>();
+
+  const [items, setItems] = useState<any[]>([]);
+  const [boms, setBoms] = useState<any[]>([]);
+  const [stores, setStores] = useState<any[]>([]);
 
   const [addProcess] = useCreateProcessMutation();
 
-  const addProformaInvoiceHandler = async (e: React.FormEvent) => {
+  const addProcessHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const data = {
-      process: process,
-      description: description,
+      item: itemName?.value,
+      bom: bom?.value,
+      quantity: quantity,
+      rm_store: rmStore?.value,
+      fg_store: fgStore?.value,
+      scrap_store: scrapStore?.value,
     };
 
     try {
@@ -52,6 +72,103 @@ const AddProcess: React.FC<AddProcess> = ({
     }
   };
 
+  const fetchItemsHandler = async ()=>{
+    try{
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL+'product/all', {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${cookies?.access_token}`
+        }
+      });
+      const data = await response.json();
+      if(!data.success){
+        throw new Error(data.message);
+      }
+      setItems(data.products);
+    }
+    catch(err: any){
+      toast.error(err.message || 'Something went wrong');
+    }
+  }
+
+  const fetchBomsHandler = async ()=>{
+    try {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL+`bom/bom/${itemName?.value}`, {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${cookies?.access_token}`
+        }
+      });
+      const data = await response.json();
+      if(!data.success){
+        throw new Error(data.message);
+      }
+      setBoms(data.boms);
+    } catch (error: any) {
+      toast.error(error.message || 'Something went wrong');
+    }
+  }
+
+  const fetchStoresHandler = async ()=>{
+    try {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL+'store/all', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${cookies?.access_token}`
+        }
+      });
+      const data = await response.json();
+      if(!data.success){
+        throw new Error(data.message);
+      }
+      setStores(data.stores);
+    } catch (error: any) {
+      toast.error(error.message || 'Something went wrong');
+    }
+  }
+
+  useEffect(()=>{
+    const results = items.map((item: any) => ({value: item._id, label: item.name}));
+    setItemNameOptions(results);
+  }, [items])
+
+  useEffect(()=>{
+    const item = items.find((item: any) => (item._id === itemName?.value));
+    setItemId(item?.product_id || '');
+    setCurrentStock(item?.current_stock);
+    setUom(item?.uom);
+  }, [itemName])
+
+  useEffect(()=>{
+    if(itemName?.value){
+      fetchBomsHandler();
+    }
+  }, [itemName])
+
+  useEffect(()=>{
+    const results = boms.map((bom: any) => ({value: bom._id, label: bom.bom_name}));
+    setBomOptions(results);
+  }, [boms])
+
+  useEffect(()=>{
+    if(bom){
+      const result = boms.find((b: any)=> (b._id === bom?.value));
+      setQuantity(result?.finished_good?.quantity);
+    }
+  }, [bom])
+
+  useEffect(()=>{
+    const results = stores.map((store: any) => ({value: store._id, label: store.name}));
+    setRmStoreOptions(results);
+    setScrapStoreOptions(results);
+    setFgStoreOptions(results);
+  }, [stores])
+
+  useEffect(()=>{
+    fetchItemsHandler();
+    fetchStoresHandler();
+  }, [])
+
   return (
     <Drawer closeDrawerHandler={closeDrawerHandler}>
       <div
@@ -63,33 +180,78 @@ const AddProcess: React.FC<AddProcess> = ({
       >
         <h1 className="px-4 flex gap-x-2 items-center text-xl py-3 border-b">
           <BiX onClick={closeDrawerHandler} size="26px" />
-          Process
+          Production Process
         </h1>
 
         <div className="mt-8 px-5">
           <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#f9fafc]">
-            Add New Process
+            Add New Production Process
           </h2>
 
-          <form onSubmit={addProformaInvoiceHandler}>
+          <form onSubmit={addProcessHandler}>
             <FormControl className="mt-3 mb-5" isRequired>
-              <FormLabel fontWeight="bold">Process</FormLabel>
+              <FormLabel fontWeight="bold">Item Id</FormLabel>
               <Input
-                value={process}
-                onChange={(e) => setProcess(e.target.value)}
+                value={itemId}
+                className="no-scrollbar"
+                disabled
+                // onChange={(e) => setItemId(e.target.value)}
                 type="text"
-                placeholder="Process"
+                placeholder="Item Id"
+              />
+              {/* <Select value={itemId} options={itemIdOptions} onChange={(d: any) => setItemId(d)} required /> */}
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Item Name</FormLabel>
+              <Select value={itemName} options={itemNameOptions} onChange={(d: any) => setItemName(d)} required />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">BOM</FormLabel>
+              <Select value={bom} options={bomOptions} onChange={(d: any) => setBom(d)} required />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Current Stock</FormLabel>
+              <Input
+                value={currentStock}
+                className="no-scrollbar"
+                onChange={(e) => setCurrentStock(+e.target.value)}
+                type="number"
+                placeholder="Current Stock"
+                disabled
               />
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
-              <FormLabel fontWeight="bold">Description</FormLabel>
+              <FormLabel fontWeight="bold">Quantity</FormLabel>
               <Input
-                value={description}
+                value={quantity}
                 className="no-scrollbar"
-                onChange={(e) => setDescription(e.target.value)}
-                type="text"
-                placeholder="Description"
+                onChange={(e) => setQuantity(+e.target.value)}
+                type="number"
+                placeholder="Quantity"
               />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">UOM</FormLabel>
+              <Input
+                value={uom}
+                className="no-scrollbar"
+                onChange={(e) => setUom(+e.target.value)}
+                type="text"
+                placeholder="UOM"
+                disabled
+              />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">FG Store</FormLabel>
+              <Select value={fgStore} options={fgStoreOptions} onChange={(d: any) => setFgStore(d)} required />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">RM Store</FormLabel>
+              <Select value={rmStore} options={rmStoreOptions} onChange={(d: any) => setRmStore(d)} required />
+            </FormControl>
+            <FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Scrap Store</FormLabel>
+              <Select value={scrapStore} options={scrapStoreOptions} onChange={(d: any) => setScrapStore(d)} required />
             </FormControl>
             <Button
               isLoading={isAdding}

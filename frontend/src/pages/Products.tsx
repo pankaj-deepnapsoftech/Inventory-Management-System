@@ -50,6 +50,8 @@ const Products: React.FC = () => {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [bulkUploading, setBulkUploading] = useState<boolean>(false);
 
+  const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState<string>('');
+
   const [bulkUpload] = useProductBulKUploadMutation();
 
   const {
@@ -209,10 +211,11 @@ const Products: React.FC = () => {
     // console.log(productServiceFilter, data[1]?.product_or_service?.toLowerCase(), data[0]?.product_or_service?.toLowerCase().includes(productServiceFilter))
     const results = data.filter(
       (prod: any) =>
-        prod.product_or_service?.toLowerCase().includes(productServiceFilter) &&
-        storeFilter &&
+        (prod.product_or_service?.toLowerCase().includes(productServiceFilter) &&
+        (inventoryCategoryFilter && prod?.inventory_category?.toLowerCase().includes(inventoryCategoryFilter)) &&
+        (storeFilter &&
         (storeFilter?.value === "" ||
-          prod?.store?._id === storeFilter?.value) &&
+          prod?.store?._id === storeFilter?.value))) &&
         (prod.name?.toLowerCase()?.includes(searchTxt) ||
           prod.product_id?.toLowerCase()?.includes(searchTxt) ||
           prod.category?.toLowerCase()?.includes(searchTxt) ||
@@ -244,7 +247,7 @@ const Products: React.FC = () => {
               ?.includes(searchTxt?.replaceAll("/", "") || "")))
     );
     setFilteredData(results);
-  }, [searchKey, productServiceFilter, storeFilter]);
+  }, [searchKey, productServiceFilter, storeFilter, inventoryCategoryFilter]);
 
   return (
     <div>
@@ -274,7 +277,7 @@ const Products: React.FC = () => {
       {/* Products Page */}
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-start mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
-          Products
+          Inventory
         </div>
 
         <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 items-start gap-x-2 w-full md:w-fit">
@@ -407,6 +410,20 @@ const Products: React.FC = () => {
             <option value="">All</option>
             <option value="product">Products</option>
             <option value="service">Services</option>
+          </select>
+        </FormControl>
+        <FormControl width={"-webkit-max-content"}>
+          <FormLabel fontWeight="bold" marginBottom={0}>
+            Inventory Category
+          </FormLabel>
+          <select
+            value={inventoryCategoryFilter}
+            onChange={(e: any) => setInventoryCategoryFilter(e.target.value)}
+            className="w-[200px] mt-2 rounded border border-[#a9a9a9] py-2 px-2"
+          >
+            <option value="">All</option>
+            <option value="direct">Direct</option>
+            <option value="indirect">Indirect</option>
           </select>
         </FormControl>
         <FormControl width={"-webkit-max-content"}>

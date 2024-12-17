@@ -89,7 +89,13 @@ exports.details = TryCatch(async (req, res)=>{
     })
 })
 exports.all = TryCatch(async (req, res)=>{
-    const payments = await Payment.find({}).populate("invoice creator");
+    const payments = await Payment.find({}).populate("creator").populate({
+        path: 'invoice',
+        populate: [
+            { path: 'buyer' },
+            { path: 'supplier' }
+        ]
+    });
     res.status(200).json({
         status: 200,
         success: true,

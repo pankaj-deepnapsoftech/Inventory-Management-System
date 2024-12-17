@@ -1,6 +1,11 @@
 const {Schema, model} = require('mongoose');
 
 const bomSchema = new Schema({
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: [true, 'Creator is a required field']
+    },
     raw_materials: {
         type: [Schema.Types.ObjectId],
         ref: 'BOM-Raw-Material',

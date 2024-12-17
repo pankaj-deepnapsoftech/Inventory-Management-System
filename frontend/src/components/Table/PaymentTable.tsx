@@ -28,7 +28,8 @@ import { MdDeleteOutline, MdEdit, MdOutlineVisibility } from "react-icons/md";
 interface PaymentTableProps {
   payments: Array<{
     creator: string;
-    created_on: string;
+    createdAt: string;
+    updatedAt: string;
     customer?: string;
     amount: string;
     date: string;
@@ -36,22 +37,24 @@ interface PaymentTableProps {
   }>;
   isLoadingPayments: boolean;
   openPaymentDetailsDrawerHandler?: (id: string) => void;
+  openUpdatePaymentDrawer?: (id: string) => void;
 }
 
 const PaymentTable: React.FC<AgentTableProps> = ({
   payments,
   isLoadingPayments,
-  openPaymentsDetailsDrawerHandler,
+  openPaymentDetailsDrawerHandler,
+  openUpdatePaymentDrawer
 }) => {
   const columns = useMemo(
     () => [
         // { Header: "Number", accessor: "number" },
         { Header: "Created By", accessor: "creator" },
-        { Header: "Created On", accessor: "created_on" },
         { Header: "Customer", accessor: "customer" },
         { Header: "Amount", accessor: "amount" },
-        { Header: "Date", accessor: "date" },
         { Header: "Payment Mode", accessor: "mode" },
+        { Header: "Created At", accessor: "createdAt" },
+        { Header: "Updated At", accessor: "updatedAt" },
     ],
     []
   );
@@ -171,39 +174,59 @@ const PaymentTable: React.FC<AgentTableProps> = ({
                           <Td fontWeight="500" {...cell.getCellProps()}>
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
+                              cell.column.id !== "creator" &&
+                              cell.column.id !== "customer" &&
                               cell.render("Cell")}
 
-                            {cell.column.id === "created_on" &&
+                            {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
-                                  {moment(row.original?.created_on).format(
+                                  {moment(row.original?.createdAt).format(
                                     "DD/MM/YYYY"
                                   )}
+                                </span>
+                              )}
+                            {cell.column.id === "updatedAt" &&
+                              row.original?.updatedAt && (
+                                <span>
+                                  {moment(row.original?.updatedAt).format(
+                                    "DD/MM/YYYY"
+                                  )}
+                                </span>
+                              )}
+                            {cell.column.id === "creator" && (
+                                <span>
+                                  {row.original.creator.first_name + ' ' + row.original.creator.last_name}
+                                </span>
+                              )}
+                            {cell.column.id === "customer" && (
+                                <span>
+                                  {row.original?.invoice.buyer ? row.original.invoice.buyer.name : row.original.invoice.supplier.name}
                                 </span>
                               )}
                           </Td>
                         );
                       })}
                       <Td className="flex gap-x-2">
-                        {openProformaInvoiceDetailsDrawerHandler && (
+                        {openPaymentDetailsDrawerHandler && (
                           <MdOutlineVisibility
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openAgentDetailsDrawerHandler(row.original?._id)
+                              openPaymentDetailsDrawerHandler(row.original?._id)
                             }
                           />
                         )}
-                        {/* {openUpdateAgentDrawerHandler && (
+                        {openUpdatePaymentDrawer && (
                           <MdEdit
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                              openUpdateAgentDrawerHandler(row.original?._id)
+                              openUpdatePaymentDrawer(row.original?._id)
                             }
                           />
                         )}
-                        {deleteAgentHandler && (
+                        {/* {deleteAgentHandler && (
                           <MdDeleteOutline
                             className="hover:scale-110"
                             size={16}

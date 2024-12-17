@@ -41,6 +41,7 @@ interface ProductTableProps {
     min_stock?: number;
     max_stock?: number;
     hsn_code?: number;
+    inventory_category?: string;
     createdAt: string;
     updatedAt: string;
   }>;
@@ -72,6 +73,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
     min_stock?: number;
     max_stock?: number;
     hsn_code?: number;
+    inventory_category?: string;
     createdAt: string;
     updatedAt: string;
   }>[] = useMemo(
@@ -83,6 +85,10 @@ const ProductTable: React.FC<ProductTableProps> = ({
       {
         Header: "Name",
         accessor: "name",
+      },
+      {
+        Header: "Inventory Category",
+        accessor: "inventory_category",
       },
       {
         Header: "Category",

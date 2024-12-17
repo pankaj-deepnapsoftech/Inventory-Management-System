@@ -4,7 +4,7 @@ const paymentSchema = new Schema(
   {
     creator: {
       type: Schema.Types.ObjectId,
-      ref: "Admin",
+      ref: "User",
       required: [true, "creator is a required field"],
     },
     invoice: {

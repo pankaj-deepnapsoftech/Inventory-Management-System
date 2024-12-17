@@ -18,7 +18,9 @@ const AddProduct: React.FC<AddProductProps> = ({
 }) => {
   const [name, setName] = useState<string | undefined>();
   const [id, setId] = useState<string | undefined>();
-  const [uom, setUom] = useState<{value: string, label: string} | undefined>();
+  const [uom, setUom] = useState<
+    { value: string; label: string } | undefined
+  >();
   const [category, setCategory] = useState<
     { value: string; label: string } | undefined
   >();
@@ -52,6 +54,14 @@ const AddProduct: React.FC<AddProductProps> = ({
     { value: string; label: string }[] | []
   >([]);
   const [cookies] = useCookies();
+  const [inventoryCategory, setInventoryCategory] = useState<
+    { value: string; label: string } | undefined
+  >();
+
+  const inventoryCategoryOptions = [
+    {value: 'direct', label: 'Direct'},
+    {value: 'indirect', label: 'Indirect'}
+  ]
 
   const categoryOptions = [
     { value: "finished goods", label: "Finished Goods" },
@@ -73,7 +83,7 @@ const AddProduct: React.FC<AddProductProps> = ({
     { value: "product", label: "Product" },
     { value: "service", label: "Service" },
   ];
-  
+
   const uomOptions = [
     { value: "pcs", label: "pcs" },
     { value: "kgs", label: "kgs" },
@@ -108,6 +118,7 @@ const AddProduct: React.FC<AddProductProps> = ({
 
       const response = await addProduct({
         name,
+        inventory_category: inventoryCategory?.value,
         product_id: id,
         uom: uom?.value,
         category: category?.value,
@@ -124,7 +135,7 @@ const AddProduct: React.FC<AddProductProps> = ({
         mrp: mrp,
         dealer_price: dealerPrice,
         distributor_price: distributorPrice,
-        store: store?.value || undefined
+        store: store?.value || undefined,
       }).unwrap();
       toast.success(response.message);
       fetchProductsHandler();
@@ -182,7 +193,15 @@ const AddProduct: React.FC<AddProductProps> = ({
             Add New Product
           </h2>
 
-          <form onSubmit={addProductHandler}>
+          <form onSubmit={addProductHandler}><FormControl className="mt-3 mb-5" isRequired>
+              <FormLabel fontWeight="bold">Inventory Category</FormLabel>
+              <Select
+                value={inventoryCategory}
+                options={inventoryCategoryOptions}
+                onChange={(e: any) => setInventoryCategory(e)}
+                required={true}
+              />
+            </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Product ID</FormLabel>
               <Input

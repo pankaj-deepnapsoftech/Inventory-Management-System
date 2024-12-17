@@ -1,6 +1,11 @@
 const {Schema, model} = require("mongoose");
 
 const productSchema = new Schema({
+    inventory_category: {
+        type: String,
+        enum: ['direct', 'indirect'],
+        required: [true, 'Category is a required field']
+    },
     name: {
         type: String,
         required: [true, "Product Name is a required field"],

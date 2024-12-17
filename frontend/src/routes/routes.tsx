@@ -69,9 +69,9 @@ const routes = [
     isSublink: true
   },
   {
-    name: "Product",
+    name: "Inventory",
     icon: <MdOutlineShoppingCart />,
-    path: "product",
+    path: "inventory",
     element: <Products />,
     isSublink: false
   },
@@ -121,9 +121,9 @@ const routes = [
         element: <BOM />,
       },
       {
-        name: "Process",
+        name: "Production Process",
         icon: <VscServerProcess />,
-        path: "process",
+        path: "production-process",
         element: <Process />,
       },
     ],

@@ -13,7 +13,7 @@ const bomRoutes = require("./routes/bom");
 const dashboardRoutes = require("./routes/dashboard");
 const proformaInvoiceRoutes = require("./routes/proformaInvoice");
 const invoiceRoutes = require("./routes/invoice");
-const processRoutes = require("./routes/process");
+const productionProcessRoutes = require("./routes/productionProcess");
 const paymentRoutes = require("./routes/payment");
 
 const app = express();
@@ -22,10 +22,10 @@ const app = express();
 // require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 
 // DEVELOPMENT ENVIRONMENT
-require("dotenv").config({ path: `.env.development` });
+// require("dotenv").config({ path: `.env.development` });
 
 // PRODUCTION ENVIRONMENT
-// require('dotenv').config({ path: `.env.production` });
+require('dotenv').config({ path: `.env.production` });
 
 // Define your allowed origins
 const allowedOrigins = [
@@ -65,7 +65,7 @@ app.use("/api/bom", bomRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/proforma-invoice", proformaInvoiceRoutes);
 app.use("/api/invoice", invoiceRoutes);
-app.use("/api/process", processRoutes);
+app.use("/api/production-process", productionProcessRoutes);
 app.use("/api/payment", paymentRoutes);
 
 app.use(globalErrorHandler);

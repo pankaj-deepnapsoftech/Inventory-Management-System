@@ -36,6 +36,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
     number | undefined
   >();
   const [store, setStore] = useState<string | undefined>();
+  const [inventoryCategory, setInventoryCategory] = useState<string | undefined>();
 
   const [cookies] = useCookies();
 
@@ -73,6 +74,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       setDealerPrice(data.product?.dealer_price);
       setDistributorPrice(data.product?.distributor_price);
       setStore(data.product?.store?.name);
+      setInventoryCategory(data.product?.inventory_category);
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Something went wrong");
     } finally {
@@ -106,6 +108,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           {isLoadingProduct && <Loading />}
           {!isLoadingProduct && (
             <div>
+              <div className="mt-3 mb-5">
+                <p className="font-semibold">Inventory Category</p>
+                <p>{inventoryCategory || 'N/A'}</p>
+              </div>
               <div className="mt-3 mb-5">
                 <p className="font-semibold">Product ID</p>
                 <p>{id}</p>

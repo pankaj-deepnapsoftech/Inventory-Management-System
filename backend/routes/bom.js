@@ -1,5 +1,5 @@
 const express = require('express');
-const { create, unapproved, update, remove, details, all } = require('../controllers/bom');
+const { create, unapproved, update, remove, details, all, findFinishedGoodBom } = require('../controllers/bom');
 const { isAuthenticated } = require('../middlewares/isAuthenticated');
 const { isAllowed } = require('../middlewares/isAllowed');
 const { isSuper } = require('../middlewares/isSuper');
@@ -11,7 +11,8 @@ router.get('/unapproved', isAuthenticated, isSuper, unapproved);
 router.route('/:id')
         .put(isAuthenticated, isAllowed, update)
         .delete(isAuthenticated, isAllowed, remove)
-        .get(isAuthenticated, isAllowed, details)
+        .get(isAuthenticated, isAllowed, details);
+router.get('/bom/:_id', isAuthenticated, findFinishedGoodBom);
 // router.delete('/remove/raw-material/:id', isAuthenticated, removeRawMaterial);
 // router.delete('/remove/finished-good/:id', isAuthenticated, removeFinishedGood);
 
