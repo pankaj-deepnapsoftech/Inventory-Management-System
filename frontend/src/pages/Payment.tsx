@@ -72,6 +72,36 @@ const Payment: React.FC = () => {
     fetchPaymentsHandler();
   }, []);
 
+  useEffect(()=>{
+    const searchText = searchKey?.toLowerCase();
+    const results = data.filter(
+      (p: any) =>
+        p.creator.first_name?.toLowerCase()?.includes(searchText) ||
+        p?.creator?.last_name?.toLowerCase()?.includes(searchText) ||
+        p?.amount?.toString()?.toLowerCase()?.includes(searchText) ||
+        p?.mode?.toLowerCase()?.includes(searchText) ||
+        p?.supplier?.name?.toLowerCase()?.includes(searchText) ||
+        p?.buyer?.name?.toLowerCase()?.includes(searchText) ||
+        (p?.createdAt &&
+          new Date(p?.createdAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            .reverse()
+            .join("")
+            ?.includes(searchText?.replaceAll("/", "") || "")) ||
+        (p?.updatedAt &&
+          new Date(p?.updatedAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            ?.reverse()
+            ?.join("")
+            ?.includes(searchText?.replaceAll("/", "") || ""))
+    );
+    setFilteredData(results);
+  }, [searchKey])
+
   return (
     <div>
       {isPaymentDetailsDrawerOpened && (

@@ -3,7 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import ProformaInvoiceTable from "../components/Table/ProformaInvoiceTable";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { closeAddInvoiceDrawer, closeAddPaymentDrawer, closeInvoiceDetailsDrawer, closeUpdateInvoiceDrawer, openAddInvoiceDrawer, openAddPaymentDrawer, openInvoiceDetailsDrawer, openUpdateInvoiceDrawer } from "../redux/reducers/drawersSlice";
+import {
+  closeAddInvoiceDrawer,
+  closeAddPaymentDrawer,
+  closeInvoiceDetailsDrawer,
+  closeUpdateInvoiceDrawer,
+  openAddInvoiceDrawer,
+  openAddPaymentDrawer,
+  openInvoiceDetailsDrawer,
+  openUpdateInvoiceDrawer,
+} from "../redux/reducers/drawersSlice";
 import AddProformaInvoice from "../components/Drawers/Proforma Invoice/AddProformaInvoice";
 import { useCookies } from "react-cookie";
 import { MdOutlineRefresh } from "react-icons/md";
@@ -20,87 +29,142 @@ const Invoice: React.FC = () => {
   const [data, setData] = useState<any[] | []>([]);
   const [filteredData, setFilteredData] = useState<any[] | []>([]);
   const [isLoadingInvoices, setIsLoadingInvoices] = useState<boolean>(false);
-  const {isAddInvoiceDrawerOpened, isUpdateInvoiceDrawerOpened, isInvoiceDetailsDrawerOpened, isAddPaymentDrawerOpened} = useSelector((state: any)=>state.drawers);
+  const {
+    isAddInvoiceDrawerOpened,
+    isUpdateInvoiceDrawerOpened,
+    isInvoiceDetailsDrawerOpened,
+    isAddPaymentDrawerOpened,
+  } = useSelector((state: any) => state.drawers);
   const dispatch = useDispatch();
   const [id, setId] = useState<string | undefined>();
 
   const [deleteInvoice] = useDeleteInvoiceMutation();
 
-  const openAddInvoiceDrawerHandler = ()=>{
+  const openAddInvoiceDrawerHandler = () => {
     dispatch(openAddInvoiceDrawer());
-  }
-  const closeAddInvoiceDrawerHandler = ()=>{
+  };
+  const closeAddInvoiceDrawerHandler = () => {
     dispatch(closeAddInvoiceDrawer());
-  }
+  };
 
-  const openInvoiceDetailsDrawerHandler = (id: string)=>{
+  const openInvoiceDetailsDrawerHandler = (id: string) => {
     setId(id);
     dispatch(openInvoiceDetailsDrawer());
-  }
-  const closeInvoiceDetailsDrawerHandler = ()=>{
+  };
+  const closeInvoiceDetailsDrawerHandler = () => {
     dispatch(closeInvoiceDetailsDrawer());
-  }
+  };
 
-  const openInvoiceUpdateDrawerHandler = (id: string)=>{
+  const openInvoiceUpdateDrawerHandler = (id: string) => {
     setId(id);
     dispatch(openUpdateInvoiceDrawer());
-  }
-  const closeInvoiceUpdateDrawerHandler = ()=>{
+  };
+  const closeInvoiceUpdateDrawerHandler = () => {
     dispatch(closeUpdateInvoiceDrawer());
-  }
+  };
 
-  const openAddPaymentHandler = (id: string)=>{
+  const openAddPaymentHandler = (id: string) => {
     setId(id);
     dispatch(openAddPaymentDrawer());
-  }
-  const closePaymentDrawerHandler = ()=>{
+  };
+  const closePaymentDrawerHandler = () => {
     dispatch(closeAddPaymentDrawer());
-  }
+  };
 
-  const fetchInvoiceHandler = async ()=>{
+  const fetchInvoiceHandler = async () => {
     try {
-        const response = await fetch(process.env.REACT_APP_BACKEND_URL+'invoice/all', {
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "invoice/all",
+        {
           method: "GET",
           headers: {
-            'Authorization': `Bearer ${cookies?.access_token}`
-          }
-        });
-        const data = await response.json();
-        if(!data.success){
-          throw new Error(data.message);
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
         }
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
+      }
 
-        setData(data.invoice);
-        setFilteredData(data.invoices);
+      setData(data.invoices);
+      setFilteredData(data.invoices);
     } catch (error: any) {
-        toast.error(error?.message || 'Something went wrong');
+      toast.error(error?.message || "Something went wrong");
     }
-  }
+  };
 
-  const deleteInvoiceHandler = async (id: string)=>{
+  const deleteInvoiceHandler = async (id: string) => {
     try {
       const response = await deleteInvoice(id).unwrap();
-      if(!response.success){
+      if (!response.success) {
         throw new Error(response.message);
-    }
-    toast.success(response.message);
-    fetchInvoiceHandler();
+      }
+      toast.success(response.message);
+      fetchInvoiceHandler();
     } catch (error: any) {
-      toast.error(error.message || 'Something went wrong');
+      toast.error(error.message || "Something went wrong");
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchInvoiceHandler();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    const searchText = searchKey?.toLowerCase();
+    const results = data.filter(
+      (i: any) =>
+        i.creator.first_name?.toLowerCase()?.includes(searchText) ||
+        i?.creator?.last_name?.toLowerCase()?.includes(searchText) ||
+        i?.subtotal?.toString()?.toLowerCase()?.includes(searchText) ||
+        i?.total?.toString()?.toLowerCase()?.includes(searchText) ||
+        i?.supplier?.name?.toLowerCase()?.includes(searchText) ||
+        i?.buyer?.name?.toLowerCase()?.includes(searchText) ||
+        (i?.createdAt &&
+          new Date(i?.createdAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            .reverse()
+            .join("")
+            ?.includes(searchText?.replaceAll("/", "") || "")) ||
+        (i?.updatedAt &&
+          new Date(i?.updatedAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            ?.reverse()
+            ?.join("")
+            ?.includes(searchText?.replaceAll("/", "") || ""))
+    );
+    setFilteredData(results);
+  }, [searchKey]);
 
   return (
     <div>
-
-      {isAddInvoiceDrawerOpened && <AddInvoice closeDrawerHandler={closeAddInvoiceDrawerHandler} fetchInvoicesHandler={fetchInvoiceHandler} />}
-      {isInvoiceDetailsDrawerOpened && <InvoiceDetails closeDrawerHandler={closeInvoiceDetailsDrawerHandler} id={id} />}
-      {isUpdateInvoiceDrawerOpened && <UpdateInvoice closeDrawerHandler={closeInvoiceUpdateDrawerHandler} id={id} fetchInvoicesHandler={fetchInvoiceHandler} />}
-      {isAddPaymentDrawerOpened && <AddPayment id={id} closeDrawerHandler={closePaymentDrawerHandler} />}
+      {isAddInvoiceDrawerOpened && (
+        <AddInvoice
+          closeDrawerHandler={closeAddInvoiceDrawerHandler}
+          fetchInvoicesHandler={fetchInvoiceHandler}
+        />
+      )}
+      {isInvoiceDetailsDrawerOpened && (
+        <InvoiceDetails
+          closeDrawerHandler={closeInvoiceDetailsDrawerHandler}
+          id={id}
+        />
+      )}
+      {isUpdateInvoiceDrawerOpened && (
+        <UpdateInvoice
+          closeDrawerHandler={closeInvoiceUpdateDrawerHandler}
+          id={id}
+          fetchInvoicesHandler={fetchInvoiceHandler}
+        />
+      )}
+      {isAddPaymentDrawerOpened && (
+        <AddPayment id={id} closeDrawerHandler={closePaymentDrawerHandler} />
+      )}
 
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-start mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
@@ -144,7 +208,14 @@ const Invoice: React.FC = () => {
       </div>
 
       <div>
-        <InvoiceTable isLoadingInvoices={isLoadingInvoices} invoices={filteredData} deleteInvoiceHandler={deleteInvoiceHandler} openInvoiceDetailsHandler={openInvoiceDetailsDrawerHandler} openUpdateInvoiceDrawer={openInvoiceUpdateDrawerHandler} openPaymentDrawer={openAddPaymentHandler} />
+        <InvoiceTable
+          isLoadingInvoices={isLoadingInvoices}
+          invoices={filteredData}
+          deleteInvoiceHandler={deleteInvoiceHandler}
+          openInvoiceDetailsHandler={openInvoiceDetailsDrawerHandler}
+          openUpdateInvoiceDrawer={openInvoiceUpdateDrawerHandler}
+          openPaymentDrawer={openAddPaymentHandler}
+        />
       </div>
     </div>
   );

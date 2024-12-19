@@ -1,5 +1,6 @@
 const ProductionProcess = require("../models/productionProcess");
 const BOM = require("../models/bom");
+const Product = require("../models/product");
 const { TryCatch, ErrorHandler } = require("../utils/error");
 
 exports.create = TryCatch(async (req, res) => {
@@ -56,31 +57,83 @@ exports.create = TryCatch(async (req, res) => {
     message: "Process has been created successfully",
   });
 });
-exports.update = TryCatch(async (req, res) => {
-
-  // console.log(req.body);
-  const {_id, status, bom} = req.body;
+exports.update = async (req, res) => {
+  const { _id, status, bom } = req.body;
   const productionProcess = await ProductionProcess.findById(_id);
+
+  if (!productionProcess) {
+    throw new ErrorHandler("Production Process doesn't exist", 400);
+  }
+
+  // ADJUST INVENTORY STOCK
+  if (status === "work in progress") {
+    // FOR FINISHED GOOD
+    const prevFinishedGood = productionProcess.finished_good;
+    const currFinishedGood = bom.finished_good;
+
+    const finishedGood = await Product.findById(
+      productionProcess.finished_good.item
+    );
+
+    if (
+      prevFinishedGood.produced_quantity < currFinishedGood.produced_quantity
+    ) {
+      const change =
+        currFinishedGood.produced_quantity - prevFinishedGood.produced_quantity;
+      productionProcess.finished_good.produced_quantity += change;
+      finishedGood.current_stock += change;
+    } else if (
+      prevFinishedGood.produced_quantity > currFinishedGood.produced_quantity
+    ) {
+      const change =
+        prevFinishedGood.produced_quantity - currFinishedGood.produced_quantity;
+      productionProcess.finished_good.produced_quantity -= change;
+      finishedGood.current_stock -= change;
+    }
+
+    await finishedGood.save();
+
+
+
+
+    // FOR RAW MATERIALS
+    const prevRawMaterials = productionProcess.raw_materials;
+    const currRawMaterials = bom.raw_materials;
+
+    await Promise.all(prevRawMaterials.map(async prevRm => {
+      const id = prevRm.item;
+      const rawMaterial = await Product.findById(id);
+      const currRm = currRawMaterials.find(item => item.item.toString() === prevRm.item.toString());
+
+      if (prevRm.used_quantity < currRm.used_quantity) {
+        const change = currRm.used_quantity - prevRm.used_quantity;
+        prevRm.used_quantity += change;
+        rawMaterial.current_stock -= change;
+      } else if (prevRm.used_quantity > currRm.used_quantity) {
+        const change = prevRm.used_quantity - currRm.used_quantity;
+        prevRm.used_quantity -= change;
+        rawMaterial.current_stock += change;
+      }
+
+      return await rawMaterial.save();
+    }))
+  }
+
   productionProcess.status = status;
-  productionProcess.finished_good.estimated_quantity = bom.finished_good.estimated_quantity;
-  productionProcess.finished_good.produced_quantity = bom.finished_good.produced_quantity;
-  productionProcess.raw_materials.forEach(p => {
-    const material = bom.raw_materials.find(m => m.item === p.item.toString());
-    p.estimated_quantity = material.estimated_quantity;
-    p.used_quantity = material.used_quantity;
-  });
-  productionProcess.processes.forEach(p => {
-    const process = bom.processes.find(pr => pr._id.toString() === p._id.toString());
+  productionProcess.processes.forEach((p) => {
+    const process = bom.processes.find(
+      (pr) => pr._id.toString() === p._id.toString()
+    );
     p.done = process.done;
-  })
-  await productionProcess.save()
+  });
+  await productionProcess.save();
 
   res.status(200).json({
     status: 200,
     success: true,
-    message: "Production process has been updated successfully"
-  })
-});
+    message: "Production process has been updated successfully",
+  });
+};
 exports.remove = TryCatch(async (req, res) => {
   const { _id } = req.params;
   if (!_id) {
@@ -119,7 +172,7 @@ exports.details = TryCatch(async (req, res) => {
             path: "store",
           },
         },
-      }
+      },
     ])
     .populate({
       path: "bom",
@@ -166,22 +219,22 @@ exports.all = TryCatch(async (req, res) => {
     production_processes: productionProcesses,
   });
 });
-exports.markDone = TryCatch(async (req, res)=>{
-  const {_id} = req.params;
-  if(!_id){
+exports.markDone = TryCatch(async (req, res) => {
+  const { _id } = req.params;
+  if (!_id) {
     throw new ErrorHandler("Id not provided", 400);
   }
   const productionProcess = await ProductionProcess.findById(_id);
-  if(!productionProcess){
+  if (!productionProcess) {
     throw new ErrorHandler("Production process doesn't exist", 400);
   }
 
-  productionProcess.status = 'completed';
+  productionProcess.status = "completed";
   await productionProcess.save();
 
   res.status(200).json({
     status: 200,
     success: true,
-    message: "Production process has been marked done successfully"
-  })
-})
+    message: "Production process has been marked done successfully",
+  });
+});

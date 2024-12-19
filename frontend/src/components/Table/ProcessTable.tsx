@@ -34,7 +34,7 @@ interface ProcessTableProps {
     scrap_store: string;
     createdAt: string;
     updatedAt: string;
-    status: string
+    status: string;
   }>;
   isLoadingProcess: boolean;
   openUpdateProcessDrawerHandler?: (id: string) => void;
@@ -42,13 +42,12 @@ interface ProcessTableProps {
   deleteProcessHandler?: (id: string) => void;
 }
 
-
 const ProcessTable: React.FC<ProcessTableProps> = ({
   process,
   isLoadingProcess,
   openUpdateProcessDrawerHandler,
   openProcessDetailsDrawerHandler,
-  deleteProcessHandler
+  deleteProcessHandler,
 }) => {
   const columns = useMemo(
     () => [
@@ -63,6 +62,25 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
     ],
     []
   );
+
+  const statusStyles = {
+    planned: {
+      bg: "#F03E3E",
+      text: "#ffffff",
+    },
+    published: {
+      bg: "#3392F8",
+      text: "#ffffff",
+    },
+    "work in progress": {
+      bg: "#E48C27",
+      text: "#ffffff",
+    },
+    completed: {
+      bg: "#409503",
+      text: "#ffffff",
+    }
+  };
 
   const {
     getTableProps,
@@ -109,11 +127,11 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                 {headerGroups.map(
                   (
                     hg: HeaderGroup<{
-                        process: string;
-                        description: string;
-                        creator: any;
-                        createdAt: string;
-                        updatedAt: string;
+                      process: string;
+                      description: string;
+                      creator: any;
+                      createdAt: string;
+                      updatedAt: string;
                     }>
                   ) => {
                     return (
@@ -201,18 +219,30 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                                   )}
                                 </span>
                               )}
-                            {cell.column.id === "creator" &&
-                                <span>{row.original.creator.first_name + ' ' + row.original.creator.last_name}</span>}
-                            {cell.column.id === "item" &&
-                                <span>{row.original.item.name}</span>}
-                            {cell.column.id === "rm_store" &&
-                                <span>{row.original.rm_store.name}</span>}
-                            {cell.column.id === "fg_store" &&
-                                <span>{row.original.fg_store.name}</span>}
-                            {cell.column.id === "scrap_store" &&
-                                <span>{row.original.scrap_store.name}</span>}
-                            {cell.column.id === "status" &&
-                                <span>{row.original.status.toUpperCase()}</span>}
+                            {cell.column.id === "creator" && (
+                              <span>
+                                {row.original.creator.first_name +
+                                  " " +
+                                  row.original.creator.last_name}
+                              </span>
+                            )}
+                            {cell.column.id === "item" && (
+                              <span>{row.original.item.name}</span>
+                            )}
+                            {cell.column.id === "rm_store" && (
+                              <span>{row.original.rm_store.name}</span>
+                            )}
+                            {cell.column.id === "fg_store" && (
+                              <span>{row.original.fg_store.name}</span>
+                            )}
+                            {cell.column.id === "scrap_store" && (
+                              <span>{row.original.scrap_store.name}</span>
+                            )}
+                            {cell.column.id === "status" && (
+                              <span className="px-2 py-1 rounded-md" style={{
+                                backgroundColor: statusStyles[row.original.status].bg,
+                                color: statusStyles[row.original.status].text}}>{row.original.status.toUpperCase()}</span>
+                            )}
                           </Td>
                         );
                       })}
@@ -231,7 +261,7 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                                openUpdateProcessDrawerHandler(row.original?._id)
+                              openUpdateProcessDrawerHandler(row.original?._id)
                             }
                           />
                         )}

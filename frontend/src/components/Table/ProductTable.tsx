@@ -138,6 +138,17 @@ const ProductTable: React.FC<ProductTableProps> = ({
     []
   );
 
+  const inventoryCategoryStyles = {
+    indirect: {
+      bg: "#F03E3E",
+      text: "#ffffff",
+    },
+    direct: {
+      bg: "#409503",
+      text: "#ffffff",
+    },
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -277,6 +288,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
                               cell.column.id !== "select" &&
+                              cell.column.id !== "inventory_category" &&
                               cell.render("Cell")}
 
                             {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
@@ -297,6 +309,17 @@ const ProductTable: React.FC<ProductTableProps> = ({
                                   )}
                                 </span>
                               )}
+                            {cell.column.id === "inventory_category" && (
+                              <span
+                                className="px-2 py-1 rounded-md"
+                                style={{
+                                  backgroundColor: inventoryCategoryStyles[row.original.inventory_category].bg,
+                                  color: inventoryCategoryStyles[row.original.inventory_category].text,
+                                }}
+                              >
+                                {row.original.inventory_category.substr(0,1).toUpperCase()+row.original.inventory_category.substr(1,)}
+                              </span>
+                            )}
                           </Td>
                         );
                       })}

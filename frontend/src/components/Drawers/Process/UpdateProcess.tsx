@@ -197,9 +197,9 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       setBomName(data.production_process.bom.bom_name);
       setTotalCost(data.production_process.bom.total_cost);
       setCreatedBy(
-        data.production_process.bom?.creator?.first_name +
+        (data.production_process.bom?.creator?.first_name || '') +
           " " +
-          data.production_process.bom?.creator?.last_name
+         (data.production_process.bom?.creator?.last_name || '')
       );
 
       const modifiedRawMaterials =
@@ -356,6 +356,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">BOM Name</FormLabel>
                 <Input
+                  isDisabled
                   value={bomName}
                   onChange={(e) => setBomName(e.target.value)}
                   type="text"
@@ -365,6 +366,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Total Cost</FormLabel>
                 <Input
+                  isDisabled
                   value={totalCost}
                   onChange={(e) => setTotalCost(e.target.value)}
                   type="number"
@@ -374,6 +376,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Created By</FormLabel>
                 <Input
+                  isDisabled
                   value={createdBy}
                   className="no-scrollbar"
                   onChange={(e) => setCreatedBy(e.target.value)}

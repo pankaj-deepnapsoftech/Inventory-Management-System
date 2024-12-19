@@ -83,12 +83,35 @@ const ProformaInvoice: React.FC = () => {
     fetchProformaInvoiceHandler();
   }, [])
 
-  // useEffect(()=>{
-  //   const results = filteredData.map(prod => (
-
-  //   ));
-  //   setFilteredData(results);
-  // }, [searchKey])
+  useEffect(()=>{
+    const searchText = searchKey?.toLowerCase();
+    const results = data.filter(
+      (pi: any) =>
+        pi.creator.first_name?.toLowerCase()?.includes(searchText) ||
+        pi?.creator?.last_name?.toLowerCase()?.includes(searchText) ||
+        pi?.subtotal?.toString()?.toLowerCase()?.includes(searchText) ||
+        pi?.total?.toString()?.toLowerCase()?.includes(searchText) ||
+        pi?.supplier?.name?.toLowerCase()?.includes(searchText) ||
+        pi?.buyer?.name?.toLowerCase()?.includes(searchText) ||
+        (pi?.createdAt &&
+          new Date(pi?.createdAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            .reverse()
+            .join("")
+            ?.includes(searchText?.replaceAll("/", "") || "")) ||
+        (pi?.updatedAt &&
+          new Date(pi?.updatedAt)
+            ?.toISOString()
+            ?.substring(0, 10)
+            ?.split("-")
+            ?.reverse()
+            ?.join("")
+            ?.includes(searchText?.replaceAll("/", "") || ""))
+    );
+    setFilteredData(results);
+  }, [searchKey])
 
   return (
     <div>

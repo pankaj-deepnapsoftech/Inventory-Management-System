@@ -196,7 +196,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
-                                  {moment(row.original?.created_on).format(
+                                  {moment(row.original?.createdAt).format(
                                     "DD/MM/YYYY"
                                   )}
                                 </span>
@@ -204,7 +204,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             {cell.column.id === "updatedAt" &&
                               row.original?.createdAt && (
                                 <span>
-                                  {moment(row.original?.created_on).format(
+                                  {moment(row.original?.updatedAt).format(
                                     "DD/MM/YYYY"
                                   )}
                                 </span>

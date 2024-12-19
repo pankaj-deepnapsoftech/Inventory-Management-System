@@ -27,14 +27,14 @@ import { MdDeleteOutline, MdEdit, MdOutlineVisibility } from "react-icons/md";
 
 interface EmployeeTableProps {
   employees: Array<{
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone: string,
-    role: string,
-    isVerified: boolean,
-    createdAt: string,
-    updatedAt: string
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    role: string;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
   }>;
   isLoadingEmployees: boolean;
   openUpdateEmployeeDrawerHandler?: (id: string) => void;
@@ -65,6 +65,17 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
     []
   );
 
+  const verificationStyles = {
+    "not verified": {
+      bg: "#F03E3E",
+      text: "#ffffff",
+    },
+    verified: {
+      bg: "#409503",
+      text: "#ffffff",
+    },
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -78,14 +89,14 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
     state: { pageIndex },
     pageCount,
   }: TableInstance<{
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone: string,
-    role: string,
-    isVerified: boolean,
-    createdAt: string,
-    updatedAt: string
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    role: string;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
   }> = useTable(
     {
       columns,
@@ -113,14 +124,14 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                 {headerGroups.map(
                   (
                     hg: HeaderGroup<{
-                        first_name: string,
-                        last_name: string,
-                        email: string,
-                        phone: string,
-                        role: string,
-                        isVerified: boolean,
-                        createdAt: string,
-                        updatedAt: string
+                      first_name: string;
+                      last_name: string;
+                      email: string;
+                      phone: string;
+                      role: string;
+                      isVerified: boolean;
+                      createdAt: string;
+                      updatedAt: string;
                     }>
                   ) => {
                     return (
@@ -205,9 +216,25 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                                 </span>
                               )}
                             {cell.column.id === "isVerified" &&
-                              (row.original.isVerified ? 'Verified' : 'Not Verified')}
-                            {cell.column.id === "role" &&
-                              <span>{(row.original?.role && row.original.role.role) || (row.original.isSuper && 'Super Admin') || ''}</span>}
+                              <span
+                              className="px-2 py-1 rounded-md"
+                              style={{
+                                backgroundColor: verificationStyles[row.original.isVerified ? 'verified' : 'not verified'].bg,
+                                color: verificationStyles[row.original.isVerified ? 'verified' : 'not verified'].text,
+                              }}
+                            >
+                              {row.original.isVerified
+                                ? "Verified"
+                                : "Not Verified"}
+                            </span>}
+                            {cell.column.id === "role" && (
+                              <span>
+                                {(row.original?.role &&
+                                  row.original.role.role) ||
+                                  (row.original.isSuper && "Super Admin") ||
+                                  ""}
+                              </span>
+                            )}
                           </Td>
                         );
                       })}
@@ -217,7 +244,9 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                                openEmployeeDetailsDrawerHandler(row.original?._id)
+                              openEmployeeDetailsDrawerHandler(
+                                row.original?._id
+                              )
                             }
                           />
                         )}
@@ -226,7 +255,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                                openUpdateEmployeeDrawerHandler(row.original?._id)
+                              openUpdateEmployeeDrawerHandler(row.original?._id)
                             }
                           />
                         )}
@@ -235,7 +264,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                                deleteEmployeeHandler(row.original?._id)
+                              deleteEmployeeHandler(row.original?._id)
                             }
                           />
                         )}
@@ -244,7 +273,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                             className="hover:scale-110"
                             size={16}
                             onClick={() =>
-                                approveEmployeeHandler(row.original?._id)
+                              approveEmployeeHandler(row.original?._id)
                             }
                           />
                         )}

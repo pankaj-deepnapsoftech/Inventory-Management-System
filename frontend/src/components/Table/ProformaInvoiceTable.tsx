@@ -194,7 +194,7 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
                                 <span>
-                                  {moment(row.original?.created_on).format(
+                                  {moment(row.original?.createdAt).format(
                                     "DD/MM/YYYY"
                                   )}
                                 </span>
@@ -202,7 +202,7 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                             {cell.column.id === "updatedAt" &&
                               row.original?.createdAt && (
                                 <span>
-                                  {moment(row.original?.created_on).format(
+                                  {moment(row.original?.updatedAt).format(
                                     "DD/MM/YYYY"
                                   )}
                                 </span>
