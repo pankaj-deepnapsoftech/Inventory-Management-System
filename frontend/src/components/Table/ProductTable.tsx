@@ -309,12 +309,12 @@ const ProductTable: React.FC<ProductTableProps> = ({
                                   )}
                                 </span>
                               )}
-                            {cell.column.id === "inventory_category" && (
+                            {cell.column.id === "inventory_category" && row.original.inventory_category && (
                               <span
                                 className="px-2 py-1 rounded-md"
                                 style={{
-                                  backgroundColor: inventoryCategoryStyles[row.original.inventory_category].bg,
-                                  color: inventoryCategoryStyles[row.original.inventory_category].text,
+                                  backgroundColor: inventoryCategoryStyles[row.original.inventory_category]?.bg,
+                                  color: inventoryCategoryStyles[row.original.inventory_category]?.text,
                                 }}
                               >
                                 {row.original.inventory_category.substr(0,1).toUpperCase()+row.original.inventory_category.substr(1,)}

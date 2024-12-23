@@ -3,9 +3,13 @@ import { IoDocumentTextOutline, IoStorefrontOutline } from "react-icons/io5";
 import { MdOutlineShoppingCart, MdOutlineSpeed, MdOutlineSell, MdOutlineAttachMoney, MdOutlinePayment, MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { RiBillLine } from "react-icons/ri";
 import { TbLockAccess, TbUsersGroup } from "react-icons/tb";
+import { SlDirection } from "react-icons/sl";
+import { FaHandsHelping } from "react-icons/fa";
+import { SiScrapy } from "react-icons/si";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { BiPurchaseTagAlt } from "react-icons/bi";
 import { VscServerProcess } from "react-icons/vsc";
+import { GiProgression } from "react-icons/gi";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Approvals from "../pages/Approvals";
@@ -19,6 +23,9 @@ import ProformaInvoice from "../pages/ProformaInvoice";
 import Invoice from "../pages/Invoice";
 import Payment from "../pages/Payment";
 import Process from "../pages/Process";
+import IndirectProducts from "../pages/IndirectProducts";
+import Scrap from "../pages/Scrap";
+import WIPProducts from "../pages/WIPProducts";
 
 const routes = [
   {
@@ -72,7 +79,33 @@ const routes = [
     name: "Inventory",
     icon: <MdOutlineShoppingCart />,
     path: "inventory",
-    element: <Products />,
+    sublink: [
+      {
+        name: "Indirect",
+        icon: <FaHandsHelping />,
+        path: "indirect",
+        element: <IndirectProducts />,
+      },
+      {
+        name: "Direct",
+        icon: <SlDirection />,
+        path: "direct",
+        element: <Products />,
+      },
+      {
+        name: "Work In Progress",
+        icon: <GiProgression />,
+        path: "wip",
+        element: <WIPProducts />,
+      }
+    ],
+    isSublink: true
+  },
+  {
+    name: "Scrap Management",
+    icon: <SiScrapy />,
+    path: "scrap",
+    element: <Scrap />,
     isSublink: false
   },
   {

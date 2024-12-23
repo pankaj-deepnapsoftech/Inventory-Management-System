@@ -31,7 +31,7 @@ interface BOMTableProps {
     parts_count: string;
     total_cost: string;
     approval_date?: string;
-    approved_by: string;
+    // approved_by: string;
     createdAt: string;
     updatedAt: string;
   }>;
@@ -55,7 +55,7 @@ const BOMTable: React.FC<BOMTableProps> = ({
       { Header: "BOM Name", accessor: "bom_name" },
       { Header: "Parts Count", accessor: "parts_count" },
       { Header: "Total Cost", accessor: "total_cost" },
-      { Header: "Approved By", accessor: "approved_by" },
+      // { Header: "Approved By", accessor: "approved_by" },
       { Header: "Created On", accessor: "createdAt" },
       { Header: "Last Updated", accessor: "updatedAt" },
     ],
@@ -78,7 +78,7 @@ const BOMTable: React.FC<BOMTableProps> = ({
     bom_name: string;
     parts_count: string;
     total_cost: string;
-    approved_by: string;
+    // approved_by: string;
     createdAt: string;
     updatedAt: string;
   }> = useTable(
@@ -177,7 +177,7 @@ const BOMTable: React.FC<BOMTableProps> = ({
                           <Td fontWeight="500" {...cell.getCellProps()}>
                             {cell.column.id !== "createdAt" &&
                               cell.column.id !== "updatedAt" &&
-                              cell.column.id !== "approved_by" &&
+                              // cell.column.id !== "approved_by" &&
                               cell.render("Cell")}
 
                             {cell.column.id === "createdAt" &&
@@ -196,13 +196,13 @@ const BOMTable: React.FC<BOMTableProps> = ({
                                   )}
                                 </span>
                               )}
-                            {cell.column.id === "approved_by" && (
+                            { /* {cell.column.id === "approved_by" && (
                               <span>
                                 {(row.original?.approved_by?.first_name || '') +
                                   " " +
                                   (row.original?.approved_by?.last_name || '')}
                               </span>
-                            )}
+                            )} */}
                           </Td>
                         );
                       })}

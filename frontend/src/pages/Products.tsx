@@ -50,8 +50,6 @@ const Products: React.FC = () => {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [bulkUploading, setBulkUploading] = useState<boolean>(false);
 
-  const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState<string>('');
-
   const [bulkUpload] = useProductBulKUploadMutation();
 
   const {
@@ -128,7 +126,7 @@ const Products: React.FC = () => {
     try {
       setIsLoadingProducts(true);
       const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + "product/all",
+        process.env.REACT_APP_BACKEND_URL + "product/all?category=direct",
         {
           method: "GET",
           headers: {
@@ -212,7 +210,6 @@ const Products: React.FC = () => {
     const results = data.filter(
       (prod: any) =>
         (prod.product_or_service?.toLowerCase().includes(productServiceFilter) &&
-        (inventoryCategoryFilter && prod?.inventory_category?.toLowerCase().includes(inventoryCategoryFilter)) &&
         (storeFilter &&
         (storeFilter?.value === "" ||
           prod?.store?._id === storeFilter?.value))) &&
@@ -247,7 +244,7 @@ const Products: React.FC = () => {
               ?.includes(searchTxt?.replaceAll("/", "") || "")))
     );
     setFilteredData(results);
-  }, [searchKey, productServiceFilter, storeFilter, inventoryCategoryFilter]);
+  }, [searchKey, productServiceFilter, storeFilter]);
 
   return (
     <div>
@@ -410,20 +407,6 @@ const Products: React.FC = () => {
             <option value="">All</option>
             <option value="product">Products</option>
             <option value="service">Services</option>
-          </select>
-        </FormControl>
-        <FormControl width={"-webkit-max-content"}>
-          <FormLabel fontWeight="bold" marginBottom={0}>
-            Inventory Category
-          </FormLabel>
-          <select
-            value={inventoryCategoryFilter}
-            onChange={(e: any) => setInventoryCategoryFilter(e.target.value)}
-            className="w-[200px] mt-2 rounded border border-[#a9a9a9] py-2 px-2"
-          >
-            <option value="">All</option>
-            <option value="direct">Direct</option>
-            <option value="indirect">Indirect</option>
           </select>
         </FormControl>
         <FormControl width={"-webkit-max-content"}>

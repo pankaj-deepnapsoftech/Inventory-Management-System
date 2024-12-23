@@ -13,6 +13,7 @@ import RawMaterial from "../../Dynamic Add Components/RawMaterial";
 import Process from "../../Dynamic Add Components/Process";
 import { useCookies } from "react-cookie";
 import FormData from "form-data";
+import ScrapMaterial from "../../Dynamic Add Components/ScrapMaterial";
 
 interface UpdateBomProps {
   closeDrawerHandler: () => void;
@@ -47,6 +48,14 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
   const [productOptions, setProductOptions] = useState<any[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
   const [updateBom] = useUpdateBOMMutation();
+  const [labourCharges, setLabourCharges] = useState<number | undefined>();
+  const [machineryCharges, setMachineryCharges] = useState<
+    number | undefined
+  >();
+  const [electricityCharges, setElectricityCharges] = useState<
+    number | undefined
+  >();
+  const [otherCharges, setOtherCharges] = useState<number | undefined>();
 
   const [rawMaterials, setRawMaterials] = useState<any[]>([
     {
@@ -61,6 +70,20 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       supplier: "",
       supporting_doc: "",
       comments: "",
+      unit_cost: "",
+      total_part_cost: "",
+    },
+  ]);
+
+  const [scrapMaterials, setScrapMaterials] = useState<any[]>([
+    {
+      _id: "",
+      item_name: "",
+      description: "",
+      // estimated_quantity: "",
+      // produced_quantity: "",
+      quantity: "",
+      uom: "",
       unit_cost: "",
       total_part_cost: "",
     },
@@ -122,9 +145,22 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       total_part_cost: material?.total_part_cost,
     }));
 
+    let modifiedScrapMaterials =
+      scrapMaterials?.[0]?.item_name &&
+      scrapMaterials?.map((material) => ({
+        _id: material?._id,
+        item: material?.item_name?.value,
+        description: material?.description,
+        // estimated_quantity: material?.estimated_quantity,
+        // produced_quantity: material?.produced_quantity,
+        quantity: material?.quantity,
+        total_part_cost: material?.total_part_cost,
+      }));
+
     const body = {
       _id: bomId,
       raw_materials: modifiedRawMaterials,
+      scrap_materials: modifiedScrapMaterials,
       processes: processes,
       finished_good: {
         item: finishedGood?.value,
@@ -137,6 +173,12 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       bom_name: bomName,
       parts_count: partsCount,
       total_cost: totalPartsCost,
+      other_charges: {
+        labour_charges: labourCharges || 0,
+        machinery_charges: machineryCharges || 0,
+        electricity_charges: electricityCharges || 0,
+        other_charges: otherCharges || 0,
+      },
     };
 
     try {
@@ -208,6 +250,27 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
         });
       });
       setRawMaterials(inputs);
+
+      const scrap: any = [];
+      data.bom?.scrap_materials?.forEach((material: any) => {
+        scrap.push({
+          _id: material._id,
+          item_name: { value: material.item._id, label: material.item.name },
+          description: material.description,
+          // estimated_quantity: material.estimated_quantity,
+          // produced_quantity: material.produced_quantity,
+          quantity: material.quantity,
+          uom: material.item.uom,
+          unit_cost: material.item.price,
+          total_part_cost: material.total_part_cost,
+        });
+      });
+      setScrapMaterials(scrap);
+
+      setLabourCharges(data.bom?.other_charges?.labour_charges);
+      setMachineryCharges(data.bom?.other_charges?.machinery_charges);
+      setElectricityCharges(data.bom?.other_charges?.electricity_charges);
+      setOtherCharges(data.bom?.other_charges?.other_charges);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     } finally {
@@ -342,7 +405,9 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                     border="1px"
                     borderColor="#a9a9a9"
                     value={quantity}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFinishedGoodQntyChangeHandler(+e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onFinishedGoodQntyChangeHandler(+e.target.value)
+                    }
                     type="number"
                     placeholder="Quantity"
                   />
@@ -418,6 +483,63 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                     onChange={(e) => setCost(+e.target.value)}
                     type="number"
                     placeholder="Cost"
+                  />
+                </FormControl>
+              </div>
+            </div>
+            <div>
+              <ScrapMaterial
+                products={products}
+                productOptions={productOptions}
+                inputs={scrapMaterials}
+                setInputs={setScrapMaterials}
+              />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mt-4 mb-2">Other Charges</h2>
+              <div className="grid grid-cols-4 gap-2">
+                <FormControl>
+                  <FormLabel fontWeight="bold">Labour Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={labourCharges}
+                    onChange={(e) => setLabourCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Labour Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Machinery Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={machineryCharges}
+                    onChange={(e) => setMachineryCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Machinery Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Electricity Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={electricityCharges}
+                    onChange={(e) => setElectricityCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Electricity Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Other Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={otherCharges}
+                    onChange={(e) => setOtherCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Other Charges"
                   />
                 </FormControl>
               </div>

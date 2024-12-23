@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import RawMaterial from "../../Dynamic Add Components/RawMaterial";
 import Process from "../../Dynamic Add Components/Process";
 import { useCookies } from "react-cookie";
+import ScrapMaterial from "../../Dynamic Add Components/ScrapMaterial";
 
 interface AddBomProps {
   closeDrawerHandler: () => void;
@@ -42,6 +43,14 @@ const AddBom: React.FC<AddBomProps> = ({
   const [productOptions, setProductOptions] = useState<
     { value: string; label: string }[] | []
   >([]);
+  const [labourCharges, setLabourCharges] = useState<number | undefined>();
+  const [machineryCharges, setMachineryCharges] = useState<
+    number | undefined
+  >();
+  const [electricityCharges, setElectricityCharges] = useState<
+    number | undefined
+  >();
+  const [otherCharges, setOtherCharges] = useState<number | undefined>();
 
   const [addBom] = useAddBomMutation();
 
@@ -58,6 +67,19 @@ const AddBom: React.FC<AddBomProps> = ({
       supplier: "",
       supporting_doc: "",
       comments: "",
+      unit_cost: "",
+      total_part_cost: "",
+    },
+  ]);
+
+  const [scrapMaterials, setScrapMaterials] = useState<any[]>([
+    {
+      item_name: "",
+      description: "",
+      // estimated_quantity: "",
+      // produced_quantity: "",
+      quantity: "",
+      uom: "",
       unit_cost: "",
       total_part_cost: "",
     },
@@ -128,8 +150,20 @@ const AddBom: React.FC<AddBomProps> = ({
       total_part_cost: material?.total_part_cost,
     }));
 
+    let modifiedScrapMaterials =
+      scrapMaterials?.[0]?.item_name &&
+      scrapMaterials.map((material) => ({
+        item: material?.item_name?.value,
+        description: material?.description,
+        // estimated_quantity: material?.estimated_quantity,
+        // produced_quantity: material?.produced_quantity,
+        quantity: material?.quantity,
+        total_part_cost: material?.total_part_cost,
+      }));
+
     const body = {
       raw_materials: modifiedRawMaterials,
+      scrap_materials: modifiedScrapMaterials,
       processes: processes,
       finished_good: {
         item: finishedGood?.value,
@@ -142,6 +176,12 @@ const AddBom: React.FC<AddBomProps> = ({
       bom_name: bomName,
       parts_count: partsCount,
       total_cost: totalPartsCost,
+      other_charges: {
+        labour_charges: labourCharges || 0,
+        machinery_charges: machineryCharges || 0,
+        electricity_charges: electricityCharges || 0,
+        other_charges: otherCharges || 0,
+      },
     };
 
     try {
@@ -181,21 +221,21 @@ const AddBom: React.FC<AddBomProps> = ({
 
   const onFinishedGoodChangeHandler = (d: any) => {
     setFinishedGood(d);
-    const product:any = products.filter((prd: any) => prd._id === d.value)[0];
+    const product: any = products.filter((prd: any) => prd._id === d.value)[0];
     setCategory(product.category);
     setUom(product.uom);
     setUnitCost(product.price);
-    if(quantity){
+    if (quantity) {
       setCost(product.price * +quantity);
     }
   };
-  
-  const onFinishedGoodQntyChangeHandler = (qty: number)=>{
+
+  const onFinishedGoodQntyChangeHandler = (qty: number) => {
     setQuantity(qty);
-    if(unitCost){
+    if (unitCost) {
       setCost(+unitCost * qty);
     }
-  }
+  };
 
   useEffect(() => {
     if (
@@ -220,7 +260,6 @@ const AddBom: React.FC<AddBomProps> = ({
       value: prd._id,
       label: prd.name,
     }));
-    console.log(modifiedProducts)
     setProductOptions(modifiedProducts);
   }, [products]);
 
@@ -282,7 +321,8 @@ const AddBom: React.FC<AddBomProps> = ({
                     border="1px"
                     borderColor="#a9a9a9"
                     value={quantity}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFinishedGoodQntyChangeHandler(+e.target.value)
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onFinishedGoodQntyChangeHandler(+e.target.value)
                     }
                     type="number"
                     placeholder="Quantity"
@@ -359,6 +399,63 @@ const AddBom: React.FC<AddBomProps> = ({
                     value={cost}
                     type="number"
                     placeholder="Cost"
+                  />
+                </FormControl>
+              </div>
+            </div>
+            <div>
+              <ScrapMaterial
+                products={products}
+                productOptions={productOptions}
+                inputs={scrapMaterials}
+                setInputs={setScrapMaterials}
+              />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mt-4 mb-2">Other Charges</h2>
+              <div className="grid grid-cols-4 gap-2">
+                <FormControl>
+                  <FormLabel fontWeight="bold">Labour Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={labourCharges}
+                    onChange={(e) => setLabourCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Labour Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Machinery Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={machineryCharges}
+                    onChange={(e) => setMachineryCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Machinery Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Electricity Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={electricityCharges}
+                    onChange={(e) => setElectricityCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Electricity Charges"
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel fontWeight="bold">Other Charges</FormLabel>
+                  <Input
+                    border="1px"
+                    borderColor="#a9a9a9"
+                    value={otherCharges}
+                    onChange={(e) => setOtherCharges(+e.target.value)}
+                    type="number"
+                    placeholder="Other Charges"
                   />
                 </FormControl>
               </div>

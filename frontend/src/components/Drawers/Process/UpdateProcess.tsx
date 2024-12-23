@@ -14,6 +14,8 @@ import { useCookies } from "react-cookie";
 import AddItems from "../../Dynamic Add Components/AddItems";
 import Process from "../../Dynamic Add Components/ProductionProcess";
 import RawMaterial from "../../Dynamic Add Components/ProcessRawMaterial";
+import ScrapMaterial from "../../Dynamic Add Components/ScrapMaterial";
+import ProcessScrapMaterial from "../../Dynamic Add Components/ProcessScrapMaterial";
 
 interface UpdateProcess {
   closeDrawerHandler: () => void;
@@ -90,6 +92,19 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
   const [submitBtnText, setSubmitBtnText] = useState<string>("Submit");
   const [processStatus, setProcessStatus] = useState<string | undefined>();
 
+  const [scrapMaterials, setScrapMaterials] = useState<any[]>([
+    {
+      _id: "",
+      item_name: "",
+      description: "",
+      estimated_quantity: "",
+      produced_quantity: "",
+      uom: "",
+      unit_cost: "",
+      total_part_cost: "",
+    },
+  ]);
+
   const [updateProcess] = useUpdateProcessMutation();
 
   const onFinishedGoodChangeHandler = (d: any) => {
@@ -113,11 +128,23 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
   const updateProcessHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    let modifiedScrapMaterials =
+      scrapMaterials?.[0]?.item_name &&
+      scrapMaterials?.map((material) => ({
+        _id: material?._id,
+        item: material?.item_name?.value,
+        description: material?.description,
+        estimated_quantity: material?.estimated_quantity,
+        produced_quantity: material?.produced_quantity,
+        total_part_cost: material?.total_part_cost,
+      }));
+
     const data = {
       // BOM
       bom: {
         _id: bomId,
         raw_materials: selectedProducts,
+        scrap_materials: modifiedScrapMaterials,
         processes: processes,
         finished_good: {
           item: finishedGood?.value,
@@ -156,11 +183,15 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
   const markProcessDoneHandler = async () => {
     try {
       setIsUpdating(true);
-      const response = await fetch(process.env.REACT_APP_BACKEND_URL+`production-process/done/${productionProcessId}`, {
-        headers: {
-          'Authorization': `Bearer ${cookies?.access_token}`
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL +
+          `production-process/done/${productionProcessId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
         }
-      });
+      );
       const data = await response.json();
       if (!data.success) {
         throw new Error(data.message);
@@ -192,14 +223,15 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
+
       setProductionProcessId(data.production_process._id);
       setBomId(data.production_process.bom._id);
       setBomName(data.production_process.bom.bom_name);
       setTotalCost(data.production_process.bom.total_cost);
       setCreatedBy(
-        (data.production_process.bom?.creator?.first_name || '') +
+        (data.production_process.bom?.creator?.first_name || "") +
           " " +
-         (data.production_process.bom?.creator?.last_name || '')
+          (data.production_process.bom?.creator?.last_name || "")
       );
 
       const modifiedRawMaterials =
@@ -235,6 +267,28 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
         });
 
       setSelectedProducts(modifiedRawMaterials);
+
+      const scrap: any = [];
+      data.production_process?.bom?.scrap_materials?.forEach(
+        (material: any) => {
+          const sc = data.production_process.scrap_materials.find(
+            (p: any) => p.item === material.item._id
+          );
+
+          scrap.push({
+            _id: material._id,
+            item_name: { value: material.item._id, label: material.item.name },
+            description: material.description,
+            estimated_quantity: sc.estimated_quantity,
+            produced_quantity: sc.produced_quantity,
+            uom: material.item.uom,
+            unit_cost: material.item.price,
+            total_part_cost: material.total_part_cost,
+          });
+        }
+      );
+      setScrapMaterials(scrap);
+
       // setProcesses(data.production_process.bom.processes);
       setProcesses(data.production_process.processes);
 
@@ -528,6 +582,14 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               </div>
             </div>
             <div>
+              <ProcessScrapMaterial
+                products={products}
+                productOptions={productOptions}
+                inputs={scrapMaterials}
+                setInputs={setScrapMaterials}
+              />
+            </div>
+            <div>
               <Button
                 marginRight={2}
                 isLoading={isUpdating}
@@ -538,16 +600,18 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               >
                 {submitBtnText}
               </Button>
-              {submitBtnText === 'Update' && <Button
-                isLoading={isUpdating}
-                type="button"
-                className="mt-1"
-                color="white"
-                backgroundColor="#1640d6"
-                onClick={markProcessDoneHandler}
-              >
-                Mark as Done
-              </Button>}
+              {submitBtnText === "Update" && (
+                <Button
+                  isLoading={isUpdating}
+                  type="button"
+                  className="mt-1"
+                  color="white"
+                  backgroundColor="#1640d6"
+                  onClick={markProcessDoneHandler}
+                >
+                  Mark as Done
+                </Button>
+              )}
             </div>
           </form>
         </div>

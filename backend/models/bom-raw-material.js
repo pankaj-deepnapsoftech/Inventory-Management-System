@@ -10,6 +10,11 @@ const BOMRawMaterialSchema = new Schema(
     //     type: String,
     //     required: [true, 'Item name is a required field']
     // },
+    bom: {
+      type: Schema.Types.ObjectId,
+      ref: "BOM",
+      required: [true, "BOM is a required field"],
+    },
     item: {
       type: Schema.Types.ObjectId,
       ref: "Product",
@@ -51,6 +56,10 @@ const BOMRawMaterialSchema = new Schema(
     // },
     total_part_cost: {
       type: Number,
+    },
+    in_production: {
+      type: Boolean,
+      default: false,
     },
   },
   {

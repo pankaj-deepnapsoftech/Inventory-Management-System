@@ -3,6 +3,8 @@ const csv = require("csvtojson");
 const fs = require("fs");
 const { TryCatch, ErrorHandler } = require("../utils/error");
 const { checkProductCsvValidity } = require("../utils/checkProductCsvValidity");
+const BOMRawMaterial = require("../models/bom-raw-material");
+const ProductionProcess = require("../models/productionProcess");
 
 exports.create = TryCatch(async (req, res) => {
   const productDetails = req.body;
@@ -10,7 +12,10 @@ exports.create = TryCatch(async (req, res) => {
     throw new ErrorHandler("Please provide product details", 400);
   }
 
-  const product = await Product.create({ ...productDetails, approved: req.user.isSuper });
+  const product = await Product.create({
+    ...productDetails,
+    approved: req.user.isSuper,
+  });
 
   res.status(200).json({
     status: 200,
@@ -74,9 +79,21 @@ exports.details = TryCatch(async (req, res) => {
   });
 });
 exports.all = TryCatch(async (req, res) => {
-  const products = await Product.find({ approved: true })
-    .sort({ updatedAt: -1 })
-    .populate("store");
+  const { category } = req.query;
+  let products;
+  if (category) {
+    products = await Product.find({
+      approved: true,
+      inventory_category: category,
+    })
+      .sort({ updatedAt: -1 })
+      .populate("store");
+  } else {
+    products = await Product.find({ approved: true })
+      .sort({ updatedAt: -1 })
+      .populate("store");
+  }
+
   res.status(200).json({
     status: 200,
     success: true,
@@ -128,3 +145,24 @@ exports.bulkUploadHandler = async (req, res) => {
   //     message: ""
   // })
 };
+exports.workInProgressProducts = TryCatch(async (req, res) => {
+  const products = await BOMRawMaterial.find({ in_production: true })
+    .populate("item")
+    .populate({
+      path: "bom",
+      populate: {
+        path: "raw_materials",
+        populate: [
+          {
+            path: "item",
+          },
+        ],
+      },
+    });
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    products,
+  });
+});

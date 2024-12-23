@@ -1,5 +1,7 @@
 const ProductionProcess = require("../models/productionProcess");
 const BOM = require("../models/bom");
+const BOMRawMaterial = require("../models/bom-raw-material");
+const BOMScrapMaterial = require("../models/bom-scrap-material");
 const Product = require("../models/product");
 const { TryCatch, ErrorHandler } = require("../utils/error");
 
@@ -8,9 +10,7 @@ exports.create = TryCatch(async (req, res) => {
   if (!processData) {
     throw new ErrorHandler("Please provide all the fields", 400);
   }
-
-  // console.log(processData)
-
+  
   const bom = await BOM.findById(processData.bom)
     .populate({
       path: "finished_good",
@@ -18,6 +18,14 @@ exports.create = TryCatch(async (req, res) => {
     })
     .populate({
       path: "raw_materials",
+      populate: [
+        {
+          path: "item",
+        },
+      ],
+    })
+    .populate({
+      path: "scrap_materials",
       populate: [
         {
           path: "item",
@@ -39,14 +47,20 @@ exports.create = TryCatch(async (req, res) => {
 
   const raw_materials = bom.raw_materials.map((material) => ({
     item: material.item._id,
-    estimated_quantity: material.quantity,
+    estimated_quantity: material.quantity
   }));
+
+  const scrap_materials = bom.scrap_materials.map((material)=>({
+    item: material.item._id,
+    estimated_quantity: material.quantity
+  }))
 
   const productionProcess = await ProductionProcess.create({
     ...processData,
     finished_good,
     processes,
     raw_materials,
+    scrap_materials,
     creator: req.user._id,
     approved: req.user.isSuper || false,
   });
@@ -93,32 +107,67 @@ exports.update = async (req, res) => {
 
     await finishedGood.save();
 
-
-
-
     // FOR RAW MATERIALS
     const prevRawMaterials = productionProcess.raw_materials;
     const currRawMaterials = bom.raw_materials;
 
-    await Promise.all(prevRawMaterials.map(async prevRm => {
-      const id = prevRm.item;
-      const rawMaterial = await Product.findById(id);
-      const currRm = currRawMaterials.find(item => item.item.toString() === prevRm.item.toString());
+    // console.log(prevRawMaterials, currRawMaterials)
 
-      if (prevRm.used_quantity < currRm.used_quantity) {
-        const change = currRm.used_quantity - prevRm.used_quantity;
-        prevRm.used_quantity += change;
-        rawMaterial.current_stock -= change;
-      } else if (prevRm.used_quantity > currRm.used_quantity) {
-        const change = prevRm.used_quantity - currRm.used_quantity;
-        prevRm.used_quantity -= change;
-        rawMaterial.current_stock += change;
-      }
+    await Promise.all(
+      prevRawMaterials.map(async (prevRm) => {
+        const id = prevRm.item;
+        const rawMaterial = await Product.findById(id);
+        const currRm = currRawMaterials.find(
+          (item) => item.item.toString() === prevRm.item.toString()
+        );
+        const bomRawMaterial = await BOMRawMaterial.findById(currRm._id);
 
-      return await rawMaterial.save();
-    }))
+        if (prevRm.used_quantity < currRm.used_quantity) {
+          const change = currRm.used_quantity - prevRm.used_quantity;
+          prevRm.used_quantity += change;
+          rawMaterial.current_stock -= change;
+        } else if (prevRm.used_quantity > currRm.used_quantity) {
+          const change = prevRm.used_quantity - currRm.used_quantity;
+          prevRm.used_quantity -= change;
+          rawMaterial.current_stock += change;
+        }
+        bomRawMaterial.in_production = true;
+        await bomRawMaterial.save();
+        return await rawMaterial.save();
+      })
+    );
+
+    // FOR SCRAP MATERIALS
+    const prevScrapMaterials = productionProcess.scrap_materials;
+    const currScrapMaterials = bom.scrap_materials;
+
+    console.log(bom, prevScrapMaterials, currScrapMaterials)
+
+    await Promise.all(
+      prevScrapMaterials.map(async (prevSc) => {
+        const id = prevSc.item;
+        const scrapMaterial = await Product.findById(id);
+        const currSc = currScrapMaterials.find(
+          (item) => item.item.toString() === prevSc.item.toString()
+        );
+        const bomScrapMaterial = await BOMScrapMaterial.findById(currSc._id);
+        console.log("********", currSc, bomScrapMaterial)
+
+        if (prevSc.produced_quantity < currSc.produced_quantity) {
+          const change = currSc.produced_quantity - prevSc.produced_quantity;
+          prevSc.produced_quantity += change;
+          scrapMaterial.current_stock -= change;
+        } else if (prevSc.produced_quantity > currSc.produced_quantity) {
+          const change = prevSc.produced_quantity - currSc.produced_quantity;
+          prevSc.produced_quantity -= change;
+          scrapMaterial.current_stock += change;
+        }
+        bomScrapMaterial.is_production_started = true;
+        await bomScrapMaterial.save();
+        return await scrapMaterial.save();
+      })
+    );
   }
-
   productionProcess.status = status;
   productionProcess.processes.forEach((p) => {
     const process = bom.processes.find(
@@ -188,6 +237,15 @@ exports.details = TryCatch(async (req, res) => {
         },
         {
           path: "raw_materials",
+          populate: {
+            path: "item",
+            populate: {
+              path: "store",
+            },
+          },
+        },
+        {
+          path: "scrap_materials",
           populate: {
             path: "item",
             populate: {

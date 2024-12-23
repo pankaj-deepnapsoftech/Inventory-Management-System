@@ -82,6 +82,26 @@ const productionProcessSchema = new Schema(
       ],
       required: [true, "Raw materials is a required field"],
     },
+    scrap_materials: {
+      type: [
+        {
+          item: {
+            type: Schema.Types.ObjectId,
+            ref: "Product",
+            required: [true, "Item is a required field"],
+          },
+          estimated_quantity: {
+            type: Number,
+            required: [true, "Estimated quantity is a required field"],
+          },
+          produced_quantity: {
+            type: Number,
+            default: 0,
+          },
+        },
+      ],
+      required: [true, "Raw materials is a required field"],
+    },
     finished_good: {
       item: {
         type: Schema.Types.ObjectId,

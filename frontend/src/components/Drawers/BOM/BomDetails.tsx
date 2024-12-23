@@ -17,11 +17,13 @@ const BomDetails: React.FC<BomDetailsProps> = ({
   const [cookies] = useCookies();
   const [isLoadingBom, setIsLoadingBom] = useState<boolean>(false);
   const [rawMaterials, setRawMaterials] = useState<any[] | []>([]);
+  const [scrapMaterials, setScrapMaterials] = useState<any[] | []>([]);
   const [finishedGood, setFinishedGood] = useState<any | undefined>();
   const [processes, setProcesses] = useState<any | undefined>();
   const [bomName, setBomName] = useState<string | undefined>();
   const [partsCount, setPartsCount] = useState<number | undefined>();
   const [totalBomCost, setTotalBomCost] = useState<number | undefined>();
+  const [otherCharges, setOtherCharges] = useState<any>();
 
   const fetchBomDetails = async () => {
     try {
@@ -45,6 +47,8 @@ const BomDetails: React.FC<BomDetailsProps> = ({
       setTotalBomCost(data.bom.total_cost);
       setPartsCount(data.bom.parts_count);
       setProcesses(data.bom.processes);
+      setScrapMaterials(data.bom?.scrap_materials);
+      setOtherCharges(data.bom?.other_charges);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     } finally {
@@ -160,14 +164,77 @@ const BomDetails: React.FC<BomDetailsProps> = ({
                       {finishedGood.category}
                     </li>
                     <li>
-                      <span className="font-semibold">Cost</span>:{" "}
-                      ₹ {finishedGood.cost}/-
+                      <span className="font-semibold">Cost</span>: ₹{" "}
+                      {finishedGood.cost}/-
                     </li>
                     <li>
-                      <span className="font-semibold">Supporting Document</span>:{" "}
-                      {finishedGood.supporting_doc ? <a href={finishedGood.supporting_doc} target="_blank"><button className="underline">Open</button></a> : 'N/A'}
+                      <span className="font-semibold">Supporting Document</span>
+                      :{" "}
+                      {finishedGood.supporting_doc ? (
+                        <a href={finishedGood.supporting_doc} target="_blank">
+                          <button className="underline">Open</button>
+                        </a>
+                      ) : (
+                        "N/A"
+                      )}
                     </li>
                   </ul>
+                </div>
+              )}
+
+              {scrapMaterials && (
+                <div>
+                  <p className="font-semibold">Scrap Materials</p>
+
+                  <ul className="mt-3 mb-5 pl-5 list-decimal">
+                    {scrapMaterials.map((material) => (
+                      <li>
+                        <p>
+                          <span className="font-semibold">Item ID</span>:{" "}
+                          {material?.item?.product_id}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Item Name</span>:{" "}
+                          {material?.item?.name}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Quantity</span>:{" "}
+                          {material?.quantity}
+                        </p>
+                        <p>
+                          <span className="font-semibold">UOM</span>:{" "}
+                          {material?.item?.uom}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Total Part Cost</span>
+                          : ₹ {material?.total_part_cost}/-
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {otherCharges && (
+                <div>
+                  <p className="font-semibold">Other Charges</p>
+
+                  <p>
+                    <span className="font-semibold">Labour Charges</span>: ₹{" "}
+                    {otherCharges?.labour_charges}/-
+                  </p>
+                  <p>
+                    <span className="font-semibold">Machinery Charges</span>: ₹{" "}
+                    {otherCharges?.machinery_charges}/-
+                  </p>
+                  <p>
+                    <span className="font-semibold">Electricity Charges</span>: ₹{" "}
+                    {otherCharges?.electricity_charges}/-
+                  </p>
+                  <p>
+                    <span className="font-semibold">Other Charges</span>: ₹{" "}
+                    {otherCharges?.other_charges}/-
+                  </p>
                 </div>
               )}
             </div>
