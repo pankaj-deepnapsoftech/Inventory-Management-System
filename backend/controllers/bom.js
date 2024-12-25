@@ -2,6 +2,7 @@ const BOM = require("../models/bom");
 const BOMFinishedMaterial = require("../models/bom-finished-material");
 const BOMRawMaterial = require("../models/bom-raw-material");
 const BOMScrapMaterial = require("../models/bom-scrap-material");
+const ProductionProcess = require("../models/productionProcess");
 const Product = require("../models/product");
 const { TryCatch, ErrorHandler } = require("../utils/error");
 
@@ -19,7 +20,7 @@ exports.create = TryCatch(async (req, res) => {
     other_charges,
   } = req.body;
 
-  console.log(scrap_materials)
+  // console.log(scrap_materials)
 
   if (
     !raw_materials ||
@@ -103,7 +104,7 @@ exports.create = TryCatch(async (req, res) => {
         const isExistingMaterial = await Product.findById(material.item);
         const createdMaterial = await BOMRawMaterial.create({
           ...material,
-          bom: bom._id
+          bom: bom._id,
         });
         return createdMaterial._id;
       })
@@ -314,7 +315,10 @@ exports.update = TryCatch(async (req, res) => {
 
             await isExistingRawMaterial.save();
           } else {
-            const newRawMaterial = await BOMRawMaterial.create({ ...material, bom: bom._id });
+            const newRawMaterial = await BOMRawMaterial.create({
+              ...material,
+              bom: bom._id,
+            });
             // isProdExists.current_stock -= newRawMaterial.quantity;
             // await isProdExists.save();
             bom.raw_materials.push(newRawMaterial._id);
@@ -354,16 +358,13 @@ exports.update = TryCatch(async (req, res) => {
               material?.quantity?.toString()
             ) {
               const quantityDifference =
-                material.quantity -
-                isExistingScrapMaterial.quantity;
+                material.quantity - isExistingScrapMaterial.quantity;
               if (quantityDifference > 0) {
                 // isProdExists.current_stock -= quantityDifference;
-                isExistingScrapMaterial.quantity =
-                  material.quantity;
+                isExistingScrapMaterial.quantity = material.quantity;
               } else {
                 // isProdExists.current_stock += Math.abs(quantityDifference);
-                isExistingScrapMaterial.quantity =
-                  material.quantity;
+                isExistingScrapMaterial.quantity = material.quantity;
               }
             }
             if (
@@ -371,16 +372,13 @@ exports.update = TryCatch(async (req, res) => {
               material?.quantity?.toString()
             ) {
               const quantityDifference =
-                material.quantity -
-                isExistingScrapMaterial.quantity;
+                material.quantity - isExistingScrapMaterial.quantity;
               if (quantityDifference > 0) {
                 // isProdExists.current_stock -= quantityDifference;
-                isExistingScrapMaterial.quantity =
-                  material.quantity;
+                isExistingScrapMaterial.quantity = material.quantity;
               } else {
                 // isProdExists.current_stock += Math.abs(quantityDifference);
-                isExistingScrapMaterial.quantity =
-                  material.quantity;
+                isExistingScrapMaterial.quantity = material.quantity;
               }
             }
 
@@ -420,6 +418,48 @@ exports.update = TryCatch(async (req, res) => {
 
   await bom.finished_good.save();
   await bom.save();
+
+  // Update the quantity of the finished good, raw materials and scrap materials in the production process, if the production process exists
+  if (bom.production_process) {
+    const productionProcess = await ProductionProcess.findById(
+      bom.production_process
+    )
+      .populate({
+        path: "finished_good",
+        populate: { path: "item" },
+      })
+      .populate({
+        path: "raw_materials",
+        populate: [
+          {
+            path: "item",
+          },
+        ],
+      })
+      .populate({
+        path: "scrap_materials",
+        populate: [
+          {
+            path: "item",
+          },
+        ],
+      });
+
+    productionProcess.raw_materials.forEach((rm) => {
+      rm.estimated_quantity = bom.raw_materials.find(
+        (m) => m.item._id.toString() === rm.item._id.toString()
+      ).quantity;
+    });
+    productionProcess.scrap_materials.forEach((sc) => {
+      sc.estimated_quantity = bom.scrap_materials.find(
+        (m) => m.item._id.toString() === sc.item._id.toString()
+      ).quantity;
+    });
+
+    productionProcess.finished_good.estimated_quantity = bom.finished_good.quantity;
+
+    await productionProcess.save();
+  }
 
   res.status(200).json({
     status: 200,

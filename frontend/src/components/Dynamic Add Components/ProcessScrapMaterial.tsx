@@ -23,8 +23,6 @@ const ProcessScrapMaterial: React.FC<ProcessScrapMaterialProps> = ({
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
 
-  console.log(selectedProducts)
-
   const onChangeHandler = (name: string, value: string, ind: number) => {
     const inputsArr: any = [...inputs];
     inputsArr[ind][name] = value;

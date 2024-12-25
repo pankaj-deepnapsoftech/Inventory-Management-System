@@ -10,7 +10,7 @@ exports.create = TryCatch(async (req, res) => {
   if (!processData) {
     throw new ErrorHandler("Please provide all the fields", 400);
   }
-  
+
   const bom = await BOM.findById(processData.bom)
     .populate({
       path: "finished_good",
@@ -47,13 +47,13 @@ exports.create = TryCatch(async (req, res) => {
 
   const raw_materials = bom.raw_materials.map((material) => ({
     item: material.item._id,
-    estimated_quantity: material.quantity
+    estimated_quantity: material.quantity,
   }));
 
-  const scrap_materials = bom.scrap_materials.map((material)=>({
+  const scrap_materials = bom.scrap_materials.map((material) => ({
     item: material.item._id,
-    estimated_quantity: material.quantity
-  }))
+    estimated_quantity: material.quantity,
+  }));
 
   const productionProcess = await ProductionProcess.create({
     ...processData,
@@ -64,6 +64,20 @@ exports.create = TryCatch(async (req, res) => {
     creator: req.user._id,
     approved: req.user.isSuper || false,
   });
+
+  bom.production_process = productionProcess._id;
+  bom.is_production_started = true;
+  await bom.save();
+
+  // await BOM.updateOne(
+  //   { _id: bom._id },
+  //   {
+  //     $push: {
+  //       'raw_materials.$[].production_process': productionProcess._id,
+  //       'scrap_materials.$[].production_process': productionProcess._id
+  //     }
+  //   }
+  // );
 
   res.status(200).json({
     status: 200,
@@ -141,7 +155,7 @@ exports.update = async (req, res) => {
     const prevScrapMaterials = productionProcess.scrap_materials;
     const currScrapMaterials = bom.scrap_materials;
 
-    console.log(bom, prevScrapMaterials, currScrapMaterials)
+    // console.log(bom, prevScrapMaterials, currScrapMaterials)
 
     await Promise.all(
       prevScrapMaterials.map(async (prevSc) => {
@@ -151,7 +165,7 @@ exports.update = async (req, res) => {
           (item) => item.item.toString() === prevSc.item.toString()
         );
         const bomScrapMaterial = await BOMScrapMaterial.findById(currSc._id);
-        console.log("********", currSc, bomScrapMaterial)
+        // console.log("********", currSc, bomScrapMaterial)
 
         if (prevSc.produced_quantity < currSc.produced_quantity) {
           const change = currSc.produced_quantity - prevSc.produced_quantity;

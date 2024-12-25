@@ -199,7 +199,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         </Th>
                                                     );
                                                 })}
-                                                <Th
+                                                {/* <Th
                                                     textTransform="capitalize"
                                                     fontSize="12px"
                                                     fontWeight="700"
@@ -209,7 +209,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                     borderRight="1px solid #d7d7d7"
                                                 >
                                                     Actions
-                                                </Th>
+                                                </Th> */}
                                             </Tr>
                                         );
                                     }
@@ -231,8 +231,8 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                             cell.column.id !== "updatedAt" &&
                                                             cell.column.id !== "item" &&
                                                             cell.column.id !== "bom" &&
-                                                            cell.column.id !== "estimated_quantity" &&
-                                                            cell.column.id !== "produced_quantity" &&
+                                                            // cell.column.id !== "estimated_quantity" &&
+                                                            // cell.column.id !== "produced_quantity" &&
                                                             cell.render("Cell")}
 
                                                         {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
@@ -267,7 +267,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                                 {row.original.bom.bom_name}
                                                             </span>
                                                         )}
-                                                        {cell.column.id === "estimated_quantity" && (
+                                                        {/* {cell.column.id === "estimated_quantity" && (
                                                             <span
                                                                 className="px-2 py-1 rounded-md"
                                                             >
@@ -280,12 +280,12 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                             >
                                                                 {row.original.produced_quantity}
                                                             </span>
-                                                        )}
+                                                        )} */}
                                                     </Td>
                                                 );
                                             })}
-                                            <Td className="flex gap-x-2">
-                                                {openScrapDetailsDrawerHandler && (
+                                            {/* <Td className="flex gap-x-2"> */}
+                                                {/* {openScrapDetailsDrawerHandler && (
                                                     <MdOutlineVisibility
                                                         className="hover:scale-110"
                                                         size={16}
@@ -293,7 +293,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                             openScrapDetailsDrawerHandler(row.original?._id)
                                                         }
                                                     />
-                                                )}
+                                                )} */}
                                                 {/* {openUpdateProductDrawerHandler && (
                                                     <MdEdit
                                                         className="hover:scale-110"
@@ -321,7 +321,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         }
                                                     />
                                                 )} */}
-                                            </Td>
+                                            {/* </Td> */}
                                         </Tr>
                                     );
                                 })}

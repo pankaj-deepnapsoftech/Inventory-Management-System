@@ -103,8 +103,12 @@ import {
           accessor: "uom",
         },
         {
+          Header: "Estimated Quantity",
+          accessor: "estimated_quantity",
+        },
+        {
           Header: "Used Quantity",
-          accessor: "quantity",
+          accessor: "used_quantity",
         },
         {
           Header: "Created On",
@@ -262,7 +266,6 @@ import {
                                 cell.column.id !== "uom" &&
                                 cell.column.id !== "category" &&
                                 cell.column.id !== "sub_category" &&
-                                cell.column.id !== "estimated_quantity" &&
                                 cell.render("Cell")}
   
                               {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}

@@ -7,6 +7,14 @@ const bomSchema = new Schema(
       ref: "User",
       required: [true, "Creator is a required field"],
     },
+    production_process: {
+      type: Schema.Types.ObjectId,
+      ref: "Production-Process"
+    },
+    is_production_started: {
+      type: Boolean,
+      default: false
+    },
     raw_materials: {
       type: [Schema.Types.ObjectId],
       ref: "BOM-Raw-Material",

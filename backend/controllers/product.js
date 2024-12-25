@@ -5,6 +5,7 @@ const { TryCatch, ErrorHandler } = require("../utils/error");
 const { checkProductCsvValidity } = require("../utils/checkProductCsvValidity");
 const BOMRawMaterial = require("../models/bom-raw-material");
 const ProductionProcess = require("../models/productionProcess");
+const BOM = require("../models/bom");
 
 exports.create = TryCatch(async (req, res) => {
   const productDetails = req.body;
@@ -146,19 +147,21 @@ exports.bulkUploadHandler = async (req, res) => {
   // })
 };
 exports.workInProgressProducts = TryCatch(async (req, res) => {
-  const products = await BOMRawMaterial.find({ in_production: true })
-    .populate("item")
-    .populate({
-      path: "bom",
-      populate: {
-        path: "raw_materials",
-        populate: [
-          {
-            path: "item",
-          },
-        ],
+  const products = [];
+  const processes = await ProductionProcess.find({
+    status: "work in progress",
+  }).populate({
+    path: "raw_materials",
+    populate: [
+      {
+        path: "item",
       },
-    });
+    ],
+  });
+
+  processes.forEach(p => {
+    p.raw_materials.forEach(material => products.push({...material._doc, createdAt: p.createdAt, updatedAt: p.updatedAt}));
+  });
 
   res.status(200).json({
     status: 200,
