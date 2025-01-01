@@ -5,9 +5,13 @@ const BOM = require("../models/bom");
 const BOMFinishedMaterial = require("../models/bom-finished-material");
 const Product = require("../models/product");
 const Store = require("../models/store");
+const ProductionProcess = require("../models/productionProcess");
+const ProformaInvoice = require("../models/proforma-invoice");
+const Invoice = require("../models/invoice");
+const Payment = require("../models/payment");
 const { TryCatch } = require("../utils/error");
 
-exports.summary = async (req, res) => {
+exports.summary = TryCatch(async (req, res) => {
   let { from, to } = req.body;
 
   if (from && to) {
@@ -184,6 +188,60 @@ exports.summary = async (req, res) => {
 
   const employees = await User.aggregate(employeesPipeline);
 
+  // Production Process Summary
+  const processPipeline = [
+    {
+      $project: {
+        status: 1
+      },
+    },
+    {
+      $group: {
+        _id: '$status',
+        total_process_count: {
+          $sum: 1,
+        }
+      },
+    },
+  ];
+
+  if (from && to) {
+    processPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+        approved: true,
+      },
+    });
+  } else {
+    processPipeline.unshift({
+      $match: {
+        approved: true,
+      },
+    });
+  }
+  const process = await ProductionProcess.aggregate(processPipeline);
+  let processCountStatusWiseArr = process.map(p=>({[p._id]: p.total_process_count}));
+  const processCountStatusWiseObj = {};
+  processCountStatusWiseArr.forEach(obj => {
+    const key = Object.keys(obj)[0];
+    processCountStatusWiseObj[key] = obj[key];
+  });
+
+  // Proforma Invoices, Invoices and Payments Insights
+  let condition = {};
+  if(from && to){
+    condition = {
+      $gte: from,
+      $lte: to
+    }
+  }
+  const totalProformaInvoices = await ProformaInvoice.find(condition).countDocuments();
+  const totalInvoices = await Invoice.find(condition).countDocuments();
+  const totalPayments = await Payment.find(condition).countDocuments();
+
   res.status(200).json({
     status: 200,
     success: true,
@@ -210,5 +268,9 @@ exports.summary = async (req, res) => {
       unapproved_bom_count: unapprovedBoms,
     },
     employees,
+    processes: processCountStatusWiseObj,
+    proforma_invoices: totalProformaInvoices,
+    invoices: totalInvoices,
+    payments: totalPayments
   });
-};
+});

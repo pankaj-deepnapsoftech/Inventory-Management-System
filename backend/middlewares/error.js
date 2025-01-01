@@ -42,6 +42,22 @@ exports.globalErrorHandler = (err, req, res, next)=>{
             message: message
         });
     }
+    else if(err.name === "JsonWebTokenError"){
+        let message = '';
+
+        if(err.message.includes('jwt malformed')){
+            message = "Session expired, Login again to continue";
+        }
+        else{
+            message = "Invalid token";
+        }
+
+        return res.status(401).json({
+            status: 401,
+            success: false,
+            message: message
+        });
+    }
 
     return res.status(err.statusCode).json({
         status: err.statusCode,

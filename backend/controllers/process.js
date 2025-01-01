@@ -110,6 +110,8 @@ exports.update = async (req, res) => {
         currFinishedGood.produced_quantity - prevFinishedGood.produced_quantity;
       productionProcess.finished_good.produced_quantity += change;
       finishedGood.current_stock += change;
+      finishedGood.change_type = 'increase';
+      finishedGood.quantity_changed = change;
     } else if (
       prevFinishedGood.produced_quantity > currFinishedGood.produced_quantity
     ) {
@@ -117,6 +119,8 @@ exports.update = async (req, res) => {
         prevFinishedGood.produced_quantity - currFinishedGood.produced_quantity;
       productionProcess.finished_good.produced_quantity -= change;
       finishedGood.current_stock -= change;
+      finishedGood.change_type = 'decrease';
+      finishedGood.quantity_changed = change;
     }
 
     await finishedGood.save();
@@ -140,10 +144,14 @@ exports.update = async (req, res) => {
           const change = currRm.used_quantity - prevRm.used_quantity;
           prevRm.used_quantity += change;
           rawMaterial.current_stock -= change;
+          rawMaterial.change_type = 'decrease';
+          rawMaterial.quantity_changed = change;
         } else if (prevRm.used_quantity > currRm.used_quantity) {
           const change = prevRm.used_quantity - currRm.used_quantity;
           prevRm.used_quantity -= change;
           rawMaterial.current_stock += change;
+          rawMaterial.change_type = 'increase';
+          rawMaterial.quantity_changed = change;
         }
         bomRawMaterial.in_production = true;
         await bomRawMaterial.save();
@@ -171,10 +179,14 @@ exports.update = async (req, res) => {
           const change = currSc.produced_quantity - prevSc.produced_quantity;
           prevSc.produced_quantity += change;
           scrapMaterial.current_stock -= change;
+          scrapMaterial.change_type = 'decrease';
+          scrapMaterial.quantity_changed = change;
         } else if (prevSc.produced_quantity > currSc.produced_quantity) {
           const change = prevSc.produced_quantity - currSc.produced_quantity;
           prevSc.produced_quantity -= change;
           scrapMaterial.current_stock += change;
+          scrapMaterial.change_type = 'increase';
+          scrapMaterial.quantity_changed = change;
         }
         bomScrapMaterial.is_production_started = true;
         await bomScrapMaterial.save();

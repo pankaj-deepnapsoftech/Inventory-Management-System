@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import {
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -14,6 +15,7 @@ import { useMemo } from "react";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa";
 import { MdDeleteOutline, MdEdit, MdOutlineVisibility } from "react-icons/md";
 import { FcApproval, FcDatabase } from "react-icons/fc";
+import { FaArrowUpLong, FaArrowDownLong } from "react-icons/fa6";
 import {
   usePagination,
   useSortBy,
@@ -119,6 +121,10 @@ const ProductTable: React.FC<ProductTableProps> = ({
         accessor: "current_stock",
       },
       {
+        Header: "Last Change",
+        accessor: "change",
+      },
+      {
         Header: "Min stock",
         accessor: "min_stock",
       },
@@ -159,8 +165,9 @@ const ProductTable: React.FC<ProductTableProps> = ({
     previousPage,
     canNextPage,
     canPreviousPage,
-    state: { pageIndex },
+    state: { pageIndex, pageSize },
     pageCount,
+    setPageSize,
   }: TableInstance<{
     name: string;
     product_id: string;
@@ -206,8 +213,19 @@ const ProductTable: React.FC<ProductTableProps> = ({
       )}
       {!isLoadingProducts && products.length > 0 && (
         <div>
-          {/* <button onClick={getSelectedProducts}>Get</button> */}
-          <TableContainer>
+          <div className="flex justify-end mb-2">
+            <Select
+              onChange={(e) => setPageSize(e.target.value)}
+              width="80px"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={100000}>All</option>
+            </Select>
+          </div>
+          <TableContainer maxHeight="600px" overflowY="auto">
             <Table variant="simple" {...getTableProps()}>
               <Thead className="text-sm font-semibold">
                 {headerGroups.map(
@@ -289,6 +307,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                               cell.column.id !== "updatedAt" &&
                               cell.column.id !== "select" &&
                               cell.column.id !== "inventory_category" &&
+                              cell.column.id !== "change" &&
                               cell.render("Cell")}
 
                             {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
@@ -317,8 +336,14 @@ const ProductTable: React.FC<ProductTableProps> = ({
                                   color: inventoryCategoryStyles[row.original.inventory_category]?.text,
                                 }}
                               >
-                                {row.original.inventory_category.substr(0,1).toUpperCase()+row.original.inventory_category.substr(1,)}
+                                {row.original.inventory_category.substr(0, 1).toUpperCase() + row.original.inventory_category.substr(1,)}
                               </span>
+                            )}
+                            {cell.column.id === "change" && row.original.change_type && (
+                              <p className="flex gap-1 items-center">
+                                {row.original.change_type === 'increase' ? <FaArrowUpLong color="#0dac51" size={20} /> : <FaArrowDownLong color="#c70505" size={20} />}
+                                <span style={{ color: row.original.change_type === 'increase' ? '#0dac51' : '#c70505' }}>{row.original.quantity_changed}</span>
+                              </p>
                             )}
                           </Td>
                         );

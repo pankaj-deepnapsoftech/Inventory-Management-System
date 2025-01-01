@@ -134,7 +134,7 @@ const Process: React.FC = () => {
       {isUpdateProcessDrawerOpened && <UpdateProcess id={id} closeDrawerHandler={closeUpdateProcessDrawerHandler} fetchProcessHandler={fetchProcessHandler} />}
 
 
-      <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-8">
+      <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
           Production Process
         </div>

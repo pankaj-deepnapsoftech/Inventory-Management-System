@@ -61,6 +61,10 @@ const BOMRawMaterialSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    approved: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     timestamps: true,

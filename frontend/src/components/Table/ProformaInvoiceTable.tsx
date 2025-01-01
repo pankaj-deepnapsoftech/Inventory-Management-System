@@ -13,6 +13,7 @@ import {
 import Loading from "../../ui/Loading";
 import { FcApproval, FcDatabase } from "react-icons/fc";
 import {
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -73,8 +74,9 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
     previousPage,
     canNextPage,
     canPreviousPage,
-    state: { pageIndex },
+    state: { pageIndex, pageSize },
     pageCount,
+    setPageSize,
   }: TableInstance<{
     createdBy: string;
     createdOn: string;
@@ -104,7 +106,19 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
       )}
       {!isLoadingProformaInvoices && proformaInvoices.length > 0 && (
         <div>
-          <TableContainer>
+          <div className="flex justify-end mb-2">
+            <Select
+              onChange={(e) => setPageSize(e.target.value)}
+              width="80px"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={100000}>All</option>
+            </Select>
+          </div>
+          <TableContainer maxHeight="600px" overflowY="auto">
             <Table variant="simple" {...getTableProps()}>
               <Thead className="text-sm font-semibold">
                 {headerGroups.map(

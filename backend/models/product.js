@@ -1,4 +1,4 @@
-const {Schema, model} = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const productSchema = new Schema({
     inventory_category: {
@@ -18,7 +18,7 @@ const productSchema = new Schema({
         unique: true,
     },
     // Unit of measurement (uom)
-    uom:{
+    uom: {
         type: String,
         required: [true, 'Unit of Measurement (UoM) is a required field'],
         minlength: [2, "Unit of Measurement (UoM) should be atleast 2 characters long"],
@@ -36,6 +36,8 @@ const productSchema = new Schema({
         type: Number,
         required: [true, 'Current Stock is a required field']
     },
+    change_type: { type: String, enum: ['increase', 'decrease'] },
+    quantity_changed: { type: Number },
     price: {
         type: Number,
         required: [true, 'Product Price is a required field']

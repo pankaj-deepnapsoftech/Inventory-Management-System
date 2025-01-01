@@ -18,48 +18,60 @@ const Dashboard: React.FC = () => {
   const { firstname } = useSelector((state: any) => state.auth);
   const [approvalsPending, setApprovalsPending] = useState<
     | {
-        unapproved_product_count: number;
-        unapproved_store_count: number;
-        unapproved_merchant_count: number;
-        unapproved_bom_count: number;
-      }
+      unapproved_product_count: number;
+      unapproved_store_count: number;
+      unapproved_merchant_count: number;
+      unapproved_bom_count: number;
+    }
     | undefined
   >();
   const [products, setProducts] = useState<
     | {
-        total_low_stock: number;
-        total_excess_stock: number;
-        total_product_count: number;
-        total_stock_price: number;
-      }
+      total_low_stock: number;
+      total_excess_stock: number;
+      total_product_count: number;
+      total_stock_price: number;
+    }
     | undefined
   >();
   const [stores, setStores] = useState<
     | {
-        total_store_count: number;
-      }
+      total_store_count: number;
+    }
     | undefined
   >();
   const [boms, setBoms] = useState<
     | {
-        total_bom_count: number;
-      }
+      total_bom_count: number;
+    }
     | undefined
   >();
   const [merchants, setMerchants] = useState<
     | {
-        total_supplier_count: number;
-        total_buyer_count: number;
-      }
+      total_supplier_count: number;
+      total_buyer_count: number;
+    }
     | undefined
   >();
   const [employees, setEmployees] = useState<
     | {
-        _id: string;
-        total_employee_count: number;
-      }[]
+      _id: string;
+      total_employee_count: number;
+    }[]
     | undefined
   >();
+  const [processes, setProcesses] = useState<
+    | {
+      planned?: number;
+      published?: number;
+      completed?: number;
+      'work in progress'?: number;
+    }
+    | undefined
+  >();
+  const [totalProformaInvoices, setTotalProformaInvoices] = useState<number>(0)
+  const [totalInvoices, setTotalInvoices] = useState<number>(0)
+  const [totalPayments, setTotalPayments] = useState<number>(0)
 
   const fetchSummaryHandler = async () => {
     try {
@@ -87,6 +99,10 @@ const Dashboard: React.FC = () => {
       setBoms(data.boms);
       setApprovalsPending(data.approvals_pending);
       setEmployees(data.employees);
+      setProcesses(data.processes);
+      setTotalProformaInvoices(data.proforma_invoices);
+      setTotalInvoices(data.invoices);
+      setTotalPayments(data.payments);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     } finally {
@@ -94,16 +110,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const applyFilterHandler = (e: React.FormEvent)=>{
+  const applyFilterHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(from, to)
 
-    if(from && to){
+    if (from && to) {
       fetchSummaryHandler();
     }
   }
 
-  const resetFilterHandler = (e: React.FormEvent)=>{
+  const resetFilterHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
     setFrom('');
@@ -133,11 +148,11 @@ const Dashboard: React.FC = () => {
           <form onSubmit={applyFilterHandler} className="flex items-end justify-between gap-2">
             <FormControl>
               <FormLabel>From</FormLabel>
-              <Input value={from} onChange={(e)=>setFrom(e.target.value)} backgroundColor="white" type="date" />
+              <Input value={from} onChange={(e) => setFrom(e.target.value)} backgroundColor="white" type="date" />
             </FormControl>
             <FormControl>
               <FormLabel>To</FormLabel>
-              <Input value={to} onChange={(e)=>setTo(e.target.value)} backgroundColor="white" type="date" />
+              <Input value={to} onChange={(e) => setTo(e.target.value)} backgroundColor="white" type="date" />
             </FormControl>
             <Button
               type="submit"
@@ -170,97 +185,61 @@ const Dashboard: React.FC = () => {
       {isLoading && <Loading />}
       {!isLoading && (
         <div>
-          <div className="mb-2 mt-5 font-semibold text-xl">
-            Inventory Insights
+          <div className="mb-2 mt-6 font-semibold text-xl">
+            Employee Insights
           </div>
-          {products && (
-            <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+          {employees && employees.length === 0 && <div className="text-center mb-2">No data found.</div>}
+          {employees && (
+            <div className="grid grid-cols-4 gap-2">
+              {employees.map((emp, ind) => {
+                return (
+                  <Card
+                    primaryColor="#A83D9B"
+                    secondaryColor="#A82298"
+                    textColor="white"
+                    title={emp?._id}
+                    content={emp?.total_employee_count}
+                    link="employee"
+                    icon={<IoPeople color="#ffffff" size={28} />}
+                  />
+                );
+              })}
+            </div>
+          )}
+          <div className="mb-2 mt-6 font-semibold text-xl">
+            Sales & Purchase Insights
+          </div>
+          {approvalsPending && (
+            <div className="grid grid-cols-4 gap-2">
               <Card
-                primaryColor="#4CAAE4"
-                secondaryColor="#32A1E7"
+                primaryColor="#A948E7"
+                secondaryColor="#1E387B"
                 textColor="white"
-                title="Products"
-                content={products?.total_product_count}
-                link="product"
+                title="Proforma Invoices"
+                content={totalProformaInvoices}
+                link="approval"
                 icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
-                secondaryColor="#32A1E7"
+                primaryColor="#A948E7"
+                secondaryColor="#1E387B"
                 textColor="white"
-                title="Stock Value"
-                content={"₹ " + products?.total_stock_price + "/-"}
-                icon={<FaRupeeSign color="#ffffff" size={24} />}
-                link="product"
+                title="Invoices"
+                content={totalInvoices}
+                link="approval"
+                icon={<FaStoreAlt color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
-                secondaryColor="#32A1E7"
+                primaryColor="#A948E7"
+                secondaryColor="#1E387B"
                 textColor="white"
-                title="Excess Stock"
-                content={products?.total_excess_stock}
-                link="product"
-                icon={<AiFillProduct color="#ffffff" size={28} />}
-              />
-              <Card
-                primaryColor="#4CAAE4"
-                secondaryColor="#32A1E7"
-                textColor="white"
-                title="Low Stock"
-                content={products?.total_low_stock}
-                link="product"
-                icon={<AiFillProduct color="#ffffff" size={28} />}
+                title="Payments"
+                content={totalPayments}
+                link="approval"
+                icon={<FaUser color="#ffffff" size={28} />}
               />
             </div>
           )}
-          <div className="grid grid-cols-4 gap-2 mb-2">
-            {stores && (
-              <div>
-                <Card
-                  primaryColor="#E57E3D"
-                  secondaryColor="#E56F27"
-                  textColor="white"
-                  title="Stores"
-                  content={stores?.total_store_count}
-                  link="store"
-                  icon={<FaStoreAlt color="#ffffff" size={28} />}
-                />
-              </div>
-            )}
-            {merchants && (
-              <Card
-                primaryColor="#A948E7"
-                secondaryColor="#A231E8"
-                textColor="white"
-                title="Buyers"
-                content={merchants?.total_buyer_count}
-                link="merchant/buyer"
-                icon={<FaUser color="#ffffff" size={24} />}
-              />
-            )}
-            {merchants && (
-              <Card
-                primaryColor="#A948E7"
-                secondaryColor="#A231E8"
-                textColor="white"
-                title="Suppliers"
-                content={merchants?.total_supplier_count}
-                link="merchant/supplier"
-                icon={<FaUser color="#ffffff" size={24} />}
-              />
-            )}
-            {boms && (
-              <Card
-                primaryColor="#37A775"
-                secondaryColor="#21A86C"
-                textColor="white"
-                title="BOMs"
-                content={boms?.total_bom_count}
-                link="bom"
-                icon={<IoIosDocument color="#ffffff" size={28} />}
-              />
-            )}
-          </div>
           <div className="mb-2 mt-6 font-semibold text-xl">
             Approvals Pending
           </div>
@@ -304,26 +283,142 @@ const Dashboard: React.FC = () => {
               />
             </div>
           )}
-          <div className="mb-2 mt-6 font-semibold text-xl">
-            Employee Insights
+          <div className="mb-2 mt-5 font-semibold text-xl">
+            Inventory Insights
           </div>
-          {employees && (
-            <div className="grid grid-cols-4 gap-2">
-              {employees.map((emp, ind) => {
-                return (
-                  <Card
-                    primaryColor="#A83D9B"
-                    secondaryColor="#A82298"
-                    textColor="white"
-                    title={emp?._id}
-                    content={emp?.total_employee_count}
-                    link="employee"
-                    icon={<IoPeople color="#ffffff" size={28} />}
-                  />
-                );
-              })}
+          {products && (
+            <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Products"
+                content={products?.total_product_count}
+                link="product"
+                icon={<IoMdCart color="#ffffff" size={28} />}
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Stock Value"
+                content={"₹ " + products?.total_stock_price + "/-"}
+                icon={<FaRupeeSign color="#ffffff" size={24} />}
+                link="product"
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Excess Stock"
+                content={products?.total_excess_stock}
+                link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Low Stock"
+                content={products?.total_low_stock}
+                link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
+              />
             </div>
           )}
+          <div className="mb-2 mt-5 font-semibold text-xl">
+            Store & Merchant Insights
+          </div>
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            {stores && (
+              <div>
+                <Card
+                  primaryColor="#E57E3D"
+                  secondaryColor="#E56F27"
+                  textColor="white"
+                  title="Stores"
+                  content={stores?.total_store_count}
+                  link="store"
+                  icon={<FaStoreAlt color="#ffffff" size={28} />}
+                />
+              </div>
+            )}
+            {merchants && (
+              <Card
+                primaryColor="#A948E7"
+                secondaryColor="#A231E8"
+                textColor="white"
+                title="Buyers"
+                content={merchants?.total_buyer_count}
+                link="merchant/buyer"
+                icon={<FaUser color="#ffffff" size={24} />}
+              />
+            )}
+            {merchants && (
+              <Card
+                primaryColor="#A948E7"
+                secondaryColor="#A231E8"
+                textColor="white"
+                title="Suppliers"
+                content={merchants?.total_supplier_count}
+                link="merchant/supplier"
+                icon={<FaUser color="#ffffff" size={24} />}
+              />
+            )}
+          </div>
+
+          <div className="mb-2 mt-5 font-semibold text-xl">
+            Production Insights
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {boms && (
+              <Card
+                primaryColor="#37A775"
+                secondaryColor="#21A86C"
+                textColor="white"
+                title="BOMs"
+                content={boms?.total_bom_count}
+                link="bom"
+                icon={<IoIosDocument color="#ffffff" size={28} />}
+              />
+            )}
+            <Card
+              primaryColor="#F03E3E"
+              secondaryColor="#E56F27"
+              textColor="white"
+              title="Planned"
+              content={processes?.planned || 0}
+              link="production/production-process"
+              icon={<FaStoreAlt color="#ffffff" size={28} />}
+            />
+            <Card
+              primaryColor="#3392F8"
+              secondaryColor="#E56F27"
+              textColor="white"
+              title="Published"
+              content={processes?.published || 0}
+              link="production/production-process"
+              icon={<FaStoreAlt color="#ffffff" size={28} />}
+            />
+            <Card
+              primaryColor="#E48C27"
+              secondaryColor="#E56F27"
+              textColor="white"
+              title="Work In Progress"
+              content={processes?.['work in progress'] || 0}
+              link="production/production-process"
+              icon={<FaStoreAlt color="#ffffff" size={28} />}
+            />
+            <Card
+              primaryColor="#409503"
+              secondaryColor="#E56F27"
+              textColor="white"
+              title="Completed"
+              content={processes?.completed || 0}
+              link="production/production-process"
+              icon={<FaStoreAlt color="#ffffff" size={28} />}
+            />
+          </div>
         </div>
       )}
     </div>

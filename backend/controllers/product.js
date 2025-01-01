@@ -116,7 +116,7 @@ exports.bulkUploadHandler = async (req, res) => {
     .fromFile(req.file.path)
     .then(async (response) => {
       try {
-        fs.unlink(req.file.path, () => {});
+        fs.unlink(req.file.path, () => { });
 
         // TODO -> Check data validity
         await checkProductCsvValidity(response);
@@ -157,10 +157,20 @@ exports.workInProgressProducts = TryCatch(async (req, res) => {
         path: "item",
       },
     ],
+  }).populate({
+    path: "bom",
+    populate: [
+      {
+        path: "finished_good",
+        populate: {
+          path: "item"
+        }
+      }
+    ],
   });
 
   processes.forEach(p => {
-    p.raw_materials.forEach(material => products.push({...material._doc, createdAt: p.createdAt, updatedAt: p.updatedAt}));
+    p.raw_materials.forEach(material => products.push({ ...material._doc, bom: p.bom, createdAt: p.createdAt, updatedAt: p.updatedAt }));
   });
 
   res.status(200).json({

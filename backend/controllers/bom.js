@@ -20,6 +20,8 @@ exports.create = TryCatch(async (req, res) => {
     other_charges,
   } = req.body;
 
+  let insuffientStockMsg = '';
+
   // console.log(scrap_materials)
 
   if (
@@ -54,10 +56,11 @@ exports.create = TryCatch(async (req, res) => {
         throw new ErrorHandler(`Negative quantities are not allowed`, 400);
       }
       if (isProdExists.current_stock < material.quantity) {
-        throw new ErrorHandler(
-          `Insufficient stock of ${isProdExists.name}`,
-          400
-        );
+        insuffientStockMsg += ` Insufficient stock of ${isProdExists.name}`;
+        // throw new ErrorHandler(
+        //   `Insufficient stock of ${isProdExists.name}`,
+        //   400
+        // );
       }
     })
   );
@@ -131,10 +134,19 @@ exports.create = TryCatch(async (req, res) => {
     await bom.save();
   }
 
+  if(insuffientStockMsg){
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: "BOM has been created successfully." + insuffientStockMsg,
+      bom,
+    });
+  }
+
   res.status(200).json({
     status: 200,
     success: true,
-    message: "BOM has been created successfully",
+    message: "BOM has been created successfully.",
     bom,
   });
 });
@@ -184,6 +196,8 @@ exports.update = TryCatch(async (req, res) => {
     throw new ErrorHandler("BOM not found", 400);
   }
 
+  let insuffientStockMsg = '';
+
   if (finished_good) {
     const isBomFinishedGoodExists = await Product.findById(finished_good.item);
     // if (!isBomFinishedGoodExists) {
@@ -212,15 +226,21 @@ exports.update = TryCatch(async (req, res) => {
           if (material.quantity < 0) {
             throw new ErrorHandler(`Negative quantities are not allowed`, 400);
           }
+          // if (
+          //   isRawMaterialExists.quantity.toString() !==
+          //     material.quantity.toString() &&
+          //   isProdExists.current_stock < material.quantity
+          // ) {
           if (
-            isRawMaterialExists.quantity.toString() !==
-              material.quantity.toString() &&
+            // isRawMaterialExists.quantity.toString() !==
+            //   material.quantity.toString() &&
             isProdExists.current_stock < material.quantity
           ) {
-            throw new ErrorHandler(
-              `Insufficient stock of ${isProdExists.name}`,
-              400
-            );
+            insuffientStockMsg += ` Insufficient stock of ${isProdExists.name}`;
+            // throw new ErrorHandler(
+            //   `Insufficient stock of ${isProdExists.name}`,
+            //   400
+            // );
           }
         }
       })
@@ -461,6 +481,14 @@ exports.update = TryCatch(async (req, res) => {
     await productionProcess.save();
   }
 
+  if(insuffientStockMsg){
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: "BOM has been updated successfully" + insuffientStockMsg,
+    });
+  }
+
   res.status(200).json({
     status: 200,
     success: true,
@@ -611,5 +639,16 @@ exports.findFinishedGoodBom = TryCatch(async (req, res) => {
     status: 200,
     success: true,
     boms: boms,
+  });
+});
+
+exports.unapprovedRawMaterials = TryCatch(async (req, res) => {
+  const unapprovedProducts = await BOMRawMaterial.find({ approved: false }).sort({
+    updatedAt: -1,
+  }).populate("item bom");
+  res.status(200).json({
+    status: 200,
+    success: true,
+    unapproved: unapprovedProducts,
   });
 });

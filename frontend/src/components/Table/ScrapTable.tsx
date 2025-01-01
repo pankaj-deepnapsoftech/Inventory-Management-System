@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import {
+    Select,
     Table,
     TableContainer,
     Tbody,
@@ -68,6 +69,10 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                 accessor: "bom",
             },
             {
+                Header: "Finished Good",
+                accessor: "finished_good",
+            },
+            {
                 Header: "Estimated Quantity",
                 accessor: "estimated_quantity",
             },
@@ -112,8 +117,9 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
         previousPage,
         canNextPage,
         canPreviousPage,
-        state: { pageIndex },
+        state: { pageIndex, pageSize },
         pageCount,
+        setPageSize,
     }: TableInstance<{
         item: string;
         bom: string;
@@ -152,8 +158,19 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
             )}
             {!isLoadingScraps && scraps.length > 0 && (
                 <div>
-                    {/* <button onClick={getSelectedProducts}>Get</button> */}
-                    <TableContainer>
+                    <div className="flex justify-end mb-2">
+                        <Select
+                            onChange={(e) => setPageSize(e.target.value)}
+                            width="80px"
+                        >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                            <option value={100000}>All</option>
+                        </Select>
+                    </div>
+                    <TableContainer maxHeight="600px" overflowY="auto">
                         <Table variant="simple" {...getTableProps()}>
                             <Thead className="text-sm font-semibold">
                                 {headerGroups.map(
@@ -231,6 +248,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                             cell.column.id !== "updatedAt" &&
                                                             cell.column.id !== "item" &&
                                                             cell.column.id !== "bom" &&
+                                                            cell.column.id !== "finished_good" &&
                                                             // cell.column.id !== "estimated_quantity" &&
                                                             // cell.column.id !== "produced_quantity" &&
                                                             cell.render("Cell")}
@@ -267,6 +285,13 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                                 {row.original.bom.bom_name}
                                                             </span>
                                                         )}
+                                                        {cell.column.id === "finished_good" && (
+                                                            <span
+                                                                className="px-2 py-1 rounded-md"
+                                                            >
+                                                                {row.original.bom.finished_good.item.name}
+                                                            </span>
+                                                        )}
                                                         {/* {cell.column.id === "estimated_quantity" && (
                                                             <span
                                                                 className="px-2 py-1 rounded-md"
@@ -285,7 +310,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                 );
                                             })}
                                             {/* <Td className="flex gap-x-2"> */}
-                                                {/* {openScrapDetailsDrawerHandler && (
+                                            {/* {openScrapDetailsDrawerHandler && (
                                                     <MdOutlineVisibility
                                                         className="hover:scale-110"
                                                         size={16}
@@ -294,7 +319,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         }
                                                     />
                                                 )} */}
-                                                {/* {openUpdateProductDrawerHandler && (
+                                            {/* {openUpdateProductDrawerHandler && (
                                                     <MdEdit
                                                         className="hover:scale-110"
                                                         size={16}
@@ -303,7 +328,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         }
                                                     />
                                                 )} */}
-                                                {/* {deleteProductHandler && (
+                                            {/* {deleteProductHandler && (
                                                     <MdDeleteOutline
                                                         className="hover:scale-110"
                                                         size={16}
@@ -312,7 +337,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         }
                                                     />
                                                 )} */}
-                                                {/* {approveProductHandler && (
+                                            {/* {approveProductHandler && (
                                                     <FcApproval
                                                         className="hover:scale-110"
                                                         size={16}

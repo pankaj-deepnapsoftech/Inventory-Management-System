@@ -89,8 +89,9 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
   const [finishedGoodUnitCost, setFinishedGoodUnitCost] = useState<
     string | undefined
   >();
-  const [submitBtnText, setSubmitBtnText] = useState<string>("Submit");
+  const [submitBtnText, setSubmitBtnText] = useState<string>("Update");
   const [processStatus, setProcessStatus] = useState<string | undefined>();
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
   const [scrapMaterials, setScrapMaterials] = useState<any[]>([
     {
@@ -327,6 +328,8 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       } else if (data.production_process.status === "work in progress") {
         setSubmitBtnText("Update");
         setProcessStatus("work in progress");
+      } else if(data.production_process.status === "completed"){
+        setIsCompleted(true);
       }
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
@@ -591,6 +594,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
             </div>
             <div>
               <Button
+                disabled={isCompleted}
                 marginRight={2}
                 isLoading={isUpdating}
                 type="submit"
@@ -602,6 +606,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
               </Button>
               {submitBtnText === "Update" && (
                 <Button
+                  disabled={isCompleted}
                   isLoading={isUpdating}
                   type="button"
                   className="mt-1"

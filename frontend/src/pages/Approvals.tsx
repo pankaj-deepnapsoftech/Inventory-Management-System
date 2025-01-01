@@ -61,6 +61,11 @@ const Approvals: React.FC = () => {
   const [boms, setBoms] = useState<any>([]);
   const [filteredBoms, setFilteredBoms] = useState<any>([]);
   const [isLoadingBoms, setIsLoadingBoms] = useState<boolean>(false);
+  //  BOM Raw Materials
+  const [bomRMSearchKey, setBomRMSearchKey] = useState<string | undefined>();
+  const [bomRMs, setBomRMs] = useState<any>([]);
+  const [filteredBomRMs, setFilteredBomRMs] = useState<any>([]);
+  const [isLoadingBomRMs, setIsLoadingBomRMs] = useState<boolean>(false);
 
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
@@ -271,12 +276,56 @@ const Approvals: React.FC = () => {
     }
   };
 
+   // For Unapproved BOM Raw Materials
+   const fetchUnapprovedBomRMsHandler = async () => {
+    try {
+      setIsLoadingBomRMs(true);
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "bom/unapproved/raw-materials",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setBomRMs(data.unapproved);
+      setFilteredBomRMs(data.unapproved);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong");
+    } finally {
+      setIsLoadingBomRMs(false);
+    }
+  };
+
+  const approveBomRMHandler = async (id: string) => {
+    try {
+      const response = await updateBom({ _id: id, approved: true }).unwrap();
+      toast.success(response.message);
+      fetchUnapprovedBomsHandler();
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong");
+    }
+  };
+
+  const deleteBomRMHandler = async (id: string) => {
+    try {
+      const response: any = await deleteBom(id).unwrap();
+      toast.success(response.message);
+      fetchUnapprovedBomsHandler();
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.message || "Something went wrong");
+    }
+  };
+
   useEffect(() => {
     fetchUnapprovedProductsHandler();
     fetchUnapprovedStoresHandler();
     fetchUnapprovedBuyersHandler();
     fetchUnapprovedSellersHandler();
     fetchUnapprovedBomsHandler();
+    fetchUnapprovedBomRMsHandler();
   }, []);
 
   // Product Search
@@ -666,6 +715,50 @@ const Approvals: React.FC = () => {
             boms={filteredBoms}
             deleteBomHandler={deleteBomHandler}
             approveBomHandler={approveBomHandler}
+          />
+        </div>
+      </div>
+
+      
+      {/* BOM Raw Materials */}
+      <div className="mt-10">
+        {/* BOM Raw Material Page */}
+        <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-8">
+          <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
+            Inventory for Approval
+          </div>
+
+          <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 gap-x-2 w-full md:w-fit">
+            <textarea
+              className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
+              rows={1}
+              //   width="220px"
+              placeholder="Search"
+              value={bomRMSearchKey}
+              onChange={(e) => setBomRMSearchKey(e.target.value)}
+            />
+            <Button
+              fontSize={{ base: "14px", md: "14px" }}
+              paddingX={{ base: "10px", md: "12px" }}
+              paddingY={{ base: "0", md: "3px" }}
+              width={{ base: "-webkit-fill-available", md: 100 }}
+              onClick={fetchUnapprovedBomRMsHandler}
+              leftIcon={<MdOutlineRefresh />}
+              color="#1640d6"
+              borderColor="#1640d6"
+              variant="outline"
+            >
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        <div>
+          <ProductTable
+            isLoadingProducts={isLoadingBomRMs}
+            products={filteredBomRMs}
+            deleteProductHandler={()=>{}}
+            approveProductHandler={()=>{}}
           />
         </div>
       </div>

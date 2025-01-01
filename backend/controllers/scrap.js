@@ -5,16 +5,25 @@ exports.all = TryCatch(async (req, res) => {
   const scraps = [];
 
   const processes = await ProductionProcess.find({
-    status: "work in progress",
+    $or: [
+      { status: 'work in progress' },
+      { status: 'completed' }
+    ]
   }).populate({
     path: "bom",
     populate: [
       {
         path: "scrap_materials",
         populate: {
-            path: "item"
+          path: "item"
         }
       },
+      {
+        path: "finished_good",
+        populate: {
+          path: "item"
+        }
+      }
     ],
   });
 
