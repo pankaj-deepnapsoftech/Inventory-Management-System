@@ -11,6 +11,8 @@ import { IoPeople } from "react-icons/io5";
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 
 const Dashboard: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("dashboard");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [from, setFrom] = useState<string | undefined>();
   const [to, setTo] = useState<string | undefined>();
@@ -130,6 +132,10 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchSummaryHandler();
   }, []);
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

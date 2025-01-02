@@ -15,6 +15,8 @@ import PaymentDetails from "../components/Drawers/Payment/PaymentDetails";
 import UpdatePayment from "../components/Drawers/Payment/UpdatePayment";
 
 const Payment: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("sale & purchase");
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [data, setData] = useState<any[] | []>([]);
   const [filteredData, setFilteredData] = useState<any[] | []>([]);
@@ -101,6 +103,10 @@ const Payment: React.FC = () => {
     );
     setFilteredData(results);
   }, [searchKey])
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

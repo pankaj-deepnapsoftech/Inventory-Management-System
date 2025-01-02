@@ -272,7 +272,7 @@ const AddInvoice: React.FC<AddInvoiceProps> = ({
                 onChange={(e: any) => setCategory(e)}
               />
             </FormControl>
-            {category && category.value === "sales" && (
+            {category && category.value === "sale" && (
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Buyer</FormLabel>
                 <Select

@@ -24,6 +24,8 @@ import UpdateInvoice from "../components/Drawers/Invoice/UpdateInvoice";
 import AddPayment from "../components/Drawers/Payment/AddPayment";
 
 const Invoice: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("sale & purchase");
   const [cookies] = useCookies();
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [data, setData] = useState<any[] | []>([]);
@@ -140,6 +142,10 @@ const Invoice: React.FC = () => {
     );
     setFilteredData(results);
   }, [searchKey]);
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

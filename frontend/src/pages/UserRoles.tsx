@@ -9,7 +9,7 @@ import {
   closeUpdateRoleDrawer,
   openAddRoleDrawer,
   openRoleDetailsDrawer,
-  openUpdateRoleDrawer
+  openUpdateRoleDrawer,
 } from "../redux/reducers/drawersSlice";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
@@ -23,6 +23,8 @@ import UserRoleDetails from "../components/Drawers/User Role/UserRoleDetails";
 import UpdateUserRole from "../components/Drawers/User Role/UpdateUserRole";
 
 const UserRole: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("user role");
   const [cookies] = useCookies();
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [roles, setRoles] = useState<any[]>([]);
@@ -77,25 +79,28 @@ const UserRole: React.FC = () => {
 
   const deleteRoleHandler = async (id: string) => {
     try {
-        const response = await fetch(process.env.REACT_APP_BACKEND_URL + "role/", {
-            method: "DELETE",
-            headers: {
-                'Authorization': `Bearer ${cookies?.access_token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                _id: id
-            })
-        });
-        const data = await response.json();
-        if (!data.success) {
-          throw new Error(data.message);
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "role/",
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            _id: id,
+          }),
         }
-        toast.success(data.message);
-        fetchRolesHandler();
-      } catch (error: any) {
-        toast.error(error?.message || "Something went wrong");
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
       }
+      toast.success(data.message);
+      fetchRolesHandler();
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    }
   };
 
   useEffect(() => {
@@ -128,14 +133,38 @@ const UserRole: React.FC = () => {
     setFilteredRoles(results);
   }, [searchKey]);
 
+  if (!isAllowed) {
+    return (
+      <div className="text-center text-red-500">
+        You are not allowed to access this route.
+      </div>
+    );
+  }
+
   return (
     <div>
-        {/* Add User Role */}
-        {isAddRoleDrawerOpened && <AddUserRole fetchUserRolesHandler={fetchRolesHandler} closeDrawerHandler={closeAddRoleDrawerHandler} />}
-        {/* User Role Details */}
-        {isRoleDetailsDrawerOpened && <UserRoleDetails roleId={roleId} closeDrawerHandler={closeRoleDetailsDrawerHandler} />}
-        {/* Update User Role */}
-        {isUpdateRoleDrawerOpened && <UpdateUserRole roleId={roleId} closeDrawerHandler={closeUpdateRoleDrawerHandler} fetchUserRolesHandler={fetchRolesHandler} />}
+      {/* Add User Role */}
+      {isAddRoleDrawerOpened && (
+        <AddUserRole
+          fetchUserRolesHandler={fetchRolesHandler}
+          closeDrawerHandler={closeAddRoleDrawerHandler}
+        />
+      )}
+      {/* User Role Details */}
+      {isRoleDetailsDrawerOpened && (
+        <UserRoleDetails
+          roleId={roleId}
+          closeDrawerHandler={closeRoleDetailsDrawerHandler}
+        />
+      )}
+      {/* Update User Role */}
+      {isUpdateRoleDrawerOpened && (
+        <UpdateUserRole
+          roleId={roleId}
+          closeDrawerHandler={closeUpdateRoleDrawerHandler}
+          fetchUserRolesHandler={fetchRolesHandler}
+        />
+      )}
 
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">

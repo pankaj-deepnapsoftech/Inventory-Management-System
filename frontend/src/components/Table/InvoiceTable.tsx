@@ -198,7 +198,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                               cell.column.id !== "updatedAt" &&
                               cell.column.id !== "customer" &&
                               cell.column.id !== "creator" &&
-                              cell.column.id !== "creator" &&
                               cell.render("Cell")}
 
                             {cell.column.id === "creator" &&
@@ -227,12 +226,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                               (row.original?.buyer || row.original?.supplier) && (
                                 <span>
                                   {row.original?.buyer ? row.original.buyer.name : row.original.supplier.name}
-                                </span>
-                              )}
-                            {cell.column.id === "creator" &&
-                              row.original?.buyer && (
-                                <span>
-                                  PENDING
                                 </span>
                               )}
                           </Td>

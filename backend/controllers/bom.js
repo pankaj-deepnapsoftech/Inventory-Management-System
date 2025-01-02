@@ -20,7 +20,7 @@ exports.create = TryCatch(async (req, res) => {
     other_charges,
   } = req.body;
 
-  let insuffientStockMsg = '';
+  let insuffientStockMsg = "";
 
   // console.log(scrap_materials)
 
@@ -134,7 +134,7 @@ exports.create = TryCatch(async (req, res) => {
     await bom.save();
   }
 
-  if(insuffientStockMsg){
+  if (insuffientStockMsg) {
     return res.status(400).json({
       status: 400,
       success: false,
@@ -196,7 +196,7 @@ exports.update = TryCatch(async (req, res) => {
     throw new ErrorHandler("BOM not found", 400);
   }
 
-  let insuffientStockMsg = '';
+  let insuffientStockMsg = "";
 
   if (finished_good) {
     const isBomFinishedGoodExists = await Product.findById(finished_good.item);
@@ -476,12 +476,13 @@ exports.update = TryCatch(async (req, res) => {
       ).quantity;
     });
 
-    productionProcess.finished_good.estimated_quantity = bom.finished_good.quantity;
+    productionProcess.finished_good.estimated_quantity =
+      bom.finished_good.quantity;
 
     await productionProcess.save();
   }
 
-  if(insuffientStockMsg){
+  if (insuffientStockMsg) {
     return res.status(400).json({
       status: 400,
       success: false,
@@ -642,13 +643,136 @@ exports.findFinishedGoodBom = TryCatch(async (req, res) => {
   });
 });
 
-exports.unapprovedRawMaterials = TryCatch(async (req, res) => {
-  const unapprovedProducts = await BOMRawMaterial.find({ approved: false }).sort({
-    updatedAt: -1,
-  }).populate("item bom");
+// Super Admin
+exports.unapprovedRawMaterialsForAdmin = TryCatch(async (req, res) => {
+  const unapprovedProducts = await BOMRawMaterial.find({
+    approvedByAdmin: false,
+  })
+    .sort({
+      updatedAt: -1,
+    })
+    .populate({
+      path: "bom",
+      populate: {
+        path: "raw_materials",
+        populate: {
+          path: "item",
+        },
+      },
+    });
+
+  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) =>
+    prod.bom.raw_materials.map((rm) => ({
+      ...rm._doc,
+      ...prod.bom._doc,
+      ...rm.item._doc,
+      _id: prod._id,
+      item: undefined,
+    }))
+  );
+
   res.status(200).json({
     status: 200,
     success: true,
-    unapproved: unapprovedProducts,
+    unapproved: unapprovedRawMaterials,
+  });
+});
+
+// Super Admin
+exports.approveRawMaterialForAdmin = TryCatch(async (req, res) => {
+  if (!req.user.isSuper) {
+    throw new ErrorHandler(
+      "You are not allowed to perform this operation",
+      401
+    );
+  }
+  const { _id } = req.body;
+  if (!_id) {
+    throw new ErrorHandler("Raw material id not provided", 400);
+  }
+
+  const updatedRawMaterial = await BOMRawMaterial.findByIdAndUpdate(
+    { _id },
+    { approvedByAdmin: true },
+    { new: true }
+  );
+  // const requiredBom = await BOM.findById(updatedRawMaterial.bom).populate(
+  //   "raw_materials"
+  // );
+  // const allRawMaterials = requiredBom.raw_materials;
+  // let areAllApproved = true;
+  // allRawMaterials.forEach((rm) => areAllApproved && rm.approved);
+  // if (areAllApproved) {
+  //   await ProductionProcess.findByIdAndUpdate({_id: requiredBom.production_process}, {status: "raw materials approved"});
+  // }
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Raw material's approval sent to inventory personnel successfully",
+  });
+});
+
+// Inventory Personnel
+exports.unapprovedRawMaterials = TryCatch(async (req, res) => {
+  const unapprovedProducts = await BOMRawMaterial.find({
+    approvedByInventoryPersonnel: false,
+  })
+    .sort({
+      updatedAt: -1,
+    })
+    .populate({
+      path: "bom",
+      populate: {
+        path: "raw_materials",
+        populate: {
+          path: "item",
+        },
+      },
+    });
+
+  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) =>
+    prod.bom.raw_materials.map((rm) => ({
+      ...rm._doc,
+      ...prod.bom._doc,
+      ...rm.item._doc,
+      _id: prod._id,
+      item: undefined,
+    }))
+  );
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    unapproved: unapprovedRawMaterials,
+  });
+});
+
+// Inventory Personnel
+exports.approveRawMaterial = TryCatch(async (req, res) => {
+  const { _id } = req.body;
+  if (!_id) {
+    throw new ErrorHandler("Raw material id not provided", 400);
+  }
+
+  const updatedRawMaterial = await BOMRawMaterial.findByIdAndUpdate(
+    { _id },
+    { approvedByInventoryPersonnel: true },
+    { new: true }
+  );
+  const requiredBom = await BOM.findById(updatedRawMaterial.bom).populate(
+    "raw_materials"
+  );
+  const allRawMaterials = requiredBom.raw_materials;
+  let areAllApproved = true;
+  allRawMaterials.forEach((rm) => areAllApproved && rm.approved);
+  if (areAllApproved) {
+    await ProductionProcess.findByIdAndUpdate({_id: requiredBom.production_process}, {status: "raw materials approved"});
+  }
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Raw material has been approved successfully",
   });
 });

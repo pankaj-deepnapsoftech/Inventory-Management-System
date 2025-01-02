@@ -12,6 +12,8 @@ import ProformaInvoiceDetails from "../components/Drawers/Proforma Invoice/Profo
 import UpdateProformaInvoice from "../components/Drawers/Proforma Invoice/UpdateProformaInvoice";
 
 const ProformaInvoice: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("sale & purchase");
   const [cookies] = useCookies();
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [data, setData] = useState<any[] | []>([]);
@@ -112,6 +114,10 @@ const ProformaInvoice: React.FC = () => {
     );
     setFilteredData(results);
   }, [searchKey])
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

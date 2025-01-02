@@ -26,6 +26,7 @@ import Process from "../pages/Process";
 import IndirectProducts from "../pages/IndirectProducts";
 import Scrap from "../pages/Scrap";
 import WIPProducts from "../pages/WIPProducts";
+import InventoryApprovals from "../pages/InventoryApprovals";
 
 const routes = [
   {
@@ -97,6 +98,12 @@ const routes = [
         icon: <GiProgression />,
         path: "wip",
         element: <WIPProducts />,
+      },
+      {
+        name: "Approvals",
+        icon: <FaRegCheckCircle />,
+        path: "approval",
+        element: <InventoryApprovals />,
       }
     ],
     isSublink: true

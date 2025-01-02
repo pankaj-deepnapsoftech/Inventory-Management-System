@@ -25,6 +25,8 @@ import { AiFillFileExcel } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 
 const Buyers: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("agent");
   const [cookies] = useCookies();
   const [showBulkUploadMenu, setShowBulkUploadMenu] = useState<boolean>(false);
   const [bulkUploading, setBulkUploading] = useState<boolean>(false);
@@ -165,6 +167,10 @@ const Buyers: React.FC = () => {
     );
     setFilteredBuyers(results);
   }, [searchKey]);
+  
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

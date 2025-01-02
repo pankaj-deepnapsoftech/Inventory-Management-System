@@ -17,11 +17,16 @@ import StoreTable from "../components/Table/StoreTable";
 import AddStore from "../components/Drawers/Store/AddStore";
 import StoreDetails from "../components/Drawers/Store/StoreDetails";
 import UpdateStore from "../components/Drawers/Store/UpdateStore";
-import { useDeleteStoresMutation, useStoreBulKUploadMutation } from "../redux/api/api";
+import {
+  useDeleteStoresMutation,
+  useStoreBulKUploadMutation,
+} from "../redux/api/api";
 import { AiFillFileExcel } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 
 const Stores: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("store");
   const [isLoadingStores, setIsLoadingStores] = useState<boolean>(false);
   const [showBulkUploadMenu, setShowBulkUploadMenu] = useState<boolean>(false);
   const [bulkUploading, setBulkUploading] = useState<boolean>(false);
@@ -162,6 +167,14 @@ const Stores: React.FC = () => {
     );
     setFilteredStores(results);
   }, [searchKey]);
+
+  if (!isAllowed) {
+    return (
+      <div className="text-center text-red-500">
+        You are not allowed to access this route.
+      </div>
+    );
+  }
 
   return (
     <div>

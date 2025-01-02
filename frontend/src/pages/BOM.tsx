@@ -19,6 +19,8 @@ import BomDetails from "../components/Drawers/BOM/BomDetails";
 import UpdateBom from "../components/Drawers/BOM/UpdateBom";
 
 const BOM: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("Production");
   const [cookies] = useCookies();
   const [bomId, setBomId] = useState<string | undefined>();
   const [searchKey, setSearchKey] = useState<string | undefined>();
@@ -122,6 +124,10 @@ const BOM: React.FC = () => {
     );
     setFilteredBoms(results);
   }, [searchKey]);
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

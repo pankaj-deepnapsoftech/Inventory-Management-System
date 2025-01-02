@@ -30,6 +30,8 @@ import ProductDetails from "../components/Drawers/Product/ProductDetails";
 // const columns = useMemo(() => ([]), []);
 
 const IndirectProducts: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("inventory");
   const [cookies] = useCookies();
   const [data, setData] = useState([]);
   const [productId, setProductId] = useState<string | undefined>(); // Product Id to be updated or deleted
@@ -245,6 +247,10 @@ const IndirectProducts: React.FC = () => {
     );
     setFilteredData(results);
   }, [searchKey, productServiceFilter, storeFilter]);
+
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>

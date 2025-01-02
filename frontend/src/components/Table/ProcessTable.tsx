@@ -65,11 +65,11 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
   );
 
   const statusStyles = {
-    planned: {
+    'raw material approval pending': {
       bg: "#F03E3E",
       text: "#ffffff",
     },
-    published: {
+    "raw materials approved": {
       bg: "#3392F8",
       text: "#ffffff",
     },

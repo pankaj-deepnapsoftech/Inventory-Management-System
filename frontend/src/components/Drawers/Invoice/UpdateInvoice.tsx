@@ -35,9 +35,7 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
   const [supplier, setSupplier] = useState<
     { value: string; label: string } | undefined
   >();
-  const [invoiceNo, setInvoiceNo] = useState<
-    string | undefined
-  >();
+  const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
   const [documentDate, setDocumentDate] = useState<string | undefined>();
   const [salesOrderDate, setSalesOrderDate] = useState<string | undefined>();
   const [note, setNote] = useState<string | undefined>();
@@ -104,7 +102,7 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
         item: item.item.value,
         quantity: item.quantity,
         amount: item.price,
-      }))
+      })),
     };
 
     try {
@@ -139,7 +137,7 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
       if (!data.success) {
         throw new Error(data.message);
       }
-
+      
       if (data.invoice.buyer) {
         setBuyer({
           value: data.invoice?.buyer?._id,
@@ -152,9 +150,7 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
         });
       }
       setInvoiceNo(data.invoice.invoice_no);
-      setDocumentDate(
-        moment(data.invoice.document_date).format("YYYY-DD-MM")
-      );
+      setDocumentDate(moment(data.invoice.document_date).format("YYYY-DD-MM"));
       setSalesOrderDate(
         moment(data.invoice.sales_order_date).format("YYYY-DD-MM")
       );
@@ -342,16 +338,18 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
               <FormControl className="mt-3 mb-5" isRequired>
                 <FormLabel fontWeight="bold">Category</FormLabel>
                 <Select
+                  isDisabled
                   value={category}
                   options={categoryOptions}
                   required={true}
                   onChange={(e: any) => setCategory(e)}
                 />
               </FormControl>
-              {category && category.value === "sales" && (
+              {category && category.value === "sale" && (
                 <FormControl className="mt-3 mb-5" isRequired>
                   <FormLabel fontWeight="bold">Buyer</FormLabel>
                   <Select
+                    isDisabled
                     value={buyer}
                     options={buyerOptions}
                     required={true}
@@ -363,6 +361,7 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
                 <FormControl className="mt-3 mb-5" isRequired>
                   <FormLabel fontWeight="bold">Supplier</FormLabel>
                   <Select
+                    isDisabled
                     value={supplier}
                     options={supplierOptions}
                     required={true}

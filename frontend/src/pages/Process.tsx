@@ -19,6 +19,8 @@ import UpdateProcess from "../components/Drawers/Process/UpdateProcess";
 import { useDeleteProcessMutation } from "../redux/api/api";
 
 const Process: React.FC = () => {
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("production");
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [data, setData] = useState<any[] | []>([]);
   const [filteredData, setFilteredData] = useState<any[] | []>([]);
@@ -87,15 +89,15 @@ const Process: React.FC = () => {
       toast.success(response.message);
       fetchProcessHandler();
     } catch (error: any) {
-      console.log(error.message || 'Something went wrong');
+      console.log(error.message || "Something went wrong");
     }
-  }
+  };
 
   useEffect(() => {
     fetchProcessHandler();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const searchText = searchKey?.toLowerCase();
     const results = data.filter(
       (p: any) =>
@@ -124,15 +126,37 @@ const Process: React.FC = () => {
             ?.includes(searchText?.replaceAll("/", "") || ""))
     );
     setFilteredData(results);
-  }, [searchKey])
+  }, [searchKey]);
+
+  if (!isAllowed) {
+    return (
+      <div className="text-center text-red-500">
+        You are not allowed to access this route.
+      </div>
+    );
+  }
 
   return (
     <div>
-
-      {isAddProcessDrawerOpened && <AddProcess fetchProcessHandler={fetchProcessHandler} closeDrawerHandler={closeAddProcessDrawerHandler} />}
-      {isProcessDetailsDrawerOpened && <ProcessDetails id={id} closeDrawerHandler={closeProcessDetailsDrawerHandler} />}
-      {isUpdateProcessDrawerOpened && <UpdateProcess id={id} closeDrawerHandler={closeUpdateProcessDrawerHandler} fetchProcessHandler={fetchProcessHandler} />}
-
+      {isAddProcessDrawerOpened && (
+        <AddProcess
+          fetchProcessHandler={fetchProcessHandler}
+          closeDrawerHandler={closeAddProcessDrawerHandler}
+        />
+      )}
+      {isProcessDetailsDrawerOpened && (
+        <ProcessDetails
+          id={id}
+          closeDrawerHandler={closeProcessDetailsDrawerHandler}
+        />
+      )}
+      {isUpdateProcessDrawerOpened && (
+        <UpdateProcess
+          id={id}
+          closeDrawerHandler={closeUpdateProcessDrawerHandler}
+          fetchProcessHandler={fetchProcessHandler}
+        />
+      )}
 
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
@@ -176,7 +200,12 @@ const Process: React.FC = () => {
       </div>
 
       <div>
-        <ProcessTable isLoadingProcess={isLoading} process={filteredData} deleteProcessHandler={deleteProcessHandler} openUpdateProcessDrawerHandler={openUpdateProcessDrawerHandler} />
+        <ProcessTable
+          isLoadingProcess={isLoading}
+          process={filteredData}
+          deleteProcessHandler={deleteProcessHandler}
+          openUpdateProcessDrawerHandler={openUpdateProcessDrawerHandler}
+        />
       </div>
     </div>
   );

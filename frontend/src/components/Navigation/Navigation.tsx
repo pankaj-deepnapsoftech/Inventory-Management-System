@@ -8,14 +8,16 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 
 const Navigation: React.FC = () => {
-  const {allowedroutes, isSuper} = useSelector((state: any) => state.auth);
+  const { allowedroutes, isSuper } = useSelector((state: any) => state.auth);
 
-  const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>({});
+  const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const toggleSubMenusHandler = (path: string) => {
     setOpenSubMenus((prev: { [key: string]: boolean }) => ({
       ...prev,
-      [path]: !prev[path]
+      [path]: !prev[path],
     }));
   };
 
@@ -23,10 +25,11 @@ const Navigation: React.FC = () => {
     <div className="h-[inherit] px-3 py-3 overflow-auto bg-[#fbfbfb]">
       <ul>
         {routes.map((route, ind) => {
-          const isAllowed = isSuper || allowedroutes.includes(route.path.replaceAll('/', ''));
-          if(!isAllowed){
-            return undefined;
-          }
+          const isAllowed =
+            isSuper || allowedroutes.includes(route.path.replaceAll("/", ""));
+          // if(!isAllowed){
+          //   return null;
+          // }
 
           if (route.isSublink) {
             return (
@@ -34,15 +37,30 @@ const Navigation: React.FC = () => {
                 <li
                   key={ind}
                   className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
-                  onClick={()=>toggleSubMenusHandler(route.path)}
+                  onClick={() => toggleSubMenusHandler(route.path)}
+                  style={{
+                    cursor: isAllowed ? "pointer" : "not-allowed",
+                    opacity: isAllowed ? 1 : 0.5,
+                    pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
+                  }}
                 >
                   <span>{route.icon}</span>
                   <span>{route.name}</span>
-                  <span className="pt-1">{openSubMenus[route.path] ? <FaAngleUp /> : <FaAngleDown />}</span>
+                  <span className="pt-1">
+                    {openSubMenus[route.path] ? <FaAngleUp /> : <FaAngleDown />}
+                  </span>
                 </li>
-                {openSubMenus[route.path] && route.sublink &&
+                {openSubMenus[route.path] &&
+                  route.sublink &&
                   route.sublink.map((sublink, index) => (
-                    <NavLink to={route.path + '/' + sublink.path}>
+                    <NavLink
+                      style={{
+                        cursor: isAllowed ? "pointer" : "not-allowed",
+                        opacity: isAllowed ? 1 : 0.5,
+                        pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
+                      }}
+                      to={route.path + "/" + sublink.path}
+                    >
                       <li
                         key={index}
                         className="flex gap-x-2 pl-5 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
@@ -54,9 +72,31 @@ const Navigation: React.FC = () => {
                   ))}
               </div>
             );
-          } else {
+          }
+          else if(route.name === "Approval" && isSuper){
             return (
-              <NavLink to={route.path || ""}>
+              <NavLink style={{
+                cursor: isAllowed ? "pointer" : "not-allowed",
+                opacity: isAllowed ? 1 : 0.5,
+                pointerEvents: isAllowed ? "auto" : "none",
+              }} to={route.path || ""}>
+                <li
+                  key={ind}
+                  className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
+                >
+                  <span>{route.icon}</span>
+                  <span>{route.name}</span>
+                </li>
+              </NavLink>
+            );
+          }
+          else if(route.name !== "Approval") {
+            return (
+              <NavLink style={{
+                cursor: isAllowed ? "pointer" : "not-allowed",
+                opacity: isAllowed ? 1 : 0.5,
+                pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
+              }} to={route.path || ""}>
                 <li
                   key={ind}
                   className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"

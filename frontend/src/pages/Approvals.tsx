@@ -20,6 +20,8 @@ import { FcDatabase } from "react-icons/fc";
 import StoreTable from "../components/Table/StoreTable";
 import AgentTable from "../components/Table/AgentTable";
 import BOMTable from "../components/Table/BOMTable";
+import BOMRawMaterialTable from "../components/Table/BOMRawMaterialTable";
+import { useSelector } from "react-redux";
 
 const Approvals: React.FC = () => {
   //   const [unapprovedProducts] = useLazyUnapprovedProductsQuery();
@@ -34,6 +36,8 @@ const Approvals: React.FC = () => {
   //   };
 
   const [cookies] = useCookies();
+  const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
+  const isAllowed = isSuper || allowedroutes.includes("Approval");
   //  Products
   const [productSearchKey, setProductSearchKey] = useState<
     string | undefined
@@ -232,7 +236,6 @@ const Approvals: React.FC = () => {
     }
   };
 
-  
   // For Unapproved BOMs
   const fetchUnapprovedBomsHandler = async () => {
     try {
@@ -276,8 +279,8 @@ const Approvals: React.FC = () => {
     }
   };
 
-   // For Unapproved BOM Raw Materials
-   const fetchUnapprovedBomRMsHandler = async () => {
+  // For Unapproved BOM Raw Materials
+  const fetchUnapprovedBomRMsHandler = async () => {
     try {
       setIsLoadingBomRMs(true);
       const response = await fetch(
@@ -301,21 +304,28 @@ const Approvals: React.FC = () => {
 
   const approveBomRMHandler = async (id: string) => {
     try {
-      const response = await updateBom({ _id: id, approved: true }).unwrap();
-      toast.success(response.message);
-      fetchUnapprovedBomsHandler();
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_URL + "bom/approve/raw-materials",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${cookies?.access_token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            _id: id,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      toast.success(data.message);
+      fetchUnapprovedBomRMsHandler();
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong");
-    }
-  };
-
-  const deleteBomRMHandler = async (id: string) => {
-    try {
-      const response: any = await deleteBom(id).unwrap();
-      toast.success(response.message);
-      fetchUnapprovedBomsHandler();
-    } catch (err: any) {
-      toast.error(err?.data?.message || err?.message || "Something went wrong");
     }
   };
 
@@ -480,7 +490,10 @@ const Approvals: React.FC = () => {
         bom.bom_name?.toLowerCase()?.includes(searchTxt) ||
         bom.parts_count?.toString()?.toLowerCase()?.includes(searchTxt) ||
         bom.total_cost?.toString()?.toLowerCase()?.includes(searchTxt) ||
-        (bom?.approved_by?.first_name + ' ' + bom?.approved_by?.last_name)?.toString()?.toLowerCase()?.includes(searchTxt || '') ||
+        (bom?.approved_by?.first_name + " " + bom?.approved_by?.last_name)
+          ?.toString()
+          ?.toLowerCase()
+          ?.includes(searchTxt || "") ||
         (bom?.createdAt &&
           new Date(bom?.createdAt)
             ?.toISOString()
@@ -501,6 +514,9 @@ const Approvals: React.FC = () => {
     setFilteredBoms(results);
   }, [bomSearchKey]);
 
+  if(!isAllowed){
+    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  }
 
   return (
     <div>
@@ -719,7 +735,6 @@ const Approvals: React.FC = () => {
         </div>
       </div>
 
-      
       {/* BOM Raw Materials */}
       <div className="mt-10">
         {/* BOM Raw Material Page */}
@@ -754,11 +769,10 @@ const Approvals: React.FC = () => {
         </div>
 
         <div>
-          <ProductTable
+          <BOMRawMaterialTable
             isLoadingProducts={isLoadingBomRMs}
             products={filteredBomRMs}
-            deleteProductHandler={()=>{}}
-            approveProductHandler={()=>{}}
+            approveProductHandler={approveBomRMHandler}
           />
         </div>
       </div>

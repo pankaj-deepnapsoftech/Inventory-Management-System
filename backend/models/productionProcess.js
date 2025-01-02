@@ -38,12 +38,12 @@ const productionProcessSchema = new Schema(
     status: {
       type: String,
       enum: [
-        "planned",
-        "published",
+        "raw material approval pending",
+        "raw materials approved",
         "work in progress",
         "completed",
       ],
-      default: "planned",
+      default: "raw material approval pending",
     },
     approved: {
       type: Boolean,
