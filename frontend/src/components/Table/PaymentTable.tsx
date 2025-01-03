@@ -210,12 +210,12 @@ const PaymentTable: React.FC<AgentTableProps> = ({
                               )}
                             {cell.column.id === "creator" && (
                                 <span>
-                                  {row.original.creator.first_name + ' ' + row.original.creator.last_name}
+                                  {row.original?.creator?.first_name + ' ' + row.original?.creator?.last_name}
                                 </span>
                               )}
                             {cell.column.id === "customer" && (
                                 <span>
-                                  {row.original?.invoice.buyer ? row.original.invoice.buyer.name : row.original.invoice.supplier.name}
+                                  {row.original?.invoice?.buyer ? row.original?.invoice?.buyer?.name : row.original.invoice?.supplier?.name}
                                 </span>
                               )}
                           </Td>

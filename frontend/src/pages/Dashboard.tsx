@@ -20,60 +20,83 @@ const Dashboard: React.FC = () => {
   const { firstname } = useSelector((state: any) => state.auth);
   const [approvalsPending, setApprovalsPending] = useState<
     | {
-      unapproved_product_count: number;
-      unapproved_store_count: number;
-      unapproved_merchant_count: number;
-      unapproved_bom_count: number;
-    }
+        unapproved_product_count: number;
+        unapproved_store_count: number;
+        unapproved_merchant_count: number;
+        unapproved_bom_count: number;
+      }
     | undefined
   >();
-  const [products, setProducts] = useState<
+  const [scrap, setScrap] = useState<
     | {
-      total_low_stock: number;
-      total_excess_stock: number;
-      total_product_count: number;
-      total_stock_price: number;
-    }
+        total_product_count: number;
+        total_stock_price: number;
+      }
+    | undefined
+  >();
+  const [inventory, setInventory] = useState<
+    | {
+        total_product_count: number;
+        total_stock_price: number;
+      }
+    | undefined
+  >();
+  const [directInventory, setDirectInventory] = useState<
+    | {
+        total_low_stock: number;
+        total_excess_stock: number;
+        total_product_count: number;
+        total_stock_price: number;
+      }
+    | undefined
+  >();
+  const [indirectInventory, setIndirectInventory] = useState<
+    | {
+        total_low_stock: number;
+        total_excess_stock: number;
+        total_product_count: number;
+        total_stock_price: number;
+      }
     | undefined
   >();
   const [stores, setStores] = useState<
     | {
-      total_store_count: number;
-    }
+        total_store_count: number;
+      }
     | undefined
   >();
   const [boms, setBoms] = useState<
     | {
-      total_bom_count: number;
-    }
+        total_bom_count: number;
+      }
     | undefined
   >();
   const [merchants, setMerchants] = useState<
     | {
-      total_supplier_count: number;
-      total_buyer_count: number;
-    }
+        total_supplier_count: number;
+        total_buyer_count: number;
+      }
     | undefined
   >();
   const [employees, setEmployees] = useState<
     | {
-      _id: string;
-      total_employee_count: number;
-    }[]
+        _id: string;
+        total_employee_count: number;
+      }[]
     | undefined
   >();
   const [processes, setProcesses] = useState<
     | {
-      planned?: number;
-      published?: number;
-      completed?: number;
-      'work in progress'?: number;
-    }
+        ["raw material approval pending"]?: number;
+        ["raw materials approved"]?: number;
+        completed?: number;
+        "work in progress"?: number;
+      }
     | undefined
   >();
-  const [totalProformaInvoices, setTotalProformaInvoices] = useState<number>(0)
-  const [totalInvoices, setTotalInvoices] = useState<number>(0)
-  const [totalPayments, setTotalPayments] = useState<number>(0)
+  const [totalProformaInvoices, setTotalProformaInvoices] = useState<number>(0);
+  const [totalInvoices, setTotalInvoices] = useState<number>(0);
+  const [totalPayments, setTotalPayments] = useState<number>(0);
 
   const fetchSummaryHandler = async () => {
     try {
@@ -83,19 +106,31 @@ const Dashboard: React.FC = () => {
         {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${cookies?.access_token}`,
           },
           body: JSON.stringify({
-            from, to
-          })
+            from,
+            to,
+          }),
         }
       );
       const data = await response.json();
       if (!data.success) {
         throw new Error(data.message);
       }
-      setProducts(data.products);
+      setDirectInventory(
+        data.products?.[0]?._id === "direct"
+          ? data.products?.[0]
+          : data.products?.[1]
+      );
+      setIndirectInventory(
+        data.products?.[0]?._id === "indirect"
+          ? data.products?.[0]
+          : data.products?.[1]
+      );
+      setScrap(data.scrap[0]);
+      setInventory(data.wip_inventory[0]);
       setStores(data.stores);
       setMerchants(data.merchants);
       setBoms(data.boms);
@@ -118,23 +153,27 @@ const Dashboard: React.FC = () => {
     if (from && to) {
       fetchSummaryHandler();
     }
-  }
+  };
 
   const resetFilterHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
-    setFrom('');
-    setTo('');
+    setFrom("");
+    setTo("");
 
     fetchSummaryHandler();
-  }
+  };
 
   useEffect(() => {
     fetchSummaryHandler();
   }, []);
 
-  if(!isAllowed){
-    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  if (!isAllowed) {
+    return (
+      <div className="text-center text-red-500">
+        You are not allowed to access this route.
+      </div>
+    );
   }
 
   return (
@@ -151,14 +190,27 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div>
-          <form onSubmit={applyFilterHandler} className="flex items-end justify-between gap-2">
+          <form
+            onSubmit={applyFilterHandler}
+            className="flex items-end justify-between gap-2"
+          >
             <FormControl>
               <FormLabel>From</FormLabel>
-              <Input value={from} onChange={(e) => setFrom(e.target.value)} backgroundColor="white" type="date" />
+              <Input
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                backgroundColor="white"
+                type="date"
+              />
             </FormControl>
             <FormControl>
               <FormLabel>To</FormLabel>
-              <Input value={to} onChange={(e) => setTo(e.target.value)} backgroundColor="white" type="date" />
+              <Input
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                backgroundColor="white"
+                type="date"
+              />
             </FormControl>
             <Button
               type="submit"
@@ -194,7 +246,9 @@ const Dashboard: React.FC = () => {
           <div className="mb-2 mt-6 font-semibold text-xl">
             Employee Insights
           </div>
-          {employees && employees.length === 0 && <div className="text-center mb-2">No data found.</div>}
+          {employees && employees.length === 0 && (
+            <div className="text-center mb-2">No data found.</div>
+          )}
           {employees && (
             <div className="grid grid-cols-4 gap-2">
               {employees.map((emp, ind) => {
@@ -255,7 +309,7 @@ const Dashboard: React.FC = () => {
                 primaryColor="#273F7C"
                 secondaryColor="#1E387B"
                 textColor="white"
-                title="Products"
+                title="Inventory"
                 content={approvalsPending?.unapproved_product_count}
                 link="approval"
                 icon={<IoMdCart color="#ffffff" size={28} />}
@@ -292,14 +346,14 @@ const Dashboard: React.FC = () => {
           <div className="mb-2 mt-5 font-semibold text-xl">
             Inventory Insights
           </div>
-          {products && (
+          {directInventory && (
             <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
               <Card
                 primaryColor="#4CAAE4"
                 secondaryColor="#32A1E7"
                 textColor="white"
-                title="Products"
-                content={products?.total_product_count}
+                title="Direct Inventory"
+                content={directInventory?.total_product_count}
                 link="product"
                 icon={<IoMdCart color="#ffffff" size={28} />}
               />
@@ -308,7 +362,7 @@ const Dashboard: React.FC = () => {
                 secondaryColor="#32A1E7"
                 textColor="white"
                 title="Stock Value"
-                content={"₹ " + products?.total_stock_price + "/-"}
+                content={"₹ " + directInventory?.total_stock_price + "/-"}
                 icon={<FaRupeeSign color="#ffffff" size={24} />}
                 link="product"
               />
@@ -317,7 +371,7 @@ const Dashboard: React.FC = () => {
                 secondaryColor="#32A1E7"
                 textColor="white"
                 title="Excess Stock"
-                content={products?.total_excess_stock}
+                content={directInventory?.total_excess_stock}
                 link="product"
                 icon={<AiFillProduct color="#ffffff" size={28} />}
               />
@@ -326,12 +380,90 @@ const Dashboard: React.FC = () => {
                 secondaryColor="#32A1E7"
                 textColor="white"
                 title="Low Stock"
-                content={products?.total_low_stock}
+                content={directInventory?.total_low_stock}
                 link="product"
                 icon={<AiFillProduct color="#ffffff" size={28} />}
               />
             </div>
           )}
+          {indirectInventory && (
+            <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Indirect Inventory"
+                content={indirectInventory?.total_product_count}
+                link="product"
+                icon={<IoMdCart color="#ffffff" size={28} />}
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Stock Value"
+                content={"₹ " + indirectInventory?.total_stock_price + "/-"}
+                icon={<FaRupeeSign color="#ffffff" size={24} />}
+                link="product"
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Excess Stock"
+                content={indirectInventory?.total_excess_stock}
+                link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
+              />
+              <Card
+                primaryColor="#4CAAE4"
+                secondaryColor="#32A1E7"
+                textColor="white"
+                title="Low Stock"
+                content={indirectInventory?.total_low_stock}
+                link="product"
+                icon={<AiFillProduct color="#ffffff" size={28} />}
+              />
+            </div>
+          )}
+          <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+            <Card
+              primaryColor="#4CAAE4"
+              secondaryColor="#32A1E7"
+              textColor="white"
+              title="Scrap Materials"
+              content={scrap?.total_product_count?.toString() || ""}
+              link="product"
+              icon={<IoMdCart color="#ffffff" size={28} />}
+            />
+            <Card
+              primaryColor="#4CAAE4"
+              secondaryColor="#32A1E7"
+              textColor="white"
+              title="Scrap Value"
+              content={"₹ " + scrap?.total_stock_price + "/-"}
+              icon={<FaRupeeSign color="#ffffff" size={24} />}
+              link="product"
+            />
+            <Card
+              primaryColor="#4CAAE4"
+              secondaryColor="#32A1E7"
+              textColor="white"
+              title="WIP Inventory"
+              content={inventory?.total_product_count?.toString() || ""}
+              link="product"
+              icon={<IoMdCart color="#ffffff" size={28} />}
+            />
+            <Card
+              primaryColor="#4CAAE4"
+              secondaryColor="#32A1E7"
+              textColor="white"
+              title="WIP Inventory Value"
+              content={"₹ " + inventory?.total_stock_price + "/-"}
+              icon={<FaRupeeSign color="#ffffff" size={24} />}
+              link="product"
+            />
+          </div>
           <div className="mb-2 mt-5 font-semibold text-xl">
             Store & Merchant Insights
           </div>
@@ -392,8 +524,8 @@ const Dashboard: React.FC = () => {
               primaryColor="#F03E3E"
               secondaryColor="#E56F27"
               textColor="white"
-              title="Planned"
-              content={processes?.planned || 0}
+              title="Inventory Approval Pending"
+              content={processes?.["raw material approval pending"] || 0}
               link="production/production-process"
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />
@@ -401,8 +533,8 @@ const Dashboard: React.FC = () => {
               primaryColor="#3392F8"
               secondaryColor="#E56F27"
               textColor="white"
-              title="Published"
-              content={processes?.published || 0}
+              title="Inventory Approved"
+              content={processes?.["raw materials approved"] || 0}
               link="production/production-process"
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />
@@ -411,7 +543,7 @@ const Dashboard: React.FC = () => {
               secondaryColor="#E56F27"
               textColor="white"
               title="Work In Progress"
-              content={processes?.['work in progress'] || 0}
+              content={processes?.["work in progress"] || 0}
               link="production/production-process"
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />

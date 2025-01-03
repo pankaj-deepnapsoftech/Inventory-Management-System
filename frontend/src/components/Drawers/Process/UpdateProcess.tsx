@@ -320,10 +320,7 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
         data.production_process.finished_good.produced_quantity
       );
 
-      if (data.production_process.status === "planned") {
-        setSubmitBtnText("Publish");
-        setProcessStatus("published");
-      } else if (data.production_process.status === "published") {
+     if (data.production_process.status === "raw materials approved") {
         setSubmitBtnText("Start Production");
         setProcessStatus("work in progress");
       } else if (data.production_process.status === "work in progress") {

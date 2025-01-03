@@ -10,6 +10,8 @@ const ProformaInvoice = require("../models/proforma-invoice");
 const Invoice = require("../models/invoice");
 const Payment = require("../models/payment");
 const { TryCatch } = require("../utils/error");
+const BOMScrapMaterial = require("../models/bom-scrap-material");
+const BOMRawMaterial = require("../models/bom-raw-material");
 
 exports.summary = TryCatch(async (req, res) => {
   let { from, to } = req.body;
@@ -34,11 +36,12 @@ exports.summary = TryCatch(async (req, res) => {
         max_stock: 1,
         price: 1,
         approved: 1,
+        inventory_category: 1
       },
     },
     {
       $group: {
-        _id: null,
+        _id: '$inventory_category',
         total_low_stock: {
           $sum: {
             $cond: [{ $lt: ["$current_stock", "$min_stock"] }, 1, 0],
@@ -79,6 +82,94 @@ exports.summary = TryCatch(async (req, res) => {
     });
   }
   const products = await Product.aggregate(productsPipeline);
+  
+  // Scrap Materials Summary
+  const scrapPipeline = [
+    {
+      $project: {
+        quantity: 1,
+        total_part_cost: 1,
+        createdAt: 1,
+        is_production_started: 1
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total_product_count: {
+          $sum: 1,
+        },
+        total_stock_price: {
+          $sum: '$total_part_cost',
+        },
+      },
+    },
+  ];
+
+  if (from && to) {
+    scrapPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        }
+      },
+    });
+  } else {
+    scrapPipeline.unshift({
+      $match: {
+        is_production_started: true,
+      },
+    });
+  }
+  const scrap = await BOMScrapMaterial.aggregate(scrapPipeline);
+  
+  // WIP Materials Summary
+  const wipInventoryPipeline = [
+    {
+      $project: {
+        approvedByAdmin: 1,
+        approvedByInventoryPersonnel: 1,
+        in_production: 1,
+        total_part_cost: 1,
+        createdAt: 1
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total_product_count: {
+          $sum: 1,
+        },
+        total_stock_price: {
+          $sum: '$total_part_cost',
+        },
+      },
+    },
+  ];
+
+  if (from && to) {
+    wipInventoryPipeline.unshift({
+      $match: {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+        approvedByAdmin: true,
+        approvedByInventoryPersonnel: true,
+        in_production: true
+      },
+    });
+  } else {
+    scrapPipeline.unshift({
+      $match: {
+        approvedByAdmin: true,
+        approvedByInventoryPersonnel: true,
+        in_production: true
+      },
+    });
+  }
+  const wipInventory = await BOMRawMaterial.aggregate(wipInventoryPipeline);
 
   // Stores Summary
   const storeCount = await Store.find({ approved: true }).countDocuments();
@@ -245,12 +336,7 @@ exports.summary = TryCatch(async (req, res) => {
   res.status(200).json({
     status: 200,
     success: true,
-    products: products[0] || {
-      total_low_stock: 0,
-      total_excess_stock: 0,
-      total_product_count: 0,
-      total_stock_price: 0,
-    },
+    products: products,
     stores: {
       total_store_count: storeCount,
     },
@@ -271,6 +357,8 @@ exports.summary = TryCatch(async (req, res) => {
     processes: processCountStatusWiseObj,
     proforma_invoices: totalProformaInvoices,
     invoices: totalInvoices,
-    payments: totalPayments
+    payments: totalPayments,
+    scrap: scrap.length === 0 ? [{total_product_count: 0, total_stock_price: 0}] : scrap,
+    wip_inventory: wipInventory.length === 0 ? [{total_product_count: 0, total_stock_price: 0}] : wipInventory
   });
 });
