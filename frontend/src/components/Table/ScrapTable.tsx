@@ -39,10 +39,7 @@ interface ScrapTableProps {
         updatedAt: string;
     }>;
     isLoadingScraps: boolean;
-    // openUpdateProductDrawerHandler?: (id: string) => void;
     openScrapDetailsDrawerHandler?: (id: string) => void;
-    // deleteProductHandler?: (id: string) => void;
-    // approveProductHandler?: (id: string) => void;
 }
 
 const ScrapTable: React.FC<ScrapTableProps> = ({
@@ -138,15 +135,6 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
         usePagination
     );
 
-    // const getSelectedProducts = ()=>{
-    //   const rows = document.getElementsByClassName('select');
-    //   const rowsArr = Array.from(rows);
-    //   const selectedIds = rowsArr
-    //   .filter(checkbox => checkbox.checked)  // Filter only the checked checkboxes
-    //   .map(checkbox => checkbox.value);
-    //   console.log(selectedIds)
-    // }
-
     return (
         <div>
             {isLoadingScraps && <Loading />}
@@ -216,17 +204,6 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                         </Th>
                                                     );
                                                 })}
-                                                {/* <Th
-                                                    textTransform="capitalize"
-                                                    fontSize="12px"
-                                                    fontWeight="700"
-                                                    color="black"
-                                                    backgroundColor="#fafafa"
-                                                    borderLeft="1px solid #d7d7d7"
-                                                    borderRight="1px solid #d7d7d7"
-                                                >
-                                                    Actions
-                                                </Th> */}
                                             </Tr>
                                         );
                                     }
@@ -249,11 +226,7 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                             cell.column.id !== "item" &&
                                                             cell.column.id !== "bom" &&
                                                             cell.column.id !== "finished_good" &&
-                                                            // cell.column.id !== "estimated_quantity" &&
-                                                            // cell.column.id !== "produced_quantity" &&
                                                             cell.render("Cell")}
-
-                                                        {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
 
                                                         {cell.column.id === "createdAt" &&
                                                             row.original?.createdAt && (
@@ -292,61 +265,9 @@ const ScrapTable: React.FC<ScrapTableProps> = ({
                                                                 {row.original.bom.finished_good.item.name}
                                                             </span>
                                                         )}
-                                                        {/* {cell.column.id === "estimated_quantity" && (
-                                                            <span
-                                                                className="px-2 py-1 rounded-md"
-                                                            >
-                                                                {row.original.quantity}
-                                                            </span>
-                                                        )}
-                                                        {cell.column.id === "produced_quantity" && (
-                                                            <span
-                                                                className="px-2 py-1 rounded-md"
-                                                            >
-                                                                {row.original.produced_quantity}
-                                                            </span>
-                                                        )} */}
                                                     </Td>
                                                 );
                                             })}
-                                            {/* <Td className="flex gap-x-2"> */}
-                                            {/* {openScrapDetailsDrawerHandler && (
-                                                    <MdOutlineVisibility
-                                                        className="hover:scale-110"
-                                                        size={16}
-                                                        onClick={() =>
-                                                            openScrapDetailsDrawerHandler(row.original?._id)
-                                                        }
-                                                    />
-                                                )} */}
-                                            {/* {openUpdateProductDrawerHandler && (
-                                                    <MdEdit
-                                                        className="hover:scale-110"
-                                                        size={16}
-                                                        onClick={() =>
-                                                            openUpdateProductDrawerHandler(row.original?._id)
-                                                        }
-                                                    />
-                                                )} */}
-                                            {/* {deleteProductHandler && (
-                                                    <MdDeleteOutline
-                                                        className="hover:scale-110"
-                                                        size={16}
-                                                        onClick={() =>
-                                                            deleteProductHandler(row.original?._id)
-                                                        }
-                                                    />
-                                                )} */}
-                                            {/* {approveProductHandler && (
-                                                    <FcApproval
-                                                        className="hover:scale-110"
-                                                        size={16}
-                                                        onClick={() =>
-                                                            approveProductHandler(row.original?._id)
-                                                        }
-                                                    />
-                                                )} */}
-                                            {/* </Td> */}
                                         </Tr>
                                     );
                                 })}

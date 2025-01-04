@@ -32,13 +32,7 @@ const ScrapMaterial: React.FC<ScrapMaterialProps> = ({
       if (unit_cost) {
         inputsArr[ind]["total_part_cost"] = +unit_cost * +value;
       }
-    } 
-    // else if (name === "produced_quantity") {
-    //   const unit_cost = inputsArr[ind]["unit_cost"];
-    //   if (unit_cost) {
-    //     inputsArr[ind]["total_part_cost"] = +unit_cost * +value;
-    //   }
-    // }
+    }
      else if (name === "item_name") {
       const item_id = inputsArr[ind]["item_name"].value;
       const product = products.filter((prd: any) => prd._id === item_id)[0];
@@ -98,9 +92,6 @@ const ScrapMaterial: React.FC<ScrapMaterialProps> = ({
                 value={selectedProducts[ind]?.label}
                 name="item_name"
                 onChange={(d) => {
-                  // const selectedProds = [...selectedProducts];
-                  // selectedProds[ind] = {...d};
-                  // setSelectedProducts(selectedProds);
                   onChangeHandler("item_name", d, ind);
                 }}
               />

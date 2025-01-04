@@ -54,14 +54,12 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
 }) => {
   const columns = useMemo(
     () => [
-      // { Header: "Number", accessor: "number" },
       { Header: "Created By", accessor: "creator" },
       { Header: "Created At", accessor: "createdAt" },
       { Header: "Last Updated", accessor: "updatedAt" },
       { Header: "Customer", accessor: "customer" },
       { Header: "Sub Total", accessor: "subtotal" },
       { Header: "Total", accessor: "total" },
-      // { Header: "Status", accessor: "status" },
     ],
     []
   );

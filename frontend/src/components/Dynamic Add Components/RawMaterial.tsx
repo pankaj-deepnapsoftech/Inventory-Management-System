@@ -63,11 +63,9 @@ const RawMaterial: React.FC<RawMaterialProps> = ({
         description: "",
         quantity: "",
         uom: "",
-        //   image?: string;
         category: "",
         assembly_phase: "",
         supplier: "",
-        // supporting_doc: "",
         comments: "",
         unit_cost: "",
         total_part_cost: "",
@@ -132,19 +130,6 @@ const RawMaterial: React.FC<RawMaterialProps> = ({
             className="grid grid-cols-4 gap-2 pb-2 mb-2"
             key={ind}
           >
-            {/* <FormControl className="mt-3 mb-5" isRequired>
-          <FormLabel fontWeight="bold">Product ID</FormLabel>
-          <Input
-            disabled
-            // onChange={(e) =>
-            //   onChangeHandler(e.target.name, e.target.value, ind)
-            // }
-            type="text"
-            placeholder="Product ID"
-            name="item_id"
-            value={input?.item_name}
-          />
-        </FormControl> */}
             <FormControl className="mb-5" isRequired>
               <FormLabel fontWeight="bold">Product Name</FormLabel>
               <Select
@@ -155,9 +140,6 @@ const RawMaterial: React.FC<RawMaterialProps> = ({
                 value={selectedProducts[ind]?.label}
                 name="item_name"
                 onChange={(d) => {
-                  // const selectedProds = [...selectedProducts];
-                  // selectedProds[ind] = {...d};
-                  // setSelectedProducts(selectedProds);
                   onChangeHandler("item_name", d, ind);
                 }}
               />
@@ -236,19 +218,6 @@ const RawMaterial: React.FC<RawMaterialProps> = ({
                 }}
               />
             </FormControl>
-            {/* <FormControl>
-            <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-            <Input
-              border="1px"
-              borderColor="#a9a9a9"
-              onChange={(e) => {
-                onChangeHandler(e.target.name, e.target.value, ind);
-              }}
-              type="text"
-              name="supporting_doc"
-              value={input.supporting_doc}
-            ></Input>
-          </FormControl> */}
             <FormControl>
               <FormLabel fontWeight="bold">Comments</FormLabel>
               <Input

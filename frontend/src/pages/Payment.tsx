@@ -133,7 +133,6 @@ const Payment: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            // width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}

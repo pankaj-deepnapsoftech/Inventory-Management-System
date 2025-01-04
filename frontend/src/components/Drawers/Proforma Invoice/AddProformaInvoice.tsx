@@ -4,7 +4,6 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
   useCreateProformaInvoiceMutation,
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
@@ -229,7 +228,6 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
 
   useEffect(() => {
     const price = inputs.reduce((acc: number, curr: any) => {
-      // const prod = allItems.find((item: any)=> item._id === curr.item.value);
       return acc + (curr?.price * curr?.quantity || 0);
     }, 0);
     setSubtotal(price);
@@ -342,13 +340,6 @@ const AddProformaInvoice: React.FC<AddProformaInvoiceProps> = ({
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Items</FormLabel>
               <AddItems inputs={inputs} setInputs={setInputs} />
-              {/* <Select
-                value={items}
-                options={itemOptions}
-                isMulti={true}
-                required={true}
-                onChange={(e: any) => setItems(e)}
-              /> */}
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Subtotal</FormLabel>

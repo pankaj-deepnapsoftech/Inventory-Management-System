@@ -4,8 +4,6 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import {
-  useAddBomMutation,
-  useAddProductMutation,
   useUpdateBOMMutation,
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
@@ -64,7 +62,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       description: "",
       quantity: "",
       uom: "",
-      //   image?: string;
       category: "",
       assembly_phase: "",
       supplier: "",
@@ -80,8 +77,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       _id: "",
       item_name: "",
       description: "",
-      // estimated_quantity: "",
-      // produced_quantity: "",
       quantity: "",
       uom: "",
       unit_cost: "",
@@ -107,10 +102,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
     if (fileInput && fileInput?.files && fileInput.files.length > 0) {
       try {
         const formData = new FormData();
-
-        // for(let i=0; i<supportingDoc?.current?.files?.length; i++){
-        // formData.append('file', supportingDoc?.current?.files[i]);
-        // }
         formData.append("file", fileInput?.files && fileInput.files[0]);
 
         const uploadedFileResponse = await fetch(
@@ -137,7 +128,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
       item: material?.item_name?.value,
       description: material?.description,
       quantity: material?.quantity,
-      // image: material?.image,
       assembly_phase: material?.assembly_phase?.value,
       supplier: material?.supplier?.value,
       supporting_doc: material?.supporting_doc,
@@ -151,8 +141,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
         _id: material?._id,
         item: material?.item_name?.value,
         description: material?.description,
-        // estimated_quantity: material?.estimated_quantity,
-        // produced_quantity: material?.produced_quantity,
         quantity: material?.quantity,
         total_part_cost: material?.total_part_cost,
       }));
@@ -237,7 +225,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
           description: material.description,
           quantity: material.quantity,
           uom: material.item.uom,
-          //   image?: string;
           category: material.item.category,
           assembly_phase: {
             value: material?.assembly_phase,
@@ -261,8 +248,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
           _id: material._id,
           item_name: { value: material.item._id, label: material.item.name },
           description: material.description,
-          // estimated_quantity: material.estimated_quantity,
-          // produced_quantity: material.produced_quantity,
           quantity: material.quantity,
           uom: material.item.uom,
           unit_cost: material.item.price,
@@ -440,14 +425,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
                   <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-                  {/* <Input
-                    border="1px"
-                    borderColor="#a9a9a9"
-                    value={supportingDoc}
-                    onChange={(e) => setSupportingDoc(e.target.value)}
-                    type="text"
-                    placeholder="Supporting Doc"
-                  /> */}
                   <input
                     type="file"
                     placeholder="Choose a file"
@@ -565,9 +542,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                 <input
                   disabled={true}
                   value={partsCount}
-                  // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  //   setPartsCount(+e.target.value)
-                  // }
                   type="number"
                   placeholder="Parts Count"
                   className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"
@@ -578,9 +552,6 @@ const UpdateBom: React.FC<UpdateBomProps> = ({
                 <input
                   disabled={true}
                   value={totalPartsCost}
-                  // onChange={(e: any) =>
-                  //   totalPartsCost(+e.target.value)
-                  // }
                   type="number"
                   placeholder="Total Parts Cost"
                   className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"

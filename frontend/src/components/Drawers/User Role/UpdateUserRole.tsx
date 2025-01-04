@@ -4,9 +4,6 @@ import { BiX } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
-  useAddRoleMutation,
-  useAddStoreMutation,
   useUpdateRoleMutation,
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";

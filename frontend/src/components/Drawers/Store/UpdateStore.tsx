@@ -2,9 +2,7 @@ import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import Drawer from "../../../ui/Drawer";
 import { BiX } from "react-icons/bi";
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import {
-  useAddProductMutation,
   useUpdateStoreMutation,
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";

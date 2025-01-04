@@ -1,12 +1,10 @@
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import Drawer from "../../../ui/Drawer";
 import { BiX } from "react-icons/bi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
-  useAddRoleMutation,
-  useAddStoreMutation,
+  useAddRoleMutation
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
@@ -69,28 +67,6 @@ const AddUserRole: React.FC<AddUserRoleProps> = ({
       setIsAddingRole(false);
     }
   };
-
-//   const fetchPermissionsHandler = async ()=>{
-//     try {
-//         const response = await fetch(process.env.REACT_APP_BACKEND_URL+'role/permissions', {
-//             method: "GET",
-//             headers: {
-//                 'Authorization': `Bearer ${cookies?.access_token}`
-//             }
-//         });
-//         const data = await response.json();
-//         if(!data.success){
-//             throw new Error(data.message);
-//         }
-//         console.log(data);
-//     } catch (error: any) {
-//         toast.error(error?.message || 'Something went wrong');
-//     }
-//   }
-
-//   useEffect(()=>{
-//     fetchPermissionsHandler();
-//   }, [])
 
   return (
     <Drawer closeDrawerHandler={closeDrawerHandler}>

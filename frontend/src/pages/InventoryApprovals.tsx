@@ -1,29 +1,10 @@
 import { Button } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
-// import { usePagination, useSortBy, useTable } from "react-table";
 import { useEffect, useMemo, useState } from "react";
-import {
-  useDeleteProductMutation,
-  useLazyFetchProductsQuery,
-} from "../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import ProductTable from "../components/Table/ProductTable";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  closeAddEmployeeDrawer,
-  closeEmployeeDetailsDrawer,
-  closeUpdateEmployeeDrawer,
-  openAddEmployeeDrawer,
-  openEmployeeDetailsDrawer,
-  openUpdateEmployeeDrawer,
-} from "../redux/reducers/drawersSlice";
-import EmployeeTable from "../components/Table/EmployeeTable";
-import EmployeeDetails from "../components/Drawers/Employee/EmployeeDetails";
-import UpdateEmployee from "../components/Drawers/Employee/UpdateEmployee";
+import { useSelector } from "react-redux";
 import BOMRawMaterialTable from "../components/Table/BOMRawMaterialTable";
-
-// const columns = useMemo(() => ([]), []);
 
 const InventoryApprovals: React.FC = () => {
   const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);

@@ -1,8 +1,6 @@
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { BiMinus } from "react-icons/bi";
-import { IoIosAdd } from "react-icons/io";
 import Select from "react-select";
 import { toast } from "react-toastify";
 
@@ -27,12 +25,6 @@ const ProcessScrapMaterial: React.FC<ProcessScrapMaterialProps> = ({
     const inputsArr: any = [...inputs];
     inputsArr[ind][name] = value;
 
-    // if (name === "estimated_quantity") {
-    //   const unit_cost = inputsArr[ind]["unit_cost"];
-    //   if (unit_cost) {
-    //     inputsArr[ind]["total_part_cost"] = +unit_cost * +value;
-    //   }
-    // } 
     if (name === "produced_quantity") {
       const unit_cost = inputsArr[ind]["unit_cost"];
       if (unit_cost) {
@@ -77,9 +69,6 @@ const ProcessScrapMaterial: React.FC<ProcessScrapMaterialProps> = ({
                 value={selectedProducts[ind]?.label}
                 name="item_name"
                 onChange={(d) => {
-                  // const selectedProds = [...selectedProducts];
-                  // selectedProds[ind] = {...d};
-                  // setSelectedProducts(selectedProds);
                   onChangeHandler("item_name", d, ind);
                 }}
               />

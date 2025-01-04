@@ -1,7 +1,4 @@
-import { FaAngleDown, FaAngleUp, FaRegCheckCircle } from "react-icons/fa";
-import { IoStorefrontOutline } from "react-icons/io5";
-import { MdOutlineShoppingCart, MdOutlineSpeed } from "react-icons/md";
-import { TbUsersGroup } from "react-icons/tb";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import routes from "../../routes/routes";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -27,9 +24,6 @@ const Navigation: React.FC = () => {
         {routes.map((route, ind) => {
           const isAllowed =
             isSuper || allowedroutes.includes(route.path.replaceAll("/", ""));
-          // if(!isAllowed){
-          //   return null;
-          // }
 
           if (route.isSublink) {
             return (
@@ -108,37 +102,6 @@ const Navigation: React.FC = () => {
             );
           }
         })}
-
-        {/* <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold">
-          <span>
-            <MdOutlineSpeed />
-          </span>
-          <span>Dashboard</span>
-        </li>
-        <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold">
-          <span>
-            <MdOutlineShoppingCart />
-          </span>
-          <span>Products</span>
-        </li>
-        <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold">
-          <span>
-            <FaRegCheckCircle />
-          </span>
-          <span>Approvals</span>
-        </li>
-        <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold">
-          <span>
-            <IoStorefrontOutline />
-          </span>
-          <span>Stores</span>
-        </li>
-        <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold">
-          <span>
-            <TbUsersGroup />
-          </span>
-          <span>Agents</span>
-        </li> */}
       </ul>
     </div>
   );

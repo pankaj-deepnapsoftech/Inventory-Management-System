@@ -81,11 +81,3 @@ exports.all = TryCatch(async (req, res)=>{
     roles
   })
 })
-// exports.permissions = TryCatch(async (req, res)=>{
-//   const permissionsAvailable = userRoleSchema.path('permissions').enumValues;
-//   res.status(200).json({
-//     status: 200,
-//     success: true,
-//     permissions: permissionsAvailable
-//   })
-// })

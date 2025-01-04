@@ -2,11 +2,11 @@ import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FaStarOfLife } from "react-icons/fa";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import { useLazyLoginWithTokenQuery, useLoginMutation } from "../../redux/api/api";
+import { useLoginMutation } from "../../redux/api/api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { userExists } from "../../redux/reducers/authSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCookies } from "react-cookie";
 
 interface LoginComponentProps {
@@ -75,7 +75,7 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
-              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
               type="email"
               placeholder="Email"
             />
@@ -96,7 +96,7 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
-              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
             />

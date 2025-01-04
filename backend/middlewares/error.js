@@ -2,7 +2,6 @@ exports.globalErrorHandler = (err, req, res, next)=>{
     err.message ||= "Internal Server Error";
     err.statusCode ||= 500
 
-    // TODO - HANDLE COMMON TYPES OF ERROR AND THEIR MESSAGES WITH STATUS CODE MANUALLY
     if (err.name === 'ValidationError') {
         const errorMessages = Object.values(err.errors).map(err => err.message);
         const errorMessage = errorMessages.join(', ');

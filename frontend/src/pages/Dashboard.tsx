@@ -178,12 +178,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      {/* <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-8">
-        <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
-          Dashboard
-        </div>
-      </div> */}
-
       <div className="flex items-start justify-between">
         <div className="text-3xl font-bold text-[#22075e]">
           Hi {firstname || ""},
@@ -218,7 +212,6 @@ const Dashboard: React.FC = () => {
               paddingX={{ base: "10px", md: "12px" }}
               paddingY={{ base: "0", md: "3px" }}
               width={{ base: "-webkit-fill-available", md: 150 }}
-              // onClick={fetchProductsHandler}
               color="white"
               backgroundColor="#1640d6"
             >

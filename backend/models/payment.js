@@ -12,10 +12,6 @@ const paymentSchema = new Schema(
       ref: "Invoice",
       required: [true, "Invoice is a required field"],
     },
-    // paymentname: {
-    //   type: String,
-    //   required: [true, "Payment name is a required field"],
-    // },
     amount: {
       type: Number,
       required: [true, "Amount is a required field"],
@@ -24,7 +20,6 @@ const paymentSchema = new Schema(
       type: String,
       enum: ["Cash", "UPI", "NEFT", "RTGS", "Cheque"],
     },
-    // reference: String,
     description: String,
   },
   { timestamps: true }

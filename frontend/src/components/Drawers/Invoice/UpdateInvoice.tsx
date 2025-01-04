@@ -4,10 +4,7 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
-  useCreateProformaInvoiceMutation,
-  useUpdateInvoiceMutation,
-  useUpdateProformaInvoiceMutation,
+  useUpdateInvoiceMutation
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
@@ -296,7 +293,6 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
 
   useEffect(() => {
     const price = inputs.reduce((acc: number, curr: any) => {
-      // const prod = allItems.find((item: any)=> item._id === curr.item.value);
       return acc + (curr?.price * curr?.quantity || 0);
     }, 0);
     setSubtotal(price);

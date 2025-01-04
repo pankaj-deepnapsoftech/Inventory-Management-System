@@ -1,7 +1,6 @@
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import { FaStarOfLife } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import React, { useState } from "react";
 import { useRegisterMutation } from "../../redux/api/api";
@@ -62,7 +61,7 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
                   <input
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
                     type="text"
                     placeholder="First Name"
                   />
@@ -80,7 +79,7 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
                     // required={true}
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
                     type="text"
                     placeholder="Last Name"
                   />
@@ -101,33 +100,12 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
                     value={phone}
                     required={true}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
                     type="number"
                     placeholder="Phone"
                   />
                 </div>
               </div>
-              {/* <div className="flex mt-4 flex-col items-start">
-                <label className="flex gap-x-1 items-center font-bold text-sm text-[rgba(0, 0, 0, 0.88)]">
-                  <span>
-                    <FaStarOfLife size="6px" color="red" />
-                  </span>
-                  Designation
-                </label>
-                <div className="relative w-[100%]">
-                  <div className="absolute top-[18px] left-[7px] text-base">
-                    <MdOutlineAdminPanelSettings />
-                  </div>
-                  <input
-                    // value={designation}
-                    required={true}
-                    // onChange={(e) => setDesignation(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
-                    type="text"
-                    placeholder="Designation"
-                  />
-                </div>
-              </div> */}
               <div className="flex mt-4 flex-col items-start">
                 <label className="flex gap-x-1 items-center font-bold text-sm text-[rgba(0, 0, 0, 0.88)]">
                   <span>
@@ -143,7 +121,7 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
                     required={true}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
                     type="email"
                     placeholder="Email"
                   />
@@ -164,7 +142,7 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
                     value={password}
                     required={true}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+                    className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                   />
@@ -196,15 +174,6 @@ const RegisterComponent: React.FC<RegisterComponentProps> = ({email, setEmail, s
               >
                 {isRegistering ? "Signing up..." : "Sign Up"}
               </button>
-              {/* <Link to="/">
-                <button
-                  type="button"
-                  style={{ boxShadow: "0 2px 0 rgba(5, 95, 255, 0.1)" }}
-                  className="mt-2 w-[100%] rounded-lg text-[#1640d6] border border-[#1640d6] bg-white py-2 font-bold"
-                >
-                  Go Back to Website
-                </button>
-              </Link> */}
             </form>
           </div>
 }

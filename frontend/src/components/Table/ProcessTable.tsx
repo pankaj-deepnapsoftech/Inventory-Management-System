@@ -288,15 +288,6 @@ const ProcessTable: React.FC<ProcessTableProps> = ({
                             }
                           />
                         )}
-                        {/* {approveAgentHandler && (
-                          <FcApproval
-                            className="hover:scale-110"
-                            size={16}
-                            onClick={() =>
-                              approveAgentHandler(row.original?._id)
-                            }
-                          />
-                        )} */}
                       </Td>
                     </Tr>
                   );

@@ -43,8 +43,6 @@ const Login: React.FC = () => {
         {showForgetPasswordComponent && (
           <ForgetPasswordComponent email={email} setEmail={setEmail} password={password} setPassword={setPassword} />
         )}
-        {/* OTP Verification Section */}
-        {/* {showOTPVerificationComponent && <ForgetPasswordOTPVerificationComponent />} */}
       </div>
     </div>
   );

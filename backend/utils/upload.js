@@ -20,15 +20,14 @@ const storage = multer.diskStorage({
 exports.upload = multer({
     storage,
     limits: {
-        fileSize: 20 * 1024 * 1024 // 20 MB
+        fileSize: 20 * 1024 * 1024
     },
     fileFilter: (req, file, cb) => {
-        // Accept only Excel files
         const filetypes = /xlsx|xls|csv/;
         const allowedMimetypes = [
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-            'application/vnd.ms-excel', // .xls
-            'text/csv', // .csv
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'text/csv',
             'application/csv'
         ];
         const mimetype = allowedMimetypes.includes(file.mimetype);

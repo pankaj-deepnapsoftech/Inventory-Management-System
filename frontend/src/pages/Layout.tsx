@@ -3,7 +3,6 @@ import Header from "../components/Header/Header";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useLazyLoginWithTokenQuery } from "../redux/api/api";
 import { toast } from "react-toastify";
 import { userExists } from "../redux/reducers/authSlice";
 import Navigation from "../components/Navigation/Navigation";
@@ -13,17 +12,6 @@ const Layout: React.FC = () => {
   const [cookies, setCookie] = useCookies();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // const [loginWithToken, { isLoading, isError, data, error }] = useLazyLoginWithTokenQuery();
-
-  // const loginWithTokenHandler = async (token: string) => {
-  //   try {
-  //       const response = await loginWithToken(token).unwrap();
-  //       console.log(response, { isLoading, isError, data, error })
-  //   } catch (err: any) {
-  //     toast.error(err?.data?.msg || err?.message || "Something went wrong");
-  //   }
-  // };
 
   const loginWithTokenHandler = async (token: string) => {
     try {

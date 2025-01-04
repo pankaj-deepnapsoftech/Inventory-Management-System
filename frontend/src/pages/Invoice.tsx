@@ -1,6 +1,5 @@
 import { Button } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
-import ProformaInvoiceTable from "../components/Table/ProformaInvoiceTable";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,7 +12,6 @@ import {
   openInvoiceDetailsDrawer,
   openUpdateInvoiceDrawer,
 } from "../redux/reducers/drawersSlice";
-import AddProformaInvoice from "../components/Drawers/Proforma Invoice/AddProformaInvoice";
 import { useCookies } from "react-cookie";
 import { MdOutlineRefresh } from "react-icons/md";
 import { useDeleteInvoiceMutation } from "../redux/api/api";
@@ -181,7 +179,6 @@ const Invoice: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}

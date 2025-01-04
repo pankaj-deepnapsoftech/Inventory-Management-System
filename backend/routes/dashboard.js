@@ -5,6 +5,5 @@ const { isSuper } = require('../middlewares/isSuper');
 const router = express.Router();
 
 router.post('/', isAuthenticated, isSuper, summary);
-// router.get('/', summary);
 
 module.exports = router;

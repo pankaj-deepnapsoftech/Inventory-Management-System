@@ -69,16 +69,6 @@ exports.create = TryCatch(async (req, res) => {
   bom.is_production_started = true;
   await bom.save();
 
-  // await BOM.updateOne(
-  //   { _id: bom._id },
-  //   {
-  //     $push: {
-  //       'raw_materials.$[].production_process': productionProcess._id,
-  //       'scrap_materials.$[].production_process': productionProcess._id
-  //     }
-  //   }
-  // );
-
   res.status(200).json({
     status: 200,
     success: true,
@@ -129,8 +119,6 @@ exports.update = async (req, res) => {
     const prevRawMaterials = productionProcess.raw_materials;
     const currRawMaterials = bom.raw_materials;
 
-    // console.log(prevRawMaterials, currRawMaterials)
-
     await Promise.all(
       prevRawMaterials.map(async (prevRm) => {
         const id = prevRm.item;
@@ -163,8 +151,6 @@ exports.update = async (req, res) => {
     const prevScrapMaterials = productionProcess.scrap_materials;
     const currScrapMaterials = bom.scrap_materials;
 
-    // console.log(bom, prevScrapMaterials, currScrapMaterials)
-
     await Promise.all(
       prevScrapMaterials.map(async (prevSc) => {
         const id = prevSc.item;
@@ -173,7 +159,6 @@ exports.update = async (req, res) => {
           (item) => item.item.toString() === prevSc.item.toString()
         );
         const bomScrapMaterial = await BOMScrapMaterial.findById(currSc._id);
-        // console.log("********", currSc, bomScrapMaterial)
 
         if (prevSc.produced_quantity < currSc.produced_quantity) {
           const change = currSc.produced_quantity - prevSc.produced_quantity;

@@ -165,15 +165,6 @@ const WIPProductTable: React.FC<WIPProductTableProps> = ({
     usePagination
   );
 
-  // const getSelectedProducts = ()=>{
-  //   const rows = document.getElementsByClassName('select');
-  //   const rowsArr = Array.from(rows);
-  //   const selectedIds = rowsArr
-  //   .filter(checkbox => checkbox.checked)  // Filter only the checked checkboxes
-  //   .map(checkbox => checkbox.value);
-  //   console.log(selectedIds)
-  // }
-
   return (
     <div>
       {isLoadingProducts && <Loading />}
@@ -247,17 +238,6 @@ const WIPProductTable: React.FC<WIPProductTableProps> = ({
                             </Th>
                           );
                         })}
-                        {/* <Th
-                            textTransform="capitalize"
-                            fontSize="12px"
-                            fontWeight="700"
-                            color="black"
-                            backgroundColor="#fafafa"
-                            borderLeft="1px solid #d7d7d7"
-                            borderRight="1px solid #d7d7d7"
-                          >
-                            Actions
-                          </Th> */}
                       </Tr>
                     );
                   }
@@ -285,8 +265,6 @@ const WIPProductTable: React.FC<WIPProductTableProps> = ({
                               cell.column.id !== "category" &&
                               cell.column.id !== "sub_category" &&
                               cell.render("Cell")}
-
-                            {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
 
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (
@@ -349,44 +327,6 @@ const WIPProductTable: React.FC<WIPProductTableProps> = ({
                           </Td>
                         );
                       })}
-                      {/* <Td className="flex gap-x-2">
-                          {openProductDetailsDrawerHandler && (
-                            <MdOutlineVisibility
-                              className="hover:scale-110"
-                              size={16}
-                              onClick={() =>
-                                openProductDetailsDrawerHandler(row.original?._id)
-                              }
-                            />
-                          )}
-                          {openUpdateProductDrawerHandler && (
-                            <MdEdit
-                              className="hover:scale-110"
-                              size={16}
-                              onClick={() =>
-                                openUpdateProductDrawerHandler(row.original?._id)
-                              }
-                            />
-                          )}
-                          {deleteProductHandler && (
-                            <MdDeleteOutline
-                              className="hover:scale-110"
-                              size={16}
-                              onClick={() =>
-                                deleteProductHandler(row.original?._id)
-                              }
-                            />
-                          )}
-                          {approveProductHandler && (
-                            <FcApproval
-                              className="hover:scale-110"
-                              size={16}
-                              onClick={() =>
-                                approveProductHandler(row.original?._id)
-                              }
-                            />
-                          )}
-                        </Td> */}
                     </Tr>
                   );
                 })}

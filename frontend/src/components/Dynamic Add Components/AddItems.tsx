@@ -12,9 +12,6 @@ interface AddItemsProps{
 }
 
 const AddItems: React.FC<AddItemsProps> = ({inputs, setInputs}) => {
-//   const [inputs, setInputs] = useState<{ item: { value: string, label: string }, quantity: number, price: number }[]>([
-//     { item: { value: "", label: "" }, quantity: 0, price: 0 },
-//   ]);
   const [cookies] = useCookies();
   const [products, setProducts] = useState<any[] | []>([]);
   const [productOptions, setProductOptions] = useState<any[] | []>([]);

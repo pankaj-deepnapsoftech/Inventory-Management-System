@@ -39,7 +39,6 @@ interface UserRoleTableProps {
   openUpdateRoleDrawerHandler?: (id: string) => void;
   openRoleDetailsDrawerHandler?: (id: string) => void;
   deleteRoleHandler?: (id: string) => void;
-  // approveRoleHandler?: (id: string) => void;
 }
 
 const UserRoleTable: React.FC<UserRoleTableProps> = ({
@@ -254,15 +253,6 @@ const UserRoleTable: React.FC<UserRoleTableProps> = ({
                             }
                           />
                         )}
-                        {/* {approveStoreHandler && (
-                            <FcApproval
-                              className="hover:scale-110"
-                              size={16}
-                              onClick={() =>
-                                approveStoreHandler(row.original?._id)
-                              }
-                            />
-                          )} */}
                       </Td>
                     </Tr>
                   );

@@ -193,15 +193,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
     usePagination
   );
 
-  // const getSelectedProducts = ()=>{
-  //   const rows = document.getElementsByClassName('select');
-  //   const rowsArr = Array.from(rows);
-  //   const selectedIds = rowsArr
-  //   .filter(checkbox => checkbox.checked)  // Filter only the checked checkboxes
-  //   .map(checkbox => checkbox.value);
-  //   console.log(selectedIds)
-  // }
-
   return (
     <div>
       {isLoadingProducts && <Loading />}
@@ -309,8 +300,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
                               cell.column.id !== "inventory_category" &&
                               cell.column.id !== "change" &&
                               cell.render("Cell")}
-
-                            {/* {cell.column.id === 'select' && <input value={row.original._id} type="checkbox" className="select" />} */}
 
                             {cell.column.id === "createdAt" &&
                               row.original?.createdAt && (

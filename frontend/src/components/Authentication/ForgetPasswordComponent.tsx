@@ -19,11 +19,8 @@ interface ForgetPasswordComponentProps {
 const ForgetPasswordComponent: React.FC<ForgetPasswordComponentProps> = ({
   email,
   setEmail,
-  password,
-  setPassword
 }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [newPassword, setNewPassword] = useState<string | undefined>();
   const [otp, setOtp] = useState<string | undefined>();

@@ -109,7 +109,6 @@ exports.bulkUploadHandler = async (req, res) => {
       try {
         fs.unlink(req.file.path, () => {});
 
-        // TODO -> Check data validity
         await checkAgentCsvValidity(response);
 
         const stores = response;
@@ -122,7 +121,6 @@ exports.bulkUploadHandler = async (req, res) => {
           message: "Merchants has been added successfully",
         });
       } catch (error) {
-        // console.log(error);
         return res.status(400).json({
           status: 400,
           success: false,
@@ -130,10 +128,4 @@ exports.bulkUploadHandler = async (req, res) => {
         });
       }
     });
-
-  // res.status(200).json({
-  //     status: 200,
-  //     success: true,
-  //     message: ""
-  // })
 };

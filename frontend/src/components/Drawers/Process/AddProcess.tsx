@@ -20,7 +20,6 @@ const AddProcess: React.FC<AddProcess> = ({
 }) => {
   const [cookies] = useCookies();
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  // const [itemId, setItemId] = useState<{ value: string, label: string } | undefined>();
   const [itemId, setItemId] = useState<string | undefined>();
   const [itemName, setItemName] = useState<{ value: string, label: string } | undefined>();
   const [bom, setBom] = useState<{ value: string, label: string } | undefined>();
@@ -31,7 +30,6 @@ const AddProcess: React.FC<AddProcess> = ({
   const [rmStore, setRmStore] = useState<{ value: string, label: string } | undefined>();
   const [scrapStore, setScrapStore] = useState<{ value: string, label: string } | undefined>();
 
-  // const [itemIdOptions, setItemIdOptions] = useState<{ value: string, label: string }[] | []>();
   const [itemNameOptions, setItemNameOptions] = useState<{ value: string, label: string }[] | []>();
   const [bomOptions, setBomOptions] = useState<{ value: string, label: string }[] | []>();
   const [fgStoreOptions, setFgStoreOptions] = useState<{ value: string, label: string }[] | []>();
@@ -195,11 +193,9 @@ const AddProcess: React.FC<AddProcess> = ({
                 value={itemId}
                 className="no-scrollbar"
                 disabled
-                // onChange={(e) => setItemId(e.target.value)}
                 type="text"
                 placeholder="Item Id"
               />
-              {/* <Select value={itemId} options={itemIdOptions} onChange={(d: any) => setItemId(d)} required /> */}
             </FormControl>
             <FormControl className="mt-3 mb-5" isRequired>
               <FormLabel fontWeight="bold">Item Name</FormLabel>

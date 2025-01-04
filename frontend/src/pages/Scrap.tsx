@@ -1,35 +1,11 @@
 import {
-  Button,
-  filter,
-  FormControl,
-  FormLabel,
-  Input,
+  Button
 } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
-import AgentTable from "../components/Table/AgentTable";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  closeAddBuyerDrawer,
-  closeBuyerDetailsDrawer,
-  closeUpdateBuyerDrawer,
-  openAddBuyerDrawer,
-  openBuyerDetailsDrawer,
-  openUpdateBuyerDrawer,
-} from "../redux/reducers/drawersSlice";
-import SampleCSV from "../assets/csv/agent-sample.csv";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import AddBuyer from "../components/Drawers/Buyer/AddBuyer";
-import UpdateBuyer from "../components/Drawers/Buyer/UpdateBuyer";
-import {
-  useAgentBulKUploadMutation,
-  useDeleteAgentMutation,
-} from "../redux/api/api";
-import BuyerDetails from "../components/Drawers/Buyer/BuyerDetails";
-import { AiFillFileExcel } from "react-icons/ai";
-import { RxCross2 } from "react-icons/rx";
 import ScrapTable from "../components/Table/ScrapTable";
+import { toast } from "react-toastify";
 
 const Scrap: React.FC = () => {
   const [cookies] = useCookies();
@@ -99,7 +75,6 @@ const Scrap: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
@@ -117,17 +92,6 @@ const Scrap: React.FC = () => {
           >
             Refresh
           </Button>
-          {/* <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 200 }}
-            onClick={openAddBuyerDrawerHandler}
-            color="white"
-            backgroundColor="#1640d6"
-          >
-            Add New Buyer
-          </Button> */}
         </div>
       </div>
 

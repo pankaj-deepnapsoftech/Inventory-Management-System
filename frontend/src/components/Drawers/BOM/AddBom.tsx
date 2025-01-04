@@ -4,8 +4,7 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import {
-  useAddBomMutation,
-  useAddProductMutation,
+  useAddBomMutation
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
 import RawMaterial from "../../Dynamic Add Components/RawMaterial";
@@ -56,12 +55,10 @@ const AddBom: React.FC<AddBomProps> = ({
 
   const [rawMaterials, setRawMaterials] = useState<any[]>([
     {
-      // item_id: "",
       item_name: "",
       description: "",
       quantity: "",
       uom: "",
-      //   image?: string;
       category: "",
       assembly_phase: "",
       supplier: "",
@@ -76,8 +73,6 @@ const AddBom: React.FC<AddBomProps> = ({
     {
       item_name: "",
       description: "",
-      // estimated_quantity: "",
-      // produced_quantity: "",
       quantity: "",
       uom: "",
       unit_cost: "",
@@ -114,9 +109,6 @@ const AddBom: React.FC<AddBomProps> = ({
       try {
         const formData = new FormData();
 
-        // for(let i=0; i<supportingDoc?.current?.files?.length; i++){
-        // formData.append('file', supportingDoc?.current?.files[i]);
-        // }
         formData.append("file", fileInput?.files && fileInput.files[0]);
 
         const uploadedFileResponse = await fetch(
@@ -142,7 +134,6 @@ const AddBom: React.FC<AddBomProps> = ({
       item: material?.item_name?.value,
       description: material?.description,
       quantity: material?.quantity,
-      // image: material?.image,
       assembly_phase: material?.assembly_phase?.value,
       supplier: material?.supplier?.value,
       supporting_doc: material?.supporting_doc,
@@ -155,8 +146,6 @@ const AddBom: React.FC<AddBomProps> = ({
       scrapMaterials.map((material) => ({
         item: material?.item_name?.value,
         description: material?.description,
-        // estimated_quantity: material?.estimated_quantity,
-        // produced_quantity: material?.produced_quantity,
         quantity: material?.quantity,
         total_part_cost: material?.total_part_cost,
       }));
@@ -214,7 +203,6 @@ const AddBom: React.FC<AddBomProps> = ({
       if (!results.success) {
         throw new Error(results?.message);
       }
-      // console.log(results.products);
       setProducts(results.products);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
@@ -363,15 +351,6 @@ const AddBom: React.FC<AddBomProps> = ({
                     accept=".pdf"
                     className="p-1 border border-[#a9a9a9] w-[267px] rounded"
                   />
-                  {/* <Input
-                    border="1px"
-                    borderColor="#a9a9a9"
-                    ref={}
-                    // value={supportingDoc}
-                    // onChange={(e) => setSupportingDoc(e.target.value)}
-                    type="file"
-                    placeholder="Supporting Doc"
-                  /> */}
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
                   <FormLabel fontWeight="bold">Comments</FormLabel>
@@ -481,9 +460,6 @@ const AddBom: React.FC<AddBomProps> = ({
                 <input
                   disabled={true}
                   value={partsCount}
-                  // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  //   setPartsCount(+e.target.value)
-                  // }
                   type="number"
                   placeholder="Parts Count"
                   className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"
@@ -494,9 +470,6 @@ const AddBom: React.FC<AddBomProps> = ({
                 <input
                   disabled={true}
                   value={totalPartsCost}
-                  // onChange={(e: any) =>
-                  //   totalPartsCost(+e.target.value)
-                  // }
                   type="number"
                   placeholder="Total Parts Cost"
                   className="rounded px-2 py-[6px] w-[267px] border-[1px] border-[#a9a9a9] disabled:cursor-not-allowed disabled:bg-white"

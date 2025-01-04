@@ -1,19 +1,12 @@
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
-import Select from "react-select";
 import { MdOutlineRefresh } from "react-icons/md";
-import { AiFillFileExcel } from "react-icons/ai";
-import { RxCross2 } from "react-icons/rx";
-import SampleCSV from '../assets/csv/product-sample.csv';
-// import { usePagination, useSortBy, useTable } from "react-table";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useDeleteProductMutation,
-  useLazyFetchProductsQuery,
   useProductBulKUploadMutation,
 } from "../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import ProductTable from "../components/Table/ProductTable";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeAddProductDrawer,
@@ -27,8 +20,6 @@ import AddProduct from "../components/Drawers/Product/AddProduct";
 import UpdateProduct from "../components/Drawers/Product/UpdateProduct";
 import ProductDetails from "../components/Drawers/Product/ProductDetails";
 import WIPProductTable from "../components/Table/WIPProductTable";
-
-// const columns = useMemo(() => ([]), []);
 
 const WIPProducts: React.FC = () => {
   const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
@@ -100,30 +91,7 @@ const WIPProducts: React.FC = () => {
     }
   };
 
-  // const stockMovementHandler = async (productIds: string[], sellerId: string)=>{
-
-  // }
-
-  //   const [fetchProducts, { data, error, isError }] =
-  //   useLazyFetchProductsQuery();
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false);
-
-  //   const fetchProductsHandler = async () => {
-  //     try {
-  //       setIsLoadingProducts(true);
-  //       const response = await fetchProducts({}).unwrap();
-  //     //   if (isError) {
-  //     //     throw new Error(error);
-  //     //   }
-  //     console.log(response, data, error, isError)
-  //     //   setData(products);
-  //     //   setFilteredData(products);
-  //     } catch (err: any) {
-  //       toast.error(err?.data?.msg || err?.message || "Something went wrong");
-  //     } finally {
-  //       setIsLoadingProducts(false);
-  //     }
-  //   };
 
   const fetchProductsHandler = async () => {
     try {
@@ -209,7 +177,6 @@ const WIPProducts: React.FC = () => {
   useEffect(() => {
     const searchTxt = searchKey?.toLowerCase();
     // // @ts-ignore
-    // console.log(productServiceFilter, data[1]?.product_or_service?.toLowerCase(), data[0]?.product_or_service?.toLowerCase().includes(productServiceFilter))
     const results = data.filter(
       (d: any) =>
         (d.name?.toLowerCase()?.includes(searchTxt) ||
@@ -280,7 +247,6 @@ const WIPProducts: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
@@ -298,136 +264,7 @@ const WIPProducts: React.FC = () => {
           >
             Refresh
           </Button>
-          {/* <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 200 }}
-            onClick={openAddProductDrawerHandler}
-            color="white"
-            backgroundColor="#1640d6"
-          >
-            Add New Product
-          </Button> */}
-          {/* <div className="w-[200px]">
-            <Button
-              fontSize={{ base: "14px", md: "14px" }}
-              paddingX={{ base: "10px", md: "12px" }}
-              paddingY={{ base: "0", md: "3px" }}
-              width={{ base: "-webkit-fill-available", md: 200 }}
-              onClick={() => setShowBulkUploadMenu(true)}
-              color="white"
-              backgroundColor="#1640d6"
-              rightIcon={<AiFillFileExcel size={22} />}
-            >
-              Bulk Upload
-            </Button>
-            {showBulkUploadMenu && (
-              <div className="mt-1 border border-[#a9a9a9] rounded p-1">
-                <form>
-                  <FormControl>
-                    <FormLabel fontWeight="bold">Choose File (.csv)</FormLabel>
-                    <Input
-                      ref={fileRef}
-                      borderWidth={1}
-                      borderColor={"#a9a9a9"}
-                      paddingTop={1}
-                      type="file"
-                      accept=".csv, .xlsx"
-                    />
-                  </FormControl>
-                  <div className="flex gap-1">
-                    <Button
-                      type="submit"
-                      fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
-                      // width={{ base: "-webkit-fill-available", md: 200 }}
-                      onClick={bulkUploadHandler}
-                      color="white"
-                      backgroundColor="#1640d6"
-                      className="mt-1"
-                      rightIcon={<AiFillFileExcel size={22} />}
-                      isLoading={bulkUploading}
-                    >
-                      Upload
-                    </Button>
-                    <Button
-                      type="button"
-                      fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
-                      // width={{ base: "-webkit-fill-available", md: 200 }}
-                      onClick={() => setShowBulkUploadMenu(false)}
-                      color="white"
-                      backgroundColor="#1640d6"
-                      className="mt-1"
-                      rightIcon={<RxCross2 size={22} />}
-                    >
-                      Close
-                    </Button>
-                  </div>
-                  <a href={SampleCSV}>
-                    <Button
-                      type="button"
-                      fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
-                      width={{ base: "-webkit-fill-available", md: 190 }}
-                      color="white"
-                      backgroundColor="#1640d6"
-                      className="mt-1"
-                      rightIcon={<AiFillFileExcel size={22} />}
-                    >
-                      Sample CSV
-                    </Button>
-                  </a>
-                </form>
-              </div>
-            )}
-          </div> */}
         </div>
-      </div>
-      <div className="flex justify-start items-center gap-2 mb-8">
-        {/* <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
-          Products
-        </div> */}
-
-        {/* <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 gap-x-2 w-full md:w-fit"> */}
-        {/* <FormControl width={"-webkit-max-content"}>
-          <FormLabel fontWeight="bold" marginBottom={0}>
-            Products/Services
-          </FormLabel>
-          <select
-            value={productServiceFilter}
-            onChange={(e: any) => setProductServiceFilter(e.target.value)}
-            className="w-[200px] mt-2 rounded border border-[#a9a9a9] py-2 px-2"
-          >
-            <option value="">All</option>
-            <option value="product">Products</option>
-            <option value="service">Services</option>
-          </select>
-        </FormControl>
-        <FormControl width={"-webkit-max-content"}>
-          <FormLabel fontWeight="bold">Store</FormLabel>
-          <Select
-            className="w-[200px] rounded mt-2 border border-[#a9a9a9]"
-            options={storeOptions}
-            value={storeFilter}
-            onChange={(d: any) => setStoreFilter(d)}
-          />
-        </FormControl> */}
-        {/* <FormControl>
-          <FormLabel fontWeight="semibold" marginBottom={0}>
-            Status
-          </FormLabel>
-          <select className="w-[200px] rounded border border-[#a9a9a9] py-2 px-2">
-            <option value="">All</option>
-            <option value="product">Products</option>
-            <option value="service">Services</option>
-          </select>
-        </FormControl> */}
-        {/* </div> */}
       </div>
 
       <div>

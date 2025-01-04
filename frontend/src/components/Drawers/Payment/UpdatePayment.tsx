@@ -4,15 +4,10 @@ import { BiX } from "react-icons/bi";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import {
-  useAddProductMutation,
-  useCreatePaymentMutation,
-  useCreateProcessMutation,
-  useCreateProformaInvoiceMutation,
   useUpdatePaymentMutation,
 } from "../../../redux/api/api";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import AddItems from "../../Dynamic Add Components/AddItems";
 
 interface UpdatePayment {
   closeDrawerHandler: () => void;

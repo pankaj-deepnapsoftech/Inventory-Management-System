@@ -22,7 +22,6 @@ exports.create = TryCatch(async (req, res) => {
   let otp = generateOTP(4);
   await OTP.create({ email: user?.email, otp });
 
-  // FIX IT ************************
   sendEmail(
     "Account Verification",
     `
@@ -202,7 +201,6 @@ exports.loginWithToken = TryCatch(async (req, res) => {
   throw new ErrorHandler("Session expired, login again", 401);
 });
 exports.resetPasswordRequest = TryCatch(async (req, res) => {
-  // const { _id: id } = req.user;
   const {email} = req.body;
   if(!email){
     throw new ErrorHandler("Email Id not provided", 400);
@@ -214,7 +212,6 @@ exports.resetPasswordRequest = TryCatch(async (req, res) => {
 
   let isExistingOTP = await OTP.findOne({ email: user.email });
   if (isExistingOTP) {
-    // FIX IT ************************
     sendEmail(
       "Reset Password Verification",
       `
@@ -238,7 +235,6 @@ exports.resetPasswordRequest = TryCatch(async (req, res) => {
   let otp = generateOTP(4);
   await OTP.create({ email: user?.email, otp });
 
-  // FIX IT ************************
   sendEmail(
     "Reset Password Verification",
     `
@@ -286,7 +282,6 @@ exports.resendOtp = TryCatch(async (req, res) => {
   }
   let isExistingOTP = await OTP.findOne({ email: user.email });
   if (isExistingOTP) {
-    // FIX IT ************************
     sendEmail(
       "Reset Password Verification",
       `
@@ -310,7 +305,6 @@ exports.resendOtp = TryCatch(async (req, res) => {
   let otp = generateOTP(4);
   await OTP.create({ email: user?.email, otp });
 
-  // FIX IT ************************
   sendEmail(
     "Reset Password Verification",
     `

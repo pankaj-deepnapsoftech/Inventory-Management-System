@@ -198,7 +198,6 @@ const Sellers: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
@@ -258,9 +257,6 @@ const Sellers: React.FC = () => {
                     <Button
                       type="submit"
                       fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
-                      // width={{ base: "-webkit-fill-available", md: 200 }}
                       onClick={bulkUploadHandler}
                       color="white"
                       backgroundColor="#1640d6"
@@ -273,9 +269,6 @@ const Sellers: React.FC = () => {
                     <Button
                       type="button"
                       fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
-                      // width={{ base: "-webkit-fill-available", md: 200 }}
                       onClick={() => setShowBulkUploadMenu(false)}
                       color="white"
                       backgroundColor="#1640d6"
@@ -289,8 +282,6 @@ const Sellers: React.FC = () => {
                     <Button
                       type="button"
                       fontSize={{ base: "14px", md: "14px" }}
-                      // paddingX={{ base: "10px", md: "12px" }}
-                      // paddingY={{ base: "0", md: "3px" }}
                       width={{ base: "-webkit-fill-available", md: 190 }}
                       color="white"
                       backgroundColor="#1640d6"

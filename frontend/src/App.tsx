@@ -23,10 +23,7 @@ const App: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Layout />}>
             {routes.map((route, ind) => {
-              const isAllowed = isSuper || allowedroutes.includes(route.path.replaceAll('/', ''))
-              // if(!isAllowed){
-              //   return null;
-              // }
+              const isAllowed = isSuper || allowedroutes.includes(route.path.replaceAll('/', ''));
               if (route.isSublink) {
                 return (
                   <Route key={ind} path={route.path} element={route.element}>

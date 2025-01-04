@@ -4,7 +4,6 @@ import {
   useDeleteBomMutation,
   useDeleteProductMutation,
   useDeleteStoresMutation,
-  useLazyUnapprovedProductsQuery,
   useUpdateAgentMutation,
   useUpdateBOMMutation,
   useUpdateProductMutation,
@@ -15,8 +14,6 @@ import { useCookies } from "react-cookie";
 import { Button } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
 import ProductTable from "../components/Table/ProductTable";
-import UpdateProduct from "../components/Drawers/Product/UpdateProduct";
-import { FcDatabase } from "react-icons/fc";
 import StoreTable from "../components/Table/StoreTable";
 import AgentTable from "../components/Table/AgentTable";
 import BOMTable from "../components/Table/BOMTable";
@@ -24,17 +21,6 @@ import BOMRawMaterialTable from "../components/Table/BOMRawMaterialTable";
 import { useSelector } from "react-redux";
 
 const Approvals: React.FC = () => {
-  //   const [unapprovedProducts] = useLazyUnapprovedProductsQuery();
-
-  //   const fetchUnapprovedProductsHandler = async () => {
-  //     try {
-  //         const data = await unapprovedProducts().unwrap();
-  //         console.log(data);
-  //     } catch (err: any) {
-  //       toast.error(err?.data?.msg || err?.message || "Something went wrong");
-  //     }
-  //   };
-
   const [cookies] = useCookies();
   const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
   const isAllowed = isSuper || allowedroutes.includes("Approval");

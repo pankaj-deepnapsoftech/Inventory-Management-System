@@ -22,8 +22,6 @@ exports.create = TryCatch(async (req, res) => {
 
   let insuffientStockMsg = "";
 
-  // console.log(scrap_materials)
-
   if (
     !raw_materials ||
     raw_materials.length === 0 ||
@@ -57,23 +55,9 @@ exports.create = TryCatch(async (req, res) => {
       }
       if (isProdExists.current_stock < material.quantity) {
         insuffientStockMsg += ` Insufficient stock of ${isProdExists.name}`;
-        // throw new ErrorHandler(
-        //   `Insufficient stock of ${isProdExists.name}`,
-        //   400
-        // );
       }
     })
   );
-
-  // const bom_raw_materials = await Promise.all(
-  //   raw_materials.map(async (material) => {
-  //     const isExistingMaterial = await Product.findById(material.item);
-  //     const createdMaterial = await BOMRawMaterial.create({
-  //       ...material,
-  //     });
-  //     return createdMaterial._id;
-  //   })
-  // );
 
   const { item, description, quantity, image, supporting_doc, comments, cost } =
     finished_good;
@@ -88,7 +72,6 @@ exports.create = TryCatch(async (req, res) => {
   });
 
   const bom = await BOM.create({
-    // raw_materials: bom_raw_materials,
     processes,
     finished_good: createdFinishedGood._id,
     approved_by,
@@ -200,9 +183,6 @@ exports.update = TryCatch(async (req, res) => {
 
   if (finished_good) {
     const isBomFinishedGoodExists = await Product.findById(finished_good.item);
-    // if (!isBomFinishedGoodExists) {
-    //   throw new ErrorHandler("Finished good doesn't exist", 400);
-    // }
     if (isBomFinishedGoodExists) {
       if (finished_good.quantity < 0) {
         throw new ErrorHandler(`Negative quantities are not allowed`, 400);
@@ -214,10 +194,6 @@ exports.update = TryCatch(async (req, res) => {
     await Promise.all(
       raw_materials.map(async (material) => {
         const isRawMaterialExists = await BOMRawMaterial.findById(material._id);
-        // if (!isRawMaterialExists) {
-        //   return;
-        //   // throw new ErrorHandler(`Raw material doesn't exist`, 400);
-        // }
         if (isRawMaterialExists) {
           const isProdExists = await Product.findById(material.item);
           if (!isProdExists) {
@@ -226,21 +202,8 @@ exports.update = TryCatch(async (req, res) => {
           if (material.quantity < 0) {
             throw new ErrorHandler(`Negative quantities are not allowed`, 400);
           }
-          // if (
-          //   isRawMaterialExists.quantity.toString() !==
-          //     material.quantity.toString() &&
-          //   isProdExists.current_stock < material.quantity
-          // ) {
-          if (
-            // isRawMaterialExists.quantity.toString() !==
-            //   material.quantity.toString() &&
-            isProdExists.current_stock < material.quantity
-          ) {
+          if (isProdExists.current_stock < material.quantity) {
             insuffientStockMsg += ` Insufficient stock of ${isProdExists.name}`;
-            // throw new ErrorHandler(
-            //   `Insufficient stock of ${isProdExists.name}`,
-            //   400
-            // );
           }
         }
       })
@@ -253,10 +216,6 @@ exports.update = TryCatch(async (req, res) => {
         const isScrapMaterialExists = await BOMScrapMaterial.findById(
           material._id
         );
-        // if (!isScrapMaterialExists) {
-        //   return;
-        //   // throw new ErrorHandler(`Scrap material doesn't exist`, 400);
-        // }
         if (isScrapMaterialExists) {
           const isProdExists = await Product.findById(material.item);
           if (!isProdExists) {
@@ -278,16 +237,13 @@ exports.update = TryCatch(async (req, res) => {
 
     if (bom.finished_good.quantity > finished_good.quantity) {
       bom.finished_good.quantity = finished_good.quantity;
-      // isProdExists.current_stock += quantityDifference;
     } else if (bom.finished_good.quantity < finished_good.quantity) {
       bom.finished_good.quantity = finished_good.quantity;
-      // isProdExists.current_stock -= quantityDifference;
     }
 
     await isProdExists.save();
 
     bom.finished_good.cost = finished_good.cost;
-    // bom.finished_good.quantity = finished_good.quantity;
     bom.finished_good.comments = finished_good?.comments;
     bom.finished_good.description = finished_good?.description;
     bom.finished_good.supporting_doc = finished_good?.supporting_doc;
@@ -320,10 +276,8 @@ exports.update = TryCatch(async (req, res) => {
               const quantityDifference =
                 material.quantity - isExistingRawMaterial.quantity;
               if (quantityDifference > 0) {
-                // isProdExists.current_stock -= quantityDifference;
                 isExistingRawMaterial.quantity = material.quantity;
               } else {
-                // isProdExists.current_stock += Math.abs(quantityDifference);
                 isExistingRawMaterial.quantity = material.quantity;
               }
             }
@@ -339,8 +293,6 @@ exports.update = TryCatch(async (req, res) => {
               ...material,
               bom: bom._id,
             });
-            // isProdExists.current_stock -= newRawMaterial.quantity;
-            // await isProdExists.save();
             bom.raw_materials.push(newRawMaterial._id);
           }
         } catch (error) {
@@ -380,10 +332,8 @@ exports.update = TryCatch(async (req, res) => {
               const quantityDifference =
                 material.quantity - isExistingScrapMaterial.quantity;
               if (quantityDifference > 0) {
-                // isProdExists.current_stock -= quantityDifference;
                 isExistingScrapMaterial.quantity = material.quantity;
               } else {
-                // isProdExists.current_stock += Math.abs(quantityDifference);
                 isExistingScrapMaterial.quantity = material.quantity;
               }
             }
@@ -394,10 +344,8 @@ exports.update = TryCatch(async (req, res) => {
               const quantityDifference =
                 material.quantity - isExistingScrapMaterial.quantity;
               if (quantityDifference > 0) {
-                // isProdExists.current_stock -= quantityDifference;
                 isExistingScrapMaterial.quantity = material.quantity;
               } else {
-                // isProdExists.current_stock += Math.abs(quantityDifference);
                 isExistingScrapMaterial.quantity = material.quantity;
               }
             }
@@ -410,8 +358,6 @@ exports.update = TryCatch(async (req, res) => {
               ...material,
               bom: bom._id,
             });
-            // isProdExists.current_stock -= newScrapMaterial.quantity;
-            // await isProdExists.save();
             bom.scrap_materials.push(newScrapMaterial._id);
           }
         } catch (error) {
@@ -616,25 +562,10 @@ exports.findFinishedGoodBom = TryCatch(async (req, res) => {
     throw new ErrorHandler("Id not provided", 400);
   }
 
-  // const boms = await BOM.find({'finished_good': {
-  //   $elemMatch: {
-  //     item: _id
-  //   }}}).populate({
-  //   path: "finished_good",
-  //   populate: [
-  //     {
-  //       path: "item",
-  //     },
-  //   ],
-  // });
-
   const allBoms = await BOM.find().populate("finished_good");
-  // console.log(allBoms)
   const boms = allBoms.filter((bom) => {
     return bom.finished_good.item.toString() === _id;
   });
-
-  // console.log(boms)
 
   res.status(200).json({
     status: 200,
@@ -661,15 +592,17 @@ exports.unapprovedRawMaterialsForAdmin = TryCatch(async (req, res) => {
       },
     });
 
-  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) =>
-    prod.bom.raw_materials.map((rm) => ({
-      ...rm._doc,
-      ...prod.bom._doc,
+  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) => {
+    const rm = prod.bom.raw_materials.filter(
+      (i) => i.item._id.toString() === prod.item.toString()
+    )[0];
+
+    return {
+      bom_name: prod.bom._doc.bom_name,
       ...rm.item._doc,
       _id: prod._id,
-      item: undefined,
-    }))
-  );
+    };
+  });
 
   res.status(200).json({
     status: 200,
@@ -696,15 +629,6 @@ exports.approveRawMaterialForAdmin = TryCatch(async (req, res) => {
     { approvedByAdmin: true },
     { new: true }
   );
-  // const requiredBom = await BOM.findById(updatedRawMaterial.bom).populate(
-  //   "raw_materials"
-  // );
-  // const allRawMaterials = requiredBom.raw_materials;
-  // let areAllApproved = true;
-  // allRawMaterials.forEach((rm) => areAllApproved && rm.approved);
-  // if (areAllApproved) {
-  //   await ProductionProcess.findByIdAndUpdate({_id: requiredBom.production_process}, {status: "raw materials approved"});
-  // }
 
   res.status(200).json({
     status: 200,
@@ -731,15 +655,17 @@ exports.unapprovedRawMaterials = TryCatch(async (req, res) => {
       },
     });
 
-  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) =>
-    prod.bom.raw_materials.map((rm) => ({
-      ...rm._doc,
-      ...prod.bom._doc,
+  const unapprovedRawMaterials = unapprovedProducts.flatMap((prod) => {
+    const rm = prod.bom.raw_materials.filter(
+      (i) => i.item._id.toString() === prod.item.toString()
+    )[0];
+
+    return {
+      bom_name: prod.bom._doc.bom_name,
       ...rm.item._doc,
       _id: prod._id,
-      item: undefined,
-    }))
-  );
+    };
+  });
 
   res.status(200).json({
     status: 200,
@@ -767,7 +693,10 @@ exports.approveRawMaterial = TryCatch(async (req, res) => {
   let areAllApproved = true;
   allRawMaterials.forEach((rm) => areAllApproved && rm.approved);
   if (areAllApproved) {
-    await ProductionProcess.findByIdAndUpdate({_id: requiredBom.production_process}, {status: "raw materials approved"});
+    await ProductionProcess.findByIdAndUpdate(
+      { _id: requiredBom.production_process },
+      { status: "raw materials approved" }
+    );
   }
 
   res.status(200).json({

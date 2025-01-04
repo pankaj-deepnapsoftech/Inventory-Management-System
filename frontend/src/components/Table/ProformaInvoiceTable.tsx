@@ -52,14 +52,12 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
 }) => {
   const columns = useMemo(
     () => [
-      // { Header: "Number", accessor: "number" },
       { Header: "Created By", accessor: "creator" },
       { Header: "Created At", accessor: "createdAt" },
       { Header: "Last Updated", accessor: "updatedAt" },
       { Header: "Customer", accessor: "customer" },
       { Header: "Sub Total", accessor: "subtotal" },
       { Header: "Total", accessor: "total" },
-      // { Header: "Status", accessor: "status" },
     ],
     []
   );
@@ -264,15 +262,6 @@ const ProformaInvoiceTable: React.FC<AgentTableProps> = ({
                             }
                           />
                         )}
-                        {/* {approveAgentHandler && (
-                          <FcApproval
-                            className="hover:scale-110"
-                            size={16}
-                            onClick={() =>
-                              approveAgentHandler(row.original?._id)
-                            }
-                          />
-                        )} */}
                       </Td>
                     </Tr>
                   );

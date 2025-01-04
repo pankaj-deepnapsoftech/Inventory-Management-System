@@ -49,7 +49,6 @@ const PaymentTable: React.FC<AgentTableProps> = ({
 }) => {
   const columns = useMemo(
     () => [
-        // { Header: "Number", accessor: "number" },
         { Header: "Created By", accessor: "creator" },
         { Header: "Customer", accessor: "customer" },
         { Header: "Amount", accessor: "amount" },
@@ -240,24 +239,6 @@ const PaymentTable: React.FC<AgentTableProps> = ({
                             }
                           />
                         )}
-                        {/* {deleteAgentHandler && (
-                          <MdDeleteOutline
-                            className="hover:scale-110"
-                            size={16}
-                            onClick={() =>
-                              deleteAgentHandler(row.original?._id)
-                            }
-                          />
-                        )}
-                        {approveAgentHandler && (
-                          <FcApproval
-                            className="hover:scale-110"
-                            size={16}
-                            onClick={() =>
-                              approveAgentHandler(row.original?._id)
-                            }
-                          />
-                        )} */}
                       </Td>
                     </Tr>
                   );

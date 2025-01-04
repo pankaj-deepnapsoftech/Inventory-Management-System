@@ -17,7 +17,5 @@ router.route('/:id')
         .delete(isAuthenticated, isAllowed, remove)
         .get(isAuthenticated, isAllowed, details);
 router.get('/bom/:_id', isAuthenticated, findFinishedGoodBom);
-// router.delete('/remove/raw-material/:id', isAuthenticated, removeRawMaterial);
-// router.delete('/remove/finished-good/:id', isAuthenticated, removeFinishedGood);
 
 module.exports = router;

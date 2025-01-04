@@ -50,6 +50,3 @@ exports.all = TryCatch(async (req, res) => {
     scraps,
   });
 });
-// exports.details = TryCatch(async (req, res)=>{
-
-// })

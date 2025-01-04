@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { BiUser } from "react-icons/bi";
 import { FaStarOfLife } from "react-icons/fa";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import {
   useResendOTPMutation,
-  useResetPasswordMutation,
   useVerifyUserMutation,
 } from "../../redux/api/api";
 import { toast } from "react-toastify";
@@ -108,15 +106,12 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
               value={otp}
               required
               onChange={(e) => setOtp(e.target.value)}
-              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border rounded mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
+              className="w-[100%] outline-none text-base pl-7 pr-2 py-2 border mt-2 border-[#d9d9d9] rounded-[10px] hover:border-[#1640d6] cursor-pointer"
               type="text"
               placeholder="OTP"
             />
           </div>
         </div>
-        {/* <div className="text-[#1640d6] mt-2">
-      <Link to='/'>Go back to Login page</Link>
-      </div> */}
         <div className="flex items-center gap-x-1">
           <button
             type="button"

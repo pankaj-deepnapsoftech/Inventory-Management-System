@@ -46,7 +46,6 @@ const userSchema = new Schema({
     timestamps: true
 });
 
-// Hash user password before saving it if it has changed
 userSchema.pre("save", async function (next) {
     if(!this.isModified('password')){
         return next();
@@ -61,7 +60,6 @@ userSchema.pre("save", async function (next) {
     }
 })
 
-// Hash user password before updating it if it has changed
 userSchema.pre("findOneAndUpdate", async function (next) {
     if(!this._update.password){
         return next();

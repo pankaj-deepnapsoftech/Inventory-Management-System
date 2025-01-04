@@ -18,13 +18,6 @@ const bomSchema = new Schema(
     raw_materials: {
       type: [Schema.Types.ObjectId],
       ref: "BOM-Raw-Material",
-      // required: [true, "Raw material is a required field"],
-      // validate: {
-      //   validator: function (arr) {
-      //     return Array.isArray(arr) && arr.length >= 1;
-      //   },
-      //   message: "There should be atleast 1 raw material",
-      // },
     },
     scrap_materials: {
       type: [Schema.Types.ObjectId],

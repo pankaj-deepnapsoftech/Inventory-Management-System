@@ -32,12 +32,6 @@ const Header: React.FC = () => {
       <img src={logo} className="w-[150px]"></img>
 
       <div className="flex gap-x-5 items-center">
-        {/* <div className="relative">
-          {notificationCtx.unseenNotifications > 0 && (
-            <span className="absolute top-[-10px] left-[18px] bg-red-600 text-white h-[25px] w-[25px] rounded-full flex items-center justify-center">
-              {notificationCtx.unseenNotifications}
-            </span>
-          )} */}
         <IoIosNotifications size={40} />
 
         <Avatar

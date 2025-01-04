@@ -1,14 +1,8 @@
 import { Button } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
-// import { usePagination, useSortBy, useTable } from "react-table";
-import { useEffect, useMemo, useState } from "react";
-import {
-  useDeleteProductMutation,
-  useLazyFetchProductsQuery,
-} from "../redux/api/api";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import ProductTable from "../components/Table/ProductTable";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeAddEmployeeDrawer,
@@ -22,31 +16,18 @@ import EmployeeTable from "../components/Table/EmployeeTable";
 import EmployeeDetails from "../components/Drawers/Employee/EmployeeDetails";
 import UpdateEmployee from "../components/Drawers/Employee/UpdateEmployee";
 
-// const columns = useMemo(() => ([]), []);
-
 const Employees: React.FC = () => {
   const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
   const isAllowed = isSuper || allowedroutes.includes("employee");
   const [cookies] = useCookies();
   const [data, setData] = useState([]);
-  const [employeeId, setEmployeeId] = useState<string | undefined>(); // Product Id to be updated or deleted
+  const [employeeId, setEmployeeId] = useState<string | undefined>();
   const [searchKey, setSearchKey] = useState<string | undefined>();
   const [filteredData, setFilteredData] = useState<any>([]);
 
-  const {
-    isAddEmployeeDrawerOpened,
-    isUpdateEmployeeDrawerOpened,
-    isEmployeeDetailsDrawerOpened,
-  } = useSelector((state: any) => state.drawers);
+  const { isUpdateEmployeeDrawerOpened, isEmployeeDetailsDrawerOpened } =
+    useSelector((state: any) => state.drawers);
   const dispatch = useDispatch();
-
-  const openAddEmployeeDrawerHandler = () => {
-    dispatch(openAddEmployeeDrawer());
-  };
-
-  const closeEmployeeDrawerHandler = () => {
-    dispatch(closeAddEmployeeDrawer());
-  };
 
   const openUpdateEmployeeDrawerHandler = (id: string) => {
     setEmployeeId(id);
@@ -66,18 +47,6 @@ const Employees: React.FC = () => {
     dispatch(closeEmployeeDetailsDrawer());
   };
 
-  //   const deleteProductHandler = async (id: string) => {
-  //     try {
-  //       const response: any = await deleteProduct({ _id: id }).unwrap();
-  //       toast.success(response.message);
-  //       fetchProductsHandler();
-  //     } catch (err: any) {
-  //       toast.error(err?.data?.message || err?.message || "Something went wrong");
-  //     }
-  //   };
-
-  //   const [fetchProducts, { data, error, isError }] =
-  //   useLazyFetchProductsQuery();
   const [isLoadingEmployees, setIsLoadingEmployees] = useState<boolean>(false);
 
   const fetchEmployeesHandler = async () => {
@@ -138,20 +107,17 @@ const Employees: React.FC = () => {
     setFilteredData(results);
   }, [searchKey]);
 
-  if(!isAllowed){
-    return <div className="text-center text-red-500">You are not allowed to access this route.</div>
+  if (!isAllowed) {
+    return (
+      <div className="text-center text-red-500">
+        You are not allowed to access this route.
+      </div>
+    );
   }
 
   return (
     <div>
-      {/* Add Product Drawer */}
-      {/* {isAddEmployeeDrawerOpened && (
-        <AddProduct
-          closeDrawerHandler={closeProductDrawerHandler}
-          fetchProductsHandler={fetchProductsHandler}
-        />
-      )} */}
-      {/* Update Product Drawer */}
+      {/* Update Employee Drawer */}
       {isUpdateEmployeeDrawerOpened && (
         <UpdateEmployee
           closeDrawerHandler={closeUpdateEmployeeDrawerHandler}
@@ -167,7 +133,7 @@ const Employees: React.FC = () => {
         />
       )}
 
-      {/* Products Page */}
+      {/* Employees Page */}
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
         <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
           Employees
@@ -177,7 +143,6 @@ const Employees: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
@@ -195,25 +160,16 @@ const Employees: React.FC = () => {
           >
             Refresh
           </Button>
-          {/* <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 200 }}
-            onClick={openAddEmployeeDrawerHandler}
-            color="white"
-            backgroundColor="#1640d6"
-          >
-            Add New Employee
-          </Button> */}
         </div>
       </div>
 
       <div>
         <EmployeeTable
-                  employees={filteredData}
-                  openEmployeeDetailsDrawerHandler={openEmployeeDetailsDrawerHandler}
-                  openUpdateEmployeeDrawerHandler={openUpdateEmployeeDrawerHandler} isLoadingEmployees={isLoadingEmployees}        />
+          employees={filteredData}
+          openEmployeeDetailsDrawerHandler={openEmployeeDetailsDrawerHandler}
+          openUpdateEmployeeDrawerHandler={openUpdateEmployeeDrawerHandler}
+          isLoadingEmployees={isLoadingEmployees}
+        />
       </div>
     </div>
   );

@@ -17,7 +17,6 @@ const productSchema = new Schema({
         required: [true, "Product Id is a required field"],
         unique: true,
     },
-    // Unit of measurement (uom)
     uom: {
         type: String,
         required: [true, 'Unit of Measurement (UoM) is a required field'],
@@ -81,8 +80,6 @@ const productSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Store'
     }
-    // tax: Number, // TODO -> Which taxes should be added
-    // image: // TODO -> Should be kept or not
 }, {
     timestamps: true
 });

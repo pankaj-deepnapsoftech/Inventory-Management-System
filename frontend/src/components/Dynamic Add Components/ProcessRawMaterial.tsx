@@ -1,8 +1,6 @@
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { BiMinus } from "react-icons/bi";
-import { IoIosAdd } from "react-icons/io";
 import Select from "react-select";
 import { toast } from "react-toastify";
 
@@ -53,33 +51,6 @@ const ProcessRawMaterial: React.FC<ProcessRawMaterialProps> = ({
 
     setInputs(inputsArr);
   };
-
-//   const addInputHandler = () => {
-//     setInputs((prev: any) => [
-//       ...prev,
-//       {
-//         item_id: "",
-//         item_name: "",
-//         description: "",
-//         quantity: "",
-//         uom: "",
-//         //   image?: string;
-//         category: "",
-//         assembly_phase: "",
-//         supplier: "",
-//         // supporting_doc: "",
-//         comments: "",
-//         unit_cost: "",
-//         total_part_cost: "",
-//       },
-//     ]);
-//   };
-
-//   const deleteInputHandler = (ind: number) => {
-//     const inputsArr = [...inputs];
-//     inputsArr.splice(ind, 1);
-//     setInputs(inputsArr);
-//   };
 
   const fetchSuppliersHandler = async () => {
     try {
@@ -143,9 +114,6 @@ const ProcessRawMaterial: React.FC<ProcessRawMaterialProps> = ({
                 value={selectedProducts[ind]?.label}
                 name="item_name"
                 onChange={(d) => {
-                  // const selectedProds = [...selectedProducts];
-                  // selectedProds[ind] = {...d};
-                  // setSelectedProducts(selectedProds);
                   onChangeHandler("item_name", d, ind);
                 }}
               />
@@ -241,19 +209,6 @@ const ProcessRawMaterial: React.FC<ProcessRawMaterialProps> = ({
                 }}
               />
             </FormControl>
-            {/* <FormControl>
-            <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-            <Input
-              border="1px"
-              borderColor="#a9a9a9"
-              onChange={(e) => {
-                onChangeHandler(e.target.name, e.target.value, ind);
-              }}
-              type="text"
-              name="supporting_doc"
-              value={input.supporting_doc}
-            ></Input>
-          </FormControl> */}
             <FormControl>
               <FormLabel fontWeight="bold">Comments</FormLabel>
               <Input
@@ -298,26 +253,6 @@ const ProcessRawMaterial: React.FC<ProcessRawMaterialProps> = ({
           </div>
         ))}
       </FormControl>
-      {/* <div className="text-end mt-1">
-        {inputs.length > 1 && (
-          <Button
-            onClick={() => deleteInputHandler(inputs.length - 1)}
-            leftIcon={<BiMinus />}
-            variant="outline"
-            className="mr-1 bg-[#a9a9a9]"
-          >
-            Remove
-          </Button>
-        )}
-        <Button
-          onClick={addInputHandler}
-          leftIcon={<IoIosAdd />}
-          variant="outline"
-          className="bg-[#a9a9a9]"
-        >
-          Add
-        </Button>
-      </div> */}
     </div>
   );
 };

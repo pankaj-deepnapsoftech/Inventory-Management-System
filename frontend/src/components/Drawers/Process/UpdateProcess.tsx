@@ -42,12 +42,10 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
   >([]);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([
     {
-      // item_id: "",
       item_name: "",
       description: "",
       quantity: "",
       uom: "",
-      //   image?: string;
       category: "",
       assembly_phase: "",
       supplier: "",
@@ -153,12 +151,10 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
           description: finishedGoodDescription,
           estimated_quantity: finishedGoodQuantity,
           produced_quantity: finishedGoodProducedQuantity,
-          // supporting_doc: pdfUrl,
           comments: finishedGoodComments,
           cost: finishedGoodCost,
         },
         bom_name: bomName,
-        // parts_count: partsCount,
         total_cost: totalCost,
       },
       // Production Process
@@ -249,7 +245,6 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
             description: material.description,
             quantity: material.quantity,
             uom: material.item.uom,
-            //   image?: string;
             category: material.item.category,
             assembly_phase: {
               value: material?.assembly_phase,
@@ -291,7 +286,6 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       );
       setScrapMaterials(scrap);
 
-      // setProcesses(data.production_process.bom.processes);
       setProcesses(data.production_process.processes);
 
       setFinishedGood({
@@ -312,7 +306,6 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       setFinishedGoodCategory(
         data.production_process.bom.finished_good.item.category
       );
-      // setFinishedGoodSupportingDoc(data.production_process.bom.finished_good.item.category);
       setFinishedGoodComments(
         data.production_process.bom.finished_good.comments
       );
@@ -380,7 +373,6 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
       selectedProducts[selectedProducts.length - 1].unit_cost !== "" &&
       selectedProducts[selectedProducts.length - 1].quantity !== ""
     ) {
-      // setPartsCount(selectedProducts.length);
       const cost = selectedProducts.reduce(
         (prev, current) => prev + +current.unit_cost * +current.quantity,
         0
@@ -531,21 +523,12 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
                   <FormLabel fontWeight="bold">Supporting Doc</FormLabel>
-                  {/* <Input
-                    border="1px"
-                    borderColor="#a9a9a9"
-                    value={supportingDoc}
-                    onChange={(e) => setSupportingDoc(e.target.value)}
-                    type="text"
-                    placeholder="Supporting Doc"
-                  /> */}
                   <input
                     disabled
                     type="file"
                     placeholder="Choose a file"
                     accept=".pdf"
                     className="p-1 border border-[#a9a9a9] w-[267px] rounded"
-                    // ref={supportingDoc}
                   />
                 </FormControl>
                 <FormControl className="mt-3 mb-5">
@@ -577,7 +560,6 @@ const UpdateProcess: React.FC<UpdateProcess> = ({
                     border="1px"
                     borderColor="#a9a9a9"
                     value={finishedGoodCost}
-                    // onChange={(e) => setCost(+e.target.value)}
                     type="number"
                     placeholder="Cost"
                   />

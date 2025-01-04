@@ -1,6 +1,5 @@
-import { Button, filter } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
-import AgentTable from "../components/Table/AgentTable";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,10 +12,6 @@ import {
 } from "../redux/reducers/drawersSlice";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import AddBuyer from "../components/Drawers/Buyer/AddBuyer";
-import UpdateBuyer from "../components/Drawers/Buyer/UpdateBuyer";
-import { useDeleteAgentMutation } from "../redux/api/api";
-import BuyerDetails from "../components/Drawers/Buyer/BuyerDetails";
 import UserRoleTable from "../components/Table/UserRoleTable";
 import AddUserRole from "../components/Drawers/User Role/AddUserRole";
 import UserRoleDetails from "../components/Drawers/User Role/UserRoleDetails";
@@ -175,7 +170,6 @@ const UserRole: React.FC = () => {
           <textarea
             className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
             rows={1}
-            //   width="220px"
             placeholder="Search"
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
