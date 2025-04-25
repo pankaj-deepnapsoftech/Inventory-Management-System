@@ -15,6 +15,7 @@ import {
 import EmployeeTable from "../components/Table/EmployeeTable";
 import EmployeeDetails from "../components/Drawers/Employee/EmployeeDetails";
 import UpdateEmployee from "../components/Drawers/Employee/UpdateEmployee";
+import { FiSearch } from "react-icons/fi";
 
 const Employees: React.FC = () => {
   const { isSuper, allowedroutes } = useSelector((state: any) => state.auth);
@@ -135,32 +136,38 @@ const Employees: React.FC = () => {
 
       {/* Employees Page */}
       <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
-        <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
+        <div className="flex text-lg md:text-2xl font-bold items-center gap-y-1">
           Employees
         </div>
 
-        <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 gap-x-2 w-full md:w-fit">
-          <textarea
-            className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
-            rows={1}
-            placeholder="Search"
-            value={searchKey}
-            onChange={(e) => setSearchKey(e.target.value)}
-          />
-          <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 100 }}
-            onClick={fetchEmployeesHandler}
-            leftIcon={<MdOutlineRefresh />}
-            color="#1640d6"
-            borderColor="#1640d6"
-            variant="outline"
-          >
-            Refresh
-          </Button>
-        </div>
+        <div className="flex flex-row items-center gap-2 w-full md:w-auto mt-2 md:mt-0 relative">
+  {/* Search Wrapper */}
+  <div className="relative w-full">
+    <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
+    <input
+      className="pl-10 pr-4 py-2 w-full text-sm rounded-[5px] border border-gray-300 bg-white shadow-sm focus:outline-none"
+      placeholder="Search roles..."
+      value={searchKey}
+      onChange={(e) => setSearchKey(e.target.value)}
+    />
+  </div>
+
+  {/* Refresh Button */}
+  <Button
+    fontSize={{ base: "14px", md: "14px" }}
+    paddingX={{ base: "10px", md: "12px" }}
+    paddingY={{ base: "0", md: "3px" }}
+    onClick={fetchEmployeesHandler}
+    leftIcon={<MdOutlineRefresh />}
+    color="#8b6bb7"
+    borderColor="#8b6bb7"
+    variant="outline"
+    className="whitespace-nowrap"
+  >
+    Refresh
+  </Button>
+</div>
+
       </div>
 
       <div>

@@ -2,108 +2,157 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import routes from "../../routes/routes";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { IoCloseSharp } from "react-icons/io5";
+import { RiMenu2Line } from "react-icons/ri";
+// import logo from "../../assets/images/logo/logo.png";
+ // Make sure your path is correct
 
 const Navigation: React.FC = () => {
   const { allowedroutes, isSuper } = useSelector((state: any) => state.auth);
-
+  const [checkMenu, setCheckMenu] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
   const [openSubMenus, setOpenSubMenus] = useState<{ [key: string]: boolean }>(
     {}
   );
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIcon(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+
+   const handleCloseMenu =()=>{
+         if(window.innerWidth < 800){
+          setCheckMenu(false)
+         }
+   }
+
 
   const toggleSubMenusHandler = (path: string) => {
-    setOpenSubMenus((prev: { [key: string]: boolean }) => ({
+    setOpenSubMenus((prev) => ({
       ...prev,
       [path]: !prev[path],
     }));
   };
 
   return (
-    <div className="h-[inherit] px-3 py-3 overflow-auto bg-[#fbfbfb]">
-      <ul>
-        {routes.map((route, ind) => {
-          const isAllowed =
-            isSuper || allowedroutes.includes(route.path.replaceAll("/", ""));
+    <>
+      {/* Mobile Menu Button */}
+      <div className="absolute top-4 left-4 z-50 md:hidden">
+        <div onClick={() => setCheckMenu(!checkMenu)}>
+          {checkMenu ? (
+            <IoCloseSharp
+              size={30}
+              className={`transition-all duration-50 ease-in absolute left-[12rem] text-white ${
+                showIcon ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+              }`}
+            />
+          ) : (
+            <RiMenu2Line size={30} className="text-white" />
+          )}
+        </div>
+      </div>
 
-          if (route.isSublink) {
-            return (
-              <div key={ind}>
-                <li
+      {/* Sidebar */}
+      <div
+        className={`bg-sideBlack text-white h-full overflow-auto md:block ${
+          checkMenu ? "block" : "hidden"
+        } transition-all duration-300 ease-in-out
+        md:relative fixed z-40 w-64 md:w-auto top-29 left-0 px-3 py-3`}
+      >
+        {/* Logo */}
+        {/* <div >
+          <img src={logo} alt="blogger" className="w-[150px] filter invert" />
+        </div> */}
+
+        {/* Menu List */}
+        <ul className="pt-3">
+          {routes.map((route, ind) => {
+            const isAllowed =
+              isSuper || allowedroutes.includes(route.path.replaceAll("/", ""));
+
+            if (route.isSublink) {
+              return (
+                <div key={ind}>
+                  <li
+                    className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold"
+                    onClick={() => toggleSubMenusHandler(route.path)}
+                    style={{
+                      cursor: isAllowed ? "pointer" : "not-allowed",
+                      opacity: isAllowed ? 1 : 0.5,
+                      pointerEvents: isAllowed ? "auto" : "none",
+                    }}
+                  >
+                    <span>{route.icon}</span>
+                    <span>{route.name}</span>
+                    <span className="pt-1">
+                      {openSubMenus[route.path] ? <FaAngleUp /> : <FaAngleDown />}
+                    </span>
+                  </li>
+                  {openSubMenus[route.path] &&
+                    route.sublink?.map((sublink, index) => (
+                      <NavLink 
+                      onClick={handleCloseMenu}
+                        key={index}
+                        to={route.path + "/" + sublink.path}
+                        style={{
+                          cursor: isAllowed ? "pointer" : "not-allowed",
+                          opacity: isAllowed ? 1 : 0.5,
+                          pointerEvents: isAllowed ? "auto" : "none",
+                        }}
+                      >
+                        <li className="flex gap-x-2 pl-5 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                          <span>{sublink.icon}</span>
+                          <span>{sublink.name}</span>
+                        </li>
+                      </NavLink>
+                    ))}
+                </div>
+              );
+            } else if (route.name === "Approval" && isSuper) {
+              return (
+                <NavLink
+                onClick={handleCloseMenu}
                   key={ind}
-                  className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
-                  onClick={() => toggleSubMenusHandler(route.path)}
+                  to={route.path || ""}
                   style={{
                     cursor: isAllowed ? "pointer" : "not-allowed",
                     opacity: isAllowed ? 1 : 0.5,
-                    pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
+                    pointerEvents: isAllowed ? "auto" : "none",
                   }}
                 >
-                  <span>{route.icon}</span>
-                  <span>{route.name}</span>
-                  <span className="pt-1">
-                    {openSubMenus[route.path] ? <FaAngleUp /> : <FaAngleDown />}
-                  </span>
-                </li>
-                {openSubMenus[route.path] &&
-                  route.sublink &&
-                  route.sublink.map((sublink, index) => (
-                    <NavLink
-                      style={{
-                        cursor: isAllowed ? "pointer" : "not-allowed",
-                        opacity: isAllowed ? 1 : 0.5,
-                        pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
-                      }}
-                      to={route.path + "/" + sublink.path}
-                    >
-                      <li
-                        key={index}
-                        className="flex gap-x-2 pl-5 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
-                      >
-                        <span>{sublink.icon}</span>
-                        <span>{sublink.name}</span>
-                      </li>
-                    </NavLink>
-                  ))}
-              </div>
-            );
-          }
-          else if(route.name === "Approval" && isSuper){
-            return (
-              <NavLink style={{
-                cursor: isAllowed ? "pointer" : "not-allowed",
-                opacity: isAllowed ? 1 : 0.5,
-                pointerEvents: isAllowed ? "auto" : "none",
-              }} to={route.path || ""}>
-                <li
+                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                    <span>{route.icon}</span>
+                    <span>{route.name}</span>
+                  </li>
+                </NavLink>
+              );
+            } else if (route.name !== "Approval") {
+              return (
+                <NavLink
+                onClick={handleCloseMenu}
                   key={ind}
-                  className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
+                  to={route.path || ""}
+                  style={{
+                    cursor: isAllowed ? "pointer" : "not-allowed",
+                    opacity: isAllowed ? 1 : 0.5,
+                    pointerEvents: isAllowed ? "auto" : "none",
+                  }}
                 >
-                  <span>{route.icon}</span>
-                  <span>{route.name}</span>
-                </li>
-              </NavLink>
-            );
-          }
-          else if(route.name !== "Approval") {
-            return (
-              <NavLink style={{
-                cursor: isAllowed ? "pointer" : "not-allowed",
-                opacity: isAllowed ? 1 : 0.5,
-                pointerEvents: isAllowed ? "auto" : "none", // Disable click interaction
-              }} to={route.path || ""}>
-                <li
-                  key={ind}
-                  className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-[#e6efff] hover:text-[#1640d6] hover:cursor-pointer text-[15px] font-semibold"
-                >
-                  <span>{route.icon}</span>
-                  <span>{route.name}</span>
-                </li>
-              </NavLink>
-            );
-          }
-        })}
-      </ul>
-    </div>
+                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                    <span>{route.icon}</span>
+                    <span>{route.name}</span>
+                  </li>
+                </NavLink>
+              );
+            }
+          })}
+        </ul>
+      </div>
+    </>
   );
 };
 

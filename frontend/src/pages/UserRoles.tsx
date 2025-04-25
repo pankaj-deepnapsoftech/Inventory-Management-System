@@ -1,6 +1,8 @@
-import { Button } from "@chakra-ui/react";
+import { background, Button } from "@chakra-ui/react";
 import { MdOutlineRefresh } from "react-icons/md";
+import { FiSearch } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeAddRoleDrawer,
@@ -137,7 +139,7 @@ const UserRole: React.FC = () => {
   }
 
   return (
-    <div>
+    <div >
       {/* Add User Role */}
       {isAddRoleDrawerOpened && (
         <AddUserRole
@@ -161,45 +163,46 @@ const UserRole: React.FC = () => {
         />
       )}
 
-      <div className="flex flex-col items-start justify-start md:flex-row gap-y-1 md:justify-between md:items-center mb-2">
-        <div className="flex text-lg md:text-xl font-semibold items-center gap-y-1">
-          User Roles
-        </div>
+<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-y-2">
+  {/* Title */}
+  <div className="text-2xl md:text-3xl font-bold">User Roles</div>
 
-        <div className="mt-2 md:mt-0 flex flex-wrap gap-y-1 gap-x-2 w-full md:w-fit">
-          <textarea
-            className="rounded-[10px] w-full md:flex-1 px-2 py-2 md:px-3 md:py-2 text-sm focus:outline-[#1640d6] hover:outline:[#1640d6] border resize-none border-[#bbbbbb] bg-[#f9f9f9]"
-            rows={1}
-            placeholder="Search"
-            value={searchKey}
-            onChange={(e) => setSearchKey(e.target.value)}
-          />
-          <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 100 }}
-            onClick={fetchRolesHandler}
-            leftIcon={<MdOutlineRefresh />}
-            color="#1640d6"
-            borderColor="#1640d6"
-            variant="outline"
-          >
-            Refresh
-          </Button>
-          <Button
-            fontSize={{ base: "14px", md: "14px" }}
-            paddingX={{ base: "10px", md: "12px" }}
-            paddingY={{ base: "0", md: "3px" }}
-            width={{ base: "-webkit-fill-available", md: 200 }}
-            onClick={openAddRoleDrawerHandler}
-            color="white"
-            backgroundColor="#1640d6"
-          >
-            Add New Role
-          </Button>
-        </div>
-      </div>
+  {/* Buttons + Search in one row on mobile */}
+  <div className="flex flex-row flex-wrap gap-2 w-full md:w-auto mt-2 md:mt-0">
+    {/* Buttons */}
+    <Button
+      className="flex-1"
+      onClick={openAddRoleDrawerHandler}
+      bg="#8b6bb7"
+      color="white"
+      _hover={{ bg: "#dab2eb" }}
+    >
+      Add New Role
+    </Button>
+    <Button
+      className="flex-1"
+      onClick={fetchRolesHandler}
+      leftIcon={<MdOutlineRefresh />}
+      variant="outline"
+      color="#8b6bb7"
+      borderColor="#8b6bb7"
+      _hover={{ bg: "#dab2eb", color: "white" }}
+    >
+      Refresh
+    </Button>
+
+    {/* Search */}
+    <div className="relative flex-1 min-w-[150px]">
+      <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
+      <input
+        className="pl-10 pr-4 py-2 w-full text-sm rounded-[5px] border-b bg-white shadow-sm focus:outline-none"
+        placeholder="Search roles..."
+        value={searchKey}
+        onChange={(e) => setSearchKey(e.target.value)}
+      />
+    </div>
+  </div>
+</div>
 
       <div>
         <UserRoleTable

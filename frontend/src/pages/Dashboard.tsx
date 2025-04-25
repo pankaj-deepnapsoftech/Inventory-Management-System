@@ -163,7 +163,24 @@ const Dashboard: React.FC = () => {
 
     fetchSummaryHandler();
   };
-
+   const dynamicColor=(index: number)=>{
+        switch(index){
+          case 0:
+            return "bg-gradient-to-br  from-purple-400 to-purple-600"
+            break;
+          case 1:
+            return "bg-gradient-to-br  from-green-400 to-green-600"
+            break;
+          case 2:
+            return "bg-gradient-to-br  from-yellow-400 to-yellow-600"
+            break;
+          case 3:
+            return "bg-gradient-to-br  from-blue-400 to-blue-600"
+            break;
+          case 4: 
+            return "bg-gradient-to-br  from-red-400 to-red-600"  
+        }
+   }
   useEffect(() => {
     fetchSummaryHandler();
   }, []);
@@ -178,78 +195,95 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <div className="flex items-start justify-between">
-        <div className="text-3xl font-bold text-[#22075e]">
-          Hi {firstname || ""},
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="text-3xl font-bold text-sideBlack">
+        Welcome {firstname || ""}
         </div>
 
         <div>
-          <form
-            onSubmit={applyFilterHandler}
-            className="flex items-end justify-between gap-2"
-          >
-            <FormControl>
-              <FormLabel>From</FormLabel>
-              <Input
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                backgroundColor="white"
-                type="date"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>To</FormLabel>
-              <Input
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                backgroundColor="white"
-                type="date"
-              />
-            </FormControl>
-            <Button
-              type="submit"
-              fontSize={{ base: "14px", md: "14px" }}
-              paddingX={{ base: "10px", md: "12px" }}
-              paddingY={{ base: "0", md: "3px" }}
-              width={{ base: "-webkit-fill-available", md: 150 }}
-              color="white"
-              backgroundColor="#1640d6"
-            >
-              Apply
-            </Button>
-            <Button
-              type="submit"
-              fontSize={{ base: "14px", md: "14px" }}
-              paddingX={{ base: "10px", md: "12px" }}
-              paddingY={{ base: "0", md: "3px" }}
-              width={{ base: "-webkit-fill-available", md: 150 }}
-              onClick={resetFilterHandler}
-              color="white"
-              backgroundColor="#1640d6"
-            >
-              Reset
-            </Button>
-          </form>
+        <form
+  onSubmit={applyFilterHandler}
+  className="flex flex-col md:flex-row items-start md:items-end gap-3 w-full md:w-auto"
+>
+  <FormControl className="w-full md:w-auto">
+    <FormLabel className="text-sm md:text-base">From:</FormLabel>
+    <Input
+      value={from}
+      onChange={(e) => setFrom(e.target.value)}
+      type="date"
+      backgroundColor="white"
+      className="w-full h-8 md:h-10 text-sm md:text-base px-2 "
+    />
+  </FormControl>
+
+  <FormControl className="w-full md:w-auto">
+    <FormLabel className="text-sm md:text-base">To:</FormLabel>
+    <Input
+      value={to}
+      onChange={(e) => setTo(e.target.value)}
+      type="date"
+      backgroundColor="white"
+      className="w-full h-8 md:h-10 text-sm md:text-base px-2 "
+    />
+  </FormControl>
+
+  <div className="flex w-full md:w-auto gap-2">
+    <Button
+      type="submit"
+      className="w-full md:w-36 h-8 md:h-10 text-sm md:text-base"
+      style={{
+        backgroundColor: "#343a40",
+        color: "white",
+      }}
+      _hover={{
+        backgroundColor: "#fbfbfb",
+        color: "#343a40",
+        boxShadow: "md",
+      }}
+    >
+      Apply
+    </Button>
+
+    <Button
+      type="button"
+      onClick={resetFilterHandler}
+      className="w-full md:w-36 h-8 md:h-10 text-sm md:text-base"
+      style={{
+        backgroundColor: "#343a40",
+        color: "white",
+      }}
+      _hover={{
+        backgroundColor: "#fbfbfb",
+        color: "#343a40",
+        boxShadow: "md",
+      }}
+    >
+      Reset
+    </Button>
+  </div>
+</form>
+
         </div>
       </div>
 
       {isLoading && <Loading />}
       {!isLoading && (
         <div>
-          <div className="mb-2 mt-6 font-semibold text-xl">
+          <div className="mb-2 mt-6 font-bold text-2xl">
             Employee Insights
           </div>
           {employees && employees.length === 0 && (
             <div className="text-center mb-2">No data found.</div>
           )}
           {employees && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {employees.map((emp, ind) => {
                 return (
                   <Card
-                    primaryColor="#A83D9B"
+                    primaryColor="white"
                     secondaryColor="#A82298"
-                    textColor="white"
+                    bgColor={dynamicColor(ind)}
+                    textColor="#A82298"
                     title={emp?._id}
                     content={emp?.total_employee_count}
                     link="employee"
@@ -259,76 +293,88 @@ const Dashboard: React.FC = () => {
               })}
             </div>
           )}
-          <div className="mb-2 mt-6 font-semibold text-xl">
+          <div className="mb-2 mt-6 font-bold text-2xl">
             Sales & Purchase Insights
           </div>
           {approvalsPending && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+             <Card
+              primaryColor="white"
+              secondaryColor="white"
+               bgColor="bg-gradient-to-br  from-pink-400 to-pink-600" 
+              textColor="black" 
+              title="Proforma Invoices"
+              content={totalProformaInvoices}
+              link="approval"
+              icon={<IoMdCart color="#fff" size={28} />}
+            />
+
               <Card
-                primaryColor="#A948E7"
-                secondaryColor="#1E387B"
-                textColor="white"
-                title="Proforma Invoices"
-                content={totalProformaInvoices}
-                link="approval"
-                icon={<IoMdCart color="#ffffff" size={28} />}
-              />
-              <Card
-                primaryColor="#A948E7"
-                secondaryColor="#1E387B"
-                textColor="white"
+                primaryColor="white"
+                secondaryColor="#900C3F"
+                bgColor="bg-gradient-to-br  from-cyan-400 to-cyan-600" 
+                textColor="#00FFFF" 
                 title="Invoices"
                 content={totalInvoices}
                 link="approval"
-                icon={<FaStoreAlt color="#ffffff" size={28} />}
+                icon={<FaStoreAlt color="#00FFFF" size={28} />}
               />
+
               <Card
-                primaryColor="#A948E7"
-                secondaryColor="#1E387B"
-                textColor="white"
+                primaryColor="white"
+                secondaryColor="#155724"
+                bgColor="bg-gradient-to-br  from-orange-400 to-orange-600" 
+                textColor="#FF69B4" 
                 title="Payments"
                 content={totalPayments}
                 link="approval"
-                icon={<FaUser color="#ffffff" size={28} />}
+                icon={<FaUser color="#FF69B4" size={28} />}
               />
+
             </div>
           )}
-          <div className="mb-2 mt-6 font-semibold text-xl">
+          <div className="mb-2 mt-6 font-bold text-2xl ">
             Approvals Pending
           </div>
           {approvalsPending && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <Card
-                primaryColor="#273F7C"
+                primaryColor="white"
                 secondaryColor="#1E387B"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-teal-400 to-emerald-500"
+
+
                 title="Inventory"
                 content={approvalsPending?.unapproved_product_count}
                 link="approval"
                 icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#273F7C"
+                primaryColor="white"
                 secondaryColor="#1E387B"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-fuchsia-500 to-red-500" 
                 title="Stores"
                 content={approvalsPending?.unapproved_store_count}
                 link="approval"
                 icon={<FaStoreAlt color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#273F7C"
+                primaryColor="white"
                 secondaryColor="#1E387B"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-purple-400 to-purple-600" 
                 title="Merchants"
                 content={approvalsPending?.unapproved_merchant_count}
                 link="approval"
                 icon={<FaUser color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#273F7C"
+                primaryColor="white"
                 secondaryColor="#1E387B"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-yellow-400 to-yellow-600" 
                 title="BOMs"
                 content={approvalsPending?.unapproved_bom_count}
                 link="approval"
@@ -336,42 +382,46 @@ const Dashboard: React.FC = () => {
               />
             </div>
           )}
-          <div className="mb-2 mt-5 font-semibold text-xl">
+          <div className="mb-2 mt-5 font-bold text-2xl">
             Inventory Insights
           </div>
           {directInventory && (
-            <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br  from-cyan-400 to-cyan-600"     
                 title="Direct Inventory"
                 content={directInventory?.total_product_count}
                 link="product"
                 icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-pink-400 to-red-600"
                 title="Stock Value"
                 content={"₹ " + directInventory?.total_stock_price + "/-"}
                 icon={<FaRupeeSign color="#ffffff" size={24} />}
                 link="product"
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br  from-green-400 to-green-600"
                 title="Excess Stock"
                 content={directInventory?.total_excess_stock}
                 link="product"
                 icon={<AiFillProduct color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-blue-400 to-blue-600"
                 title="Low Stock"
                 content={directInventory?.total_low_stock}
                 link="product"
@@ -380,38 +430,42 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           {indirectInventory && (
-            <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-3">
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-green-400 to-lime-600"
                 title="Indirect Inventory"
                 content={indirectInventory?.total_product_count}
                 link="product"
                 icon={<IoMdCart color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-yellow-400 to-yellow-600"
                 title="Stock Value"
                 content={"₹ " + indirectInventory?.total_stock_price + "/-"}
-                icon={<FaRupeeSign color="#ffffff" size={24} />}
+                icon={<FaRupeeSign color="#ffffff" size={28} />}
                 link="product"
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-purple-400 to-purple-600"
                 title="Excess Stock"
                 content={indirectInventory?.total_excess_stock}
                 link="product"
                 icon={<AiFillProduct color="#ffffff" size={28} />}
               />
               <Card
-                primaryColor="#4CAAE4"
+                primaryColor="white"
                 secondaryColor="#32A1E7"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-red-400 to-red-600"
                 title="Low Stock"
                 content={indirectInventory?.total_low_stock}
                 link="product"
@@ -419,54 +473,59 @@ const Dashboard: React.FC = () => {
               />
             </div>
           )}
-          <div className="grid grid-cols-4 gap-2 mt-4 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6  mt-6">
             <Card
-              primaryColor="#4CAAE4"
+              primaryColor="white"
               secondaryColor="#32A1E7"
               textColor="white"
+              bgColor="bg-gradient-to-br from-cyan-400 to-cyan-600"
               title="Scrap Materials"
               content={scrap?.total_product_count?.toString() || ""}
               link="product"
               icon={<IoMdCart color="#ffffff" size={28} />}
             />
             <Card
-              primaryColor="#4CAAE4"
+              primaryColor="white"
               secondaryColor="#32A1E7"
               textColor="white"
+               bgColor="bg-gradient-to-br from-blue-400 to-blue-600"
               title="Scrap Value"
               content={"₹ " + scrap?.total_stock_price + "/-"}
               icon={<FaRupeeSign color="#ffffff" size={24} />}
               link="product"
             />
             <Card
-              primaryColor="#4CAAE4"
+              primaryColor="white"
               secondaryColor="#32A1E7"
               textColor="white"
+              bgColor="bg-gradient-to-br from-orange-400 to-orange-600"
               title="WIP Inventory"
               content={inventory?.total_product_count?.toString() || ""}
               link="product"
               icon={<IoMdCart color="#ffffff" size={28} />}
             />
             <Card
-              primaryColor="#4CAAE4"
+              primaryColor="white"
               secondaryColor="#32A1E7"
-              textColor="white"
+              textColor="White"
+                bgColor="bg-gradient-to-br from-green-400 to-green-600"
               title="WIP Inventory Value"
               content={"₹ " + inventory?.total_stock_price + "/-"}
               icon={<FaRupeeSign color="#ffffff" size={24} />}
               link="product"
             />
           </div>
-          <div className="mb-2 mt-5 font-semibold text-xl">
+          <div className="mb-2 mt-5 font-bold text-2xl">
             Store & Merchant Insights
           </div>
-          <div className="grid grid-cols-4 gap-2 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {stores && (
               <div>
                 <Card
-                  primaryColor="#E57E3D"
+                  primaryColor="white"
                   secondaryColor="#E56F27"
                   textColor="white"
+                  bgColor="bg-gradient-to-br from-purple-400 to-purple-600"
                   title="Stores"
                   content={stores?.total_store_count}
                   link="store"
@@ -476,9 +535,10 @@ const Dashboard: React.FC = () => {
             )}
             {merchants && (
               <Card
-                primaryColor="#A948E7"
+                primaryColor="white"
                 secondaryColor="#A231E8"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-red-400 to-red-600"
                 title="Buyers"
                 content={merchants?.total_buyer_count}
                 link="merchant/buyer"
@@ -487,9 +547,10 @@ const Dashboard: React.FC = () => {
             )}
             {merchants && (
               <Card
-                primaryColor="#A948E7"
+                primaryColor="white"
                 secondaryColor="#A231E8"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-blue-400 to-blue-600"
                 title="Suppliers"
                 content={merchants?.total_supplier_count}
                 link="merchant/supplier"
@@ -498,15 +559,16 @@ const Dashboard: React.FC = () => {
             )}
           </div>
 
-          <div className="mb-2 mt-5 font-semibold text-xl">
+          <div className="mb-2 mt-5 font-bold text-2xl">
             Production Insights
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {boms && (
               <Card
-                primaryColor="#37A775"
+                primaryColor="white"
                 secondaryColor="#21A86C"
                 textColor="white"
+                bgColor="bg-gradient-to-br from-cyan-400 to-sky-600"
                 title="BOMs"
                 content={boms?.total_bom_count}
                 link="bom"
@@ -514,17 +576,19 @@ const Dashboard: React.FC = () => {
               />
             )}
             <Card
-              primaryColor="#F03E3E"
+              primaryColor="white"
               secondaryColor="#E56F27"
               textColor="white"
+              bgColor="bg-gradient-to-br from-pink-300 to-indigo-200"
               title="Inventory Approval Pending"
               content={processes?.["raw material approval pending"] || 0}
               link="production/production-process"
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />
             <Card
-              primaryColor="#3392F8"
+              primaryColor="white"
               secondaryColor="#E56F27"
+              bgColor="bg-gradient-to-br from-yellow-400 to-yellow-600"
               textColor="white"
               title="Inventory Approved"
               content={processes?.["raw materials approved"] || 0}
@@ -532,18 +596,20 @@ const Dashboard: React.FC = () => {
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />
             <Card
-              primaryColor="#E48C27"
+              primaryColor="white"
               secondaryColor="#E56F27"
               textColor="white"
+              bgColor="bg-gradient-to-br from-pink-400 to-pink-600"
               title="Work In Progress"
               content={processes?.["work in progress"] || 0}
               link="production/production-process"
               icon={<FaStoreAlt color="#ffffff" size={28} />}
             />
             <Card
-              primaryColor="#409503"
+              primaryColor="white"
               secondaryColor="#E56F27"
               textColor="white"
+              bgColor="bg-gradient-to-br from-green-400 to-green-600"
               title="Completed"
               content={processes?.completed || 0}
               link="production/production-process"

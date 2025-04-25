@@ -77,13 +77,13 @@ const AddUserRole: React.FC<AddUserRoleProps> = ({
             "rgba(0, 0, 0, 0.08) 0px 6px 16px 0px, rgba(0, 0, 0, 0.12) 0px 3px 6px -4px, rgba(0, 0, 0, 0.05) 0px 9px 28px 8px",
         }}
       >
-        <h1 className="px-4 flex gap-x-2 items-center text-xl py-3 border-b">
-          <BiX onClick={closeDrawerHandler} size="26px" />
+        <h1 className="px-4 flex gap-x-2 items-center font-bold text-[25px] py-3 border-b">
+          <BiX onClick={closeDrawerHandler} size="30px" />
           User Role
         </h1>
 
         <div className="mt-8 px-5">
-          <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#f9fafc]">
+          <h2 className="text-2xl font-semibold py-5 text-center mb-6 border-y bg-[#edf2f6]">
             Add New Role
           </h2>
 
@@ -124,9 +124,9 @@ const AddUserRole: React.FC<AddUserRoleProps> = ({
             <Button
               isLoading={isAddingRole}
               type="submit"
-              className="mt-1"
+              className="mt-5"
               color="white"
-              backgroundColor="#1640d6"
+              backgroundColor="#8b6bb7"
             >
               Submit
             </Button>

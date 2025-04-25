@@ -134,7 +134,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
           </div>
           <TableContainer maxHeight="600px" overflowY="auto">
             <Table variant="simple" {...getTableProps()}>
-              <Thead className="text-sm font-semibold">
+              <Thead className="text-sm font-semibold bg-gray-100">
                 {headerGroups.map(
                   (
                     hg: HeaderGroup<{
@@ -149,7 +149,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                     }>
                   ) => {
                     return (
-                      <Tr {...hg.getHeaderGroupProps()}>
+                      <Tr {...hg.getHeaderGroupProps()}  borderBottom="1px solid #e2e8f0">
                         {hg.headers.map((column: any) => {
                           return (
                             <Th
@@ -157,7 +157,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                               fontSize="12px"
                               fontWeight="700"
                               color="black"
-                              backgroundColor="#fafafa"
+                              backgroundColor="#edf2f6"
                               borderLeft="1px solid #d7d7d7"
                               borderRight="1px solid #d7d7d7"
                               {...column.getHeaderProps(
@@ -184,7 +184,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
                           fontSize="12px"
                           fontWeight="700"
                           color="black"
-                          backgroundColor="#fafafa"
+                          backgroundColor="#edf2f6"
                           borderLeft="1px solid #d7d7d7"
                           borderRight="1px solid #d7d7d7"
                         >

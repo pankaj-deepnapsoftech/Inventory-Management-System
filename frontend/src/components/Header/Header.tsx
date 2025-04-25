@@ -28,11 +28,11 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="relative flex justify-between items-center py-2 px-3">
-      <img src={logo} className="w-[150px]"></img>
-
-      <div className="flex gap-x-5 items-center">
-        <IoIosNotifications size={40} />
+    <div className="relative flex justify-between max-[800px]:justify-end items-center py-2 px-3 bg-sideBlack"
+    style={{ boxShadow: "0 0 20px 3px #96beee26" }}>
+      <img src={logo} alt="blogger" className="w-[150px] filter invert max-[800px]:hidden" />
+      <div className="flex gap-x-5 items-center   ">
+        <IoIosNotifications size={40} color="white" />
 
         <Avatar
           cursor="pointer"

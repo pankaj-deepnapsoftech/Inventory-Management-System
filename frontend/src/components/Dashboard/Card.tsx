@@ -6,6 +6,7 @@ interface CardProps {
   primaryColor?: string;
   secondaryColor?: string;
   textColor?: string;
+  bgColor?: string;
   link?: string;
   icon: React.ReactNode;
 }
@@ -13,18 +14,31 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({
   title,
   content,
-  primaryColor
+  primaryColor,
+  bgColor,
+  icon,
 }) => {
   return (
     <div
       style={{ boxShadow: "0 0 20px 3px #96beee26" }}
-      className="bg-white rounded-md text-center py-7"
+      className={`${bgColor} rounded-xl p-6 hover:scale-[1.1] transition-all duration-300`}
     >
-      <h1 className="text-xl border-b border-b-[#a9a9a9] pb-4 font-bold text-[#22075e]">
-        {title}
-      </h1>
-      <div className="mt-4 font-bold text-[#595959]">
-        <span style={{backgroundColor: primaryColor}} className="text-[#ffffff] rounded px-2 ml-1 py-1">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white capitalize">
+          {title === "DESIGNER"
+            ? "Designer"
+            : title === "DISPATCHER "
+            ? "Dispatcher"
+            : title}
+        </h1>
+        <div className="text-white text-3xl">{icon}</div>
+      </div>
+
+      <div className="text-black text-lg font-bold">
+        <span
+          style={{ backgroundColor: primaryColor }}
+          className="inline-block text-black px-4 py-2 rounded-lg"
+        >
           {content}
         </span>
       </div>
