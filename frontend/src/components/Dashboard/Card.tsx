@@ -21,7 +21,7 @@ const Card: React.FC<CardProps> = ({
   return (
     <div
       style={{ boxShadow: "0 0 20px 3px #96beee26" }}
-      className={`${bgColor} rounded-xl p-6 hover:scale-[1.1] transition-all duration-300`}
+      className={`${bgColor} rounded-xl p-5 h-[160px] w-[270px] hover:scale-[1.1] transition-all duration-300`}
     >
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white capitalize">

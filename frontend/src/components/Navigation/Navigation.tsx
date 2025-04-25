@@ -1,12 +1,12 @@
-import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaSignOutAlt } from "react-icons/fa";
 import routes from "../../routes/routes";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { RiMenu2Line } from "react-icons/ri";
-// import logo from "../../assets/images/logo/logo.png";
- // Make sure your path is correct
+import logo from "../../assets/images/logo/logo.png";
+ 
 
 const Navigation: React.FC = () => {
   const { allowedroutes, isSuper } = useSelector((state: any) => state.auth);
@@ -51,25 +51,26 @@ const Navigation: React.FC = () => {
               }`}
             />
           ) : (
-            <RiMenu2Line size={30} className="text-white" />
+            <RiMenu2Line size={30} className="text-black" />
           )}
         </div>
       </div>
 
       {/* Sidebar */}
-      <div
-        className={`bg-sideBlack text-white h-full overflow-auto md:block ${
+      <div 
+        className={`bg-gradient-to-b from-[#1c1c36] to-[#10223a] text-white h-full overflow-auto md:block ${
           checkMenu ? "block" : "hidden"
         } transition-all duration-300 ease-in-out
-        md:relative fixed z-40 w-64 md:w-auto top-29 left-0 px-3 py-3`}
+        fixed z-40 w-64 md:w-auto top-0 left-0 px-3 py-3`}
       >
         {/* Logo */}
-        {/* <div >
-          <img src={logo} alt="blogger" className="w-[150px] filter invert" />
-        </div> */}
+        <div className="pt-4 pb-4">
+    <img src={logo} alt="blogger" className="w-[190px] filter invert" />
+        </div>
+        <hr className=" border-1.5 w-[180px] ml-4  relative top-10 border-gray-300" />
 
         {/* Menu List */}
-        <ul className="pt-3">
+        <ul className="pt-[50px]">
           {routes.map((route, ind) => {
             const isAllowed =
               isSuper || allowedroutes.includes(route.path.replaceAll("/", ""));
@@ -78,7 +79,7 @@ const Navigation: React.FC = () => {
               return (
                 <div key={ind}>
                   <li
-                    className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold"
+                    className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-gradient-to-b from-[#4e578a81] to-[#dadada5b] hover:text-white text-[15px] font-semibold"
                     onClick={() => toggleSubMenusHandler(route.path)}
                     style={{
                       cursor: isAllowed ? "pointer" : "not-allowed",
@@ -104,7 +105,7 @@ const Navigation: React.FC = () => {
                           pointerEvents: isAllowed ? "auto" : "none",
                         }}
                       >
-                        <li className="flex gap-x-2 pl-5 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                        <li className="flex gap-x-2 pl-5 pr-9 py-3 rounded-lg hover:bg-gradient-to-b from-[#4e578a81] to-[#dadada5b] hover:text-white text-[15px] font-semibold">
                           <span>{sublink.icon}</span>
                           <span>{sublink.name}</span>
                         </li>
@@ -124,7 +125,7 @@ const Navigation: React.FC = () => {
                     pointerEvents: isAllowed ? "auto" : "none",
                   }}
                 >
-                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-gradient-to-b from-[#4e578a81] to-[#dadada5b] hover:text-white text-[15px] font-semibold">
                     <span>{route.icon}</span>
                     <span>{route.name}</span>
                   </li>
@@ -142,7 +143,7 @@ const Navigation: React.FC = () => {
                     pointerEvents: isAllowed ? "auto" : "none",
                   }}
                 >
-                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-white hover:text-[#343a40] text-[15px] font-semibold">
+                  <li className="flex gap-x-2 pl-3 pr-9 py-3 rounded-lg hover:bg-gradient-to-b from-[#4e578a81] to-[#dadada5b] hover:text-whitetext-[15px] font-semibold">
                     <span>{route.icon}</span>
                     <span>{route.name}</span>
                   </li>
@@ -151,6 +152,13 @@ const Navigation: React.FC = () => {
             }
           })}
         </ul>
+        <hr className="my-4 border-1.5 w-[180px] ml-4 relative top-0 border-gray-300" />
+        <div className="mt-[140px]">
+    <button className="flex items-center justify-center ml-4 h-[40px] w-[150px] gap-2 bg-gradient-to-r from-red-500 to-red-700 hover:bg-red-600 text-white py-2 rounded-md transition-all">
+      Log Out
+      <FaSignOutAlt />
+    </button>
+  </div>
       </div>
     </>
   );

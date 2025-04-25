@@ -48,9 +48,9 @@ const Layout: React.FC = () => {
     <div>
       <Header />
 
-      <div className="h-[90vh] overflow-hidden flex gap-x-2">
+      <div className="h-[90vh] overflow-hidden  flex gap-x-2">
         <div
-          className="h-[inherit] border: none overflow-x-hidden overflow-y-auto w-0 md:w-[280px] "
+          className="h-[inherit] border: none overflow-x-hidden overflow-y-auto w-0 md:w-[230px] "
           style={{ boxShadow: "0 0 20px 3px #96beee26" }}
         >
           <Navigation />

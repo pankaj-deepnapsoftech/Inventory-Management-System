@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import logo from "../../assets/images/logo/logo.png";
+// import logo from "../../assets/images/logo/logo.png";
 import { Avatar } from "@chakra-ui/react";
 import { IoIosNotifications } from "react-icons/io";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import UserDetailsMenu from "../../ui/UserDetailsMenu";
+// import { MdOutlineDashboardCustomize } from "react-icons/md";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -28,35 +29,44 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="relative flex justify-between max-[800px]:justify-end items-center py-2 px-3 bg-sideBlack"
-    style={{ boxShadow: "0 0 20px 3px #96beee26" }}>
-      <img src={logo} alt="blogger" className="w-[150px] filter invert max-[800px]:hidden" />
-      <div className="flex gap-x-5 items-center   ">
-        <IoIosNotifications size={40} color="white" />
-
-        <Avatar
-          cursor="pointer"
-          size="md"
-          name={firstname ? firstname + " " + lastname : ""}
-          onClick={() => setShowUserDetails((prev) => !prev)}
-        ></Avatar>
-        {showUserDetails && (
-          <ClickMenu
-            top={70}
-            right={30}
-            closeContextMenuHandler={() => setShowUserDetails(false)}
-          >
-            <UserDetailsMenu
-              email={email}
-              firstname={firstname}
-              lastname={lastname}
-              logoutHandler={logoutHandler}
-              closeUserDetailsMenu={() => setShowUserDetails(false)}
-            />
-          </ClickMenu>
-        )}
+    
+    <div className="relative flex justify-around  items-center py-2 px-3 bg-[#fbfbfb]"
+    style={{ boxShadow: "0 0 20px 3px #96beee26" }}
+  > 
+   
+   {/* <MdOutlineDashboardCustomize /> */}
+    <h1 className="text-[30px] font-[900] text-gray-800">Dashboard</h1>
+  
+    <div className="flex gap-x-2 items-center relative left-60 ">
+      <div className="p-2 rounded-md flex items-center justify-center w-12 h-10">
+        <IoIosNotifications size={40} color="black" />
       </div>
+  
+      <Avatar
+        cursor="pointer"
+        size="md"
+        name={firstname ? firstname + " " + lastname : ""}
+        onClick={() => setShowUserDetails((prev) => !prev)}
+      />
+  
+      {showUserDetails && (
+        <ClickMenu
+          top={70}
+          right={30}
+          closeContextMenuHandler={() => setShowUserDetails(false)}
+        >
+          <UserDetailsMenu
+            email={email}
+            firstname={firstname}
+            lastname={lastname}
+            logoutHandler={logoutHandler}
+            closeUserDetailsMenu={() => setShowUserDetails(false)}
+          />
+        </ClickMenu>
+      )}
     </div>
+  </div>
+  
   );
 };
 

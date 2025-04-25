@@ -195,73 +195,60 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="text-3xl font-bold text-sideBlack">
-        Welcome {firstname || ""}
+      <div className="flex flex-col  md:items-center md:justify-between gap-6 p-4 bg-white rounded-xl shadow-sm">
+        <div className="text-2xl md:text-3xl font-[700] text-gray-800 ">
+          Welcome {firstname || ""}
         </div>
 
         <div>
         <form
-  onSubmit={applyFilterHandler}
-  className="flex flex-col md:flex-row items-start md:items-end gap-3 w-full md:w-auto"
->
-  <FormControl className="w-full md:w-auto">
-    <FormLabel className="text-sm md:text-base">From:</FormLabel>
-    <Input
-      value={from}
-      onChange={(e) => setFrom(e.target.value)}
-      type="date"
-      backgroundColor="white"
-      className="w-full h-8 md:h-10 text-sm md:text-base px-2 "
-    />
-  </FormControl>
+          onSubmit={applyFilterHandler}
+          className="flex flex-col md:flex-row items-start md:items-end gap-4 w-full md:w-auto"
+        >
+          <div className="w-full max-w-md">
+            <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1">
+              FROM:
+            </label>
+            <input
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              id="dob"
+              type="text"
+              placeholder="DD/MM/YYYY"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm placeholder-gray-400 focus:outline-none transition"
+            />
 
-  <FormControl className="w-full md:w-auto">
-    <FormLabel className="text-sm md:text-base">To:</FormLabel>
-    <Input
-      value={to}
-      onChange={(e) => setTo(e.target.value)}
-      type="date"
-      backgroundColor="white"
-      className="w-full h-8 md:h-10 text-sm md:text-base px-2 "
-    />
-  </FormControl>
-
-  <div className="flex w-full md:w-auto gap-2">
-    <Button
-      type="submit"
-      className="w-full md:w-36 h-8 md:h-10 text-sm md:text-base"
-      style={{
-        backgroundColor: "#343a40",
-        color: "white",
-      }}
-      _hover={{
-        backgroundColor: "#fbfbfb",
-        color: "#343a40",
-        boxShadow: "md",
-      }}
-    >
-      Apply
-    </Button>
-
-    <Button
-      type="button"
-      onClick={resetFilterHandler}
-      className="w-full md:w-36 h-8 md:h-10 text-sm md:text-base"
-      style={{
-        backgroundColor: "#343a40",
-        color: "white",
-      }}
-      _hover={{
-        backgroundColor: "#fbfbfb",
-        color: "#343a40",
-        boxShadow: "md",
-      }}
-    >
-      Reset
-    </Button>
-  </div>
-</form>
+          </div>
+          <div className="w-full max-w-md">
+            <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1">
+              TO:
+            </label>
+            <input
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              id="dob"
+              type="text"
+              placeholder="DD/MM/YYYY"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm placeholder-gray-400 focus:outline-none  transition"
+            />
+          </div>
+          <div className="flex w-full md:w-auto gap-2">
+            <button
+              onClick={resetFilterHandler}
+              type="submit"
+              className="w-full md:w-40 h-11 px-4 text-sm font-medium tracking-wide rounded-md bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-md border-none hover:from-gray-800  hover:to-gray-950 focus:outline-none  transition-all duration-300 ease-in-out"
+            >
+              Apply Now
+            </button>
+            <button
+              onClick={resetFilterHandler}
+              type="submit"
+              className="w-full md:w-40  h-11 text-sm font-medium tracking-wide rounded-md bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-md border-none hover:from-gray-800 hover:to-gray-950 focus:outline-none  transition-all duration-300 ease-in-out"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
 
         </div>
       </div>
